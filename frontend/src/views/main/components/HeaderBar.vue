@@ -26,7 +26,6 @@
         variant="text"
         icon="mdi-magnify"
         style="margin-top: 25px"
-        v-show="!state.search"
       ></v-btn>
 
       <v-btn variant="text" class="inline">회원가입</v-btn>
@@ -45,7 +44,7 @@
 </template>
 
 <script>
-import {reactive} from 'vue'
+import { reactive } from "vue";
 export default {
   name: "HeaderBar",
   data: () => ({
@@ -76,23 +75,23 @@ export default {
       this.drawer = false;
     },
   },
-  setup(){
-    const state=reactive ({
-      search : false
-    })
-    const search_hover= ()=>{
-      state.search=!state.search
-      console.log(state.search)
-    }
-    const search_thing=()=>{
-      state.search=false
-    }
+  setup() {
+    const state = reactive({
+      search: false,
+    });
+    const search_hover = () => {
+      state.search = !state.search;
+      console.log(state.search);
+    };
+    const search_thing = () => {
+      state.search = false;
+    };
     return {
       search_hover,
       state,
-      search_thing
-    }
-  }
+      search_thing,
+    };
+  },
 };
 </script>
 
@@ -109,6 +108,7 @@ export default {
   height: 70px;
   width: 140px;
   margin: 10px;
+  margin-bottom: 16px;
 }
 .inputdata {
   margin-top: 20px;

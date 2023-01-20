@@ -1,8 +1,8 @@
 <template>
-  <v-card class="sidebar">
+  <v-card>
     <v-layout>
-      <v-navigation-drawer permanent>
-        <v-list color="transparent">
+      <v-navigation-drawer class="sidebar" style="width: 200px">
+        <v-list>
           <router-link to="/">
             <v-list-item title="Home"></v-list-item>
           </router-link>
@@ -30,7 +30,7 @@
           </div>
         </template>
       </v-navigation-drawer>
-      <v-main style="height: 80vh">
+      <v-main style="height: 80vh; overflow: scroll">
         <router-view />
         <!--메인 화면 왜인지는 모름 -->
       </v-main>
@@ -47,5 +47,9 @@ export default {
 <style>
 .sidebar {
   height: 80vh;
+  background-color: rgb(244, 247, 255);
+}
+a {
+  text-decoration: none;
 }
 </style>
