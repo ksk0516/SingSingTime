@@ -31,7 +31,8 @@
         </template>
       </v-navigation-drawer>
       <v-main style="height: 80vh">
-         <router-view /> <!--메인 화면 왜인지는 모름 -->
+        <router-view />
+        <!--메인 화면 왜인지는 모름 -->
       </v-main>
     </v-layout>
   </v-card>
@@ -44,7 +45,7 @@ export default {
 </script>
 
 <style>
-.sidebar{
+.sidebar {
   height: 80vh;
 }
 </style>
