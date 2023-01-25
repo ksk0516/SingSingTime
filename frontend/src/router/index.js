@@ -1,6 +1,6 @@
 import { createRouter, createWebHashHistory } from "vue-router";
 import CommunityView from "../views/community/community.vue";
-import ConferencesView from "../views/conferences/conferences.vue";
+import ConferencesView from "../views/conferences/conference.vue";
 import HomeView from "../views/home/home.vue";
 import MypageView from "../views/mypage/mypage.vue";
 import RankView from "../views/rank/rank.vue";
@@ -17,9 +17,10 @@ const routes = [
     component: RankView,
   },
   {
-    path: "/conferences",
+    path: "/conferences/:Id/:name",
     name: "ConferencesBox",
     component: ConferencesView,
+    props: true,
   },
   {
     path: "/community",
