@@ -1,5 +1,5 @@
 <template>
-  <div>FooterBar</div>
+  <div class="footer">FooterBar</div>
 </template>
 
 <script>
@@ -8,4 +8,8 @@ export default {
 };
 </script>
 
-<style></style>
+<style>
+.footer {
+  border: 1px solid black;
+}
+</style>
