@@ -15,7 +15,7 @@
                 <p class="item_name"><b>랭킹</b></p>
               </v-col>
               <v-col col="2">
-                <p class="item_value">광주김범수</p>
+                <p class="item_value">장덕김범수</p>
                 <p class="item_value">8회</p>
                 <p class="item_value">12등</p>
               </v-col>
