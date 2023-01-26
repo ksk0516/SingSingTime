@@ -41,18 +41,18 @@
             </template>
             <v-card>
               <v-card-title>
-                <span class="text-h5" style="margin:20px;">Search</span>
+                <span class="text-h5" style="margin: 20px">Search</span>
               </v-card-title>
               <v-card-text>
                 <v-container>
-                    <v-card-text>
-                      <v-autocomplete
-                        placeholder="노래 혹은 가수를 검색해주세요"
-                        prepend-icon="mdi-magnify"
-                        return-object
-                      ></v-autocomplete>
-                    </v-card-text>
-                    <!-- <v-divider></v-divider> -->
+                  <v-card-text>
+                    <v-autocomplete
+                      placeholder="노래 혹은 가수를 검색해주세요"
+                      prepend-icon="mdi-magnify"
+                      return-object
+                    ></v-autocomplete>
+                  </v-card-text>
+                  <!-- <v-divider></v-divider> -->
                 </v-container>
               </v-card-text>
               <v-card-actions>
