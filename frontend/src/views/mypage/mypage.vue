@@ -1,7 +1,7 @@
 <template>
   <v-template>
-    <v-row class="outbox">
-      <v-col col="6" md="3" lg="6" class="mypage_box">
+    <v-row class="outbox" justify="center">
+      <v-col col="5" md="3" lg="5" class="mypage_box">
         <h2 style="text-align: left"><b>My Page</b></h2>
         <v-row>
           <v-col col="3" class="user_image">
@@ -23,8 +23,8 @@
           </v-col>
         </v-row>
       </v-col>
-      <v-col col="6" md="3" lg="6" class="myplaylist_box">
-        <v-row>
+      <v-col col="5" md="3" lg="5" class="myplaylist_box">
+        <v-row justify="space-between ">
           <h2 style="text-align: left">
             <b>My Playlist</b><v-icon>mdi-music</v-icon>
           </h2>
@@ -69,7 +69,15 @@
     <br />
     <v-divider></v-divider>
     <br />
-    <h2 style="text-align: left"><b>My Highlight</b></h2>
+    <v-row align="center" justify="center">
+      <v-col sm="5" lg="10" class="d-flex">
+        <h2 style="text-align: left"><b>My Highlight</b></h2>
+        <div class="custom-file" style="margin-top:25px; margin-left:25px;">
+          <input id="customFile" type="file" @change="handleFileChange"/>
+          <label class="custom-file-label" for="customFile">{{file_name}}</label>
+        </div>
+      </v-col>
+    </v-row>
   </v-template>
 </template>
 
@@ -78,6 +86,8 @@ export default {
   name: "MypageBox",
   data: () => ({
     add_dialog: false,
+    file_name: "파일을 선택하세요.",
+    message: "Hello, world",
   }),
 };
 </script>
@@ -124,7 +134,7 @@ export default {
   background-color: aliceblue;
   border-radius: 50px;
   height: 30px;
-  margin-top: 3px;
+  margin-top: 23px;
   margin-left: 15px;
 }
 </style>
