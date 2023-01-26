@@ -157,12 +157,16 @@
             <v-container>
               <v-row>
                 <v-col cols="6">
-                  <v-text-field label="아이디"></v-text-field>
+                  <v-text-field
+                    label="아이디"
+                    v-model="state.form.id"
+                  ></v-text-field>
                 </v-col>
                 <v-col cols="12">
                   <v-text-field
                     label="비밀번호"
                     type="password"
+                    v-model="state.form.password"
                     required
                   ></v-text-field>
                 </v-col>
@@ -175,7 +179,11 @@
             <v-btn color="blue darken-1" text @click="login_dialog = false">
               Close
             </v-btn>
-            <v-btn color="blue darken-1" text @click="login_dialog = false">
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="(login_dialog = false), clickLogin()"
+            >
               Save
             </v-btn>
           </v-card-actions>
@@ -194,8 +202,9 @@
 </template>
 
 <script>
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import axios from "axios";
+import { useStore } from "vuex";
 
 export default {
   name: "HeaderBar",
@@ -299,8 +308,14 @@ export default {
     },
   },
   setup() {
+    const loginForm = ref(null);
+    const store = useStore();
     const state = reactive({
       search: false,
+      form: {
+        id: "",
+        password: "",
+      },
     });
     const search_hover = () => {
       state.search = !state.search;
@@ -309,11 +324,45 @@ export default {
     const search_thing = () => {
       state.search = false;
     };
+    const clickLogin = function () {
+      console.log(state.form.id, state.form.password);
 
+      const user = {
+        id: state.form.id,
+        password: state.form.password,
+      };
+      axios({
+        method: "post",
+        url: "http://localhost:8080/api/v1/auth/login",
+        data: user,
+      })
+        .then((res) => {
+          alert("로그인 성공!");
+          loginForm.value.validate(async (valid) => {
+            if (valid) {
+              console.log("submit");
+              await store.dispatch("accountStore/loginAction", {
+                id: state.form.id,
+                password: state.form.password,
+              });
+              console.log(
+                "accessToken " + store.getters["accountStore/getToken"]
+              );
+            }
+          });
+          localStorage.setItem("jwt", res.data.accessToken);
+          window.location.reload(true);
+        })
+        .catch((res) => {
+          alert(res.response.data.message);
+        });
+      // 로그인 클릭 시 validate 체크 후 그 결과 값에 따라, 로그인 API 호출 또는 경고창 표시
+    };
     return {
       search_hover,
       state,
       search_thing,
+      clickLogin,
     };
   },
 };
