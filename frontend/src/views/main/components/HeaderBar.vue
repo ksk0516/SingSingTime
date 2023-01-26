@@ -51,9 +51,15 @@
         </template>
         <v-card>
           <v-card-title>
-            <img class="logo" src="../../../assets/images/login_logo.png" style="width:220px; margin-left: 180px;"/>
+            <img
+              class="logo"
+              src="../../../assets/images/login_logo.png"
+              style="width: 220px; margin-left: 180px"
+            />
             <v-spacer></v-spacer>
-            <span class="text-h5" style="margin-left:22px" ><b>회원가입</b></span>
+            <span class="text-h5" style="margin-left: 22px"
+              ><b>회원가입</b></span
+            >
           </v-card-title>
           <v-card-text>
             <v-container>
@@ -163,9 +169,13 @@
         </template>
         <v-card>
           <v-card-title>
-            <img class="logo" src="../../../assets/images/login_logo.png" style="width:220px; margin-left: 180px;"/>
+            <img
+              class="logo"
+              src="../../../assets/images/login_logo.png"
+              style="width: 220px; margin-left: 180px"
+            />
             <v-spacer></v-spacer>
-            <span class="text-h5" style="margin-left:22px" ><b>로그인</b></span>
+            <span class="text-h5" style="margin-left: 22px"><b>로그인</b></span>
           </v-card-title>
           <v-card-text>
             <v-container>

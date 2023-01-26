@@ -1,4 +1,8 @@
 <template>
+  <Highlight />
+  <hr />
+  <h2><b>Room List</b></h2>
+
   <ul class="infinite-list" v-infinite-scroll="load" style="overflow: auto">
     <li
       v-for="i in state.count"
@@ -37,6 +41,7 @@
 </style>
 <script>
 import Conference from "./components/conference.vue";
+import Highlight from "./components/highlight.vue";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
 // import { createStore } from "vuex";
@@ -46,6 +51,7 @@ export default {
 
   components: {
     Conference,
+    Highlight,
   },
 
   setup() {
