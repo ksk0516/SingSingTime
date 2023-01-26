@@ -33,8 +33,18 @@
           <v-btn
             class="inline"
             variant="text"
+            @click="logout"
+            v-on="on"
+            v-show="state.token"
+          >
+            로그아웃
+          </v-btn>
+          <v-btn
+            class="inline"
+            variant="text"
             @click="signup_dialog = true"
             v-on="on"
+            v-show="!state.token"
           >
             회원가입
           </v-btn>
@@ -145,6 +155,7 @@
             variant="text"
             @click="login_dialog = true"
             v-on="on"
+            v-show="!state.token"
           >
             로그인
           </v-btn>
@@ -202,9 +213,10 @@
 </template>
 
 <script>
-import { reactive, ref } from "vue";
+import { reactive, onMounted } from "vue";
 import axios from "axios";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 
 export default {
   name: "HeaderBar",
@@ -304,10 +316,11 @@ export default {
     },
   },
   setup() {
-    const loginForm = ref(null);
     const store = useStore();
+    const router = useRouter();
     const state = reactive({
       search: false,
+      token: localStorage.getItem("jwt"),
       form: {
         id: "",
         password: "",
@@ -320,9 +333,17 @@ export default {
     const search_thing = () => {
       state.search = false;
     };
+    onMounted(() => {
+      // console.log(loginForm.value)
+    });
+    const logout = function () {
+      localStorage.removeItem("jwt");
+      localStorage.removeItem("nickname");
+      state.token = false;
+      console.log(state.token);
+      router.push("/");
+    };
     const clickLogin = function () {
-      console.log(state.form.id, state.form.password);
-
       const user = {
         id: state.form.id,
         password: state.form.password,
@@ -331,27 +352,21 @@ export default {
         method: "post",
         url: "http://localhost:8080/api/v1/auth/login",
         data: user,
-      })
-        .then((res) => {
-          alert("로그인 성공!");
-          loginForm.value.validate(async (valid) => {
-            if (valid) {
-              console.log("submit");
-              await store.dispatch("accountStore/loginAction", {
-                id: state.form.id,
-                password: state.form.password,
-              });
-              console.log(
-                "accessToken " + store.getters["accountStore/getToken"]
-              );
-            }
-          });
-          localStorage.setItem("jwt", res.data.accessToken);
-          window.location.reload(true);
-        })
-        .catch((res) => {
-          alert(res.response.data.message);
+      }).then((res) => {
+        alert("로그인 성공!");
+        // console.log(res);
+        console.log("submit");
+        store.dispatch("accountStore/loginAction", {
+          id: state.form.id,
+          password: state.form.password,
         });
+        state.token = res.data.accessToken;
+        console.log("accessToken " + store.getters["accountStore/getToken"]);
+        console.log(res.data);
+        localStorage.setItem("jwt", res.data.accessToken);
+        // localStorage.setItem("nickname", state.form.user_nickname);
+        window.location.reload(true);
+      });
       // 로그인 클릭 시 validate 체크 후 그 결과 값에 따라, 로그인 API 호출 또는 경고창 표시
     };
     return {
@@ -359,6 +374,7 @@ export default {
       state,
       search_thing,
       clickLogin,
+      logout,
     };
   },
 };

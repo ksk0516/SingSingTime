@@ -6,29 +6,7 @@
     frameborder="0"
   ></iframe> -->
   <div id="main-container" class="container">
-    <div id="join" v-if="!session">
-      <div id="join-dialog" class="jumbotron vertical-center">
-        <h1>Join a video session</h1>
-        <div class="form-group">
-          <p>
-            <label>Participant</label>
-            <input
-              v-model="myUserName"
-              class="form-control"
-              type="text"
-              required
-            />
-          </p>
-          <p class="text-center">
-            <button class="btn btn-lg btn-success" @click="joinSession()">
-              Join!
-            </button>
-          </p>
-        </div>
-      </div>
-    </div>
-
-    <div id="session" v-if="session">
+    <div id="session" v-if="name">
       <!-- <iframe
         width="750px"
         height="500px"
@@ -37,6 +15,8 @@
       ></iframe> -->
       <div id="session-header">
         <h1 id="session-title">{{ mySessionId }}</h1>
+        <h1 id="session-title">{{ myUserName }}</h1>
+        <h1 id="session-title">{{ name }}</h1>
         <input
           class="btn btn-large btn-danger"
           type="button"
@@ -92,7 +72,7 @@ export default {
 
       // Join form
       mySessionId: this.$route.params.Id,
-      myUserName: "Participant" + Math.floor(Math.random() * 100),
+      myUserName: localStorage.name,
     };
   },
   computed: {
@@ -103,8 +83,15 @@ export default {
       return this.$route.params.Id;
     },
   },
-
+  created() {
+    this.joinSession();
+    this.getname();
+  },
   methods: {
+    getname() {
+      this.name = localStorage.getItem("name");
+      console.log(this.name);
+    },
     joinSession() {
       // --- 1) Get an OpenVidu object ---
       this.OV = new OpenVidu();
@@ -190,6 +177,7 @@ export default {
 
       // Remove beforeunload listener
       window.removeEventListener("beforeunload", this.leaveSession);
+      this.$router.push("/");
     },
 
     updateMainVideoStreamManager(stream) {

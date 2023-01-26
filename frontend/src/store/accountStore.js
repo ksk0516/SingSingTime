@@ -17,8 +17,8 @@ const mutations = {
 };
 
 const actions = {
-  loginAction: async ({ commit }, loginData) => {
-    const response = await requestLogin(loginData);
+  loginAction: ({ commit }, loginData) => {
+    const response = requestLogin(loginData);
     commit("setToken", response.data.accessToken);
   },
 };
