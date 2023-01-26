@@ -288,18 +288,14 @@ export default {
         method: "post",
         url: "http://localhost:8080/api/v1/users/",
         data: user,
-      })
-        .then((res) => {
-          (this.user_id = ""),
-            (this.user_nickname = ""),
-            (this.user_password = ""),
-            (this.user_genre = "");
-          alert("회원가입 성공!");
-          console.log(res);
-        })
-        .catch(() => {
-          console.log("시발");
-        });
+      }).then((res) => {
+        (this.user_id = ""),
+          (this.user_nickname = ""),
+          (this.user_password = ""),
+          (this.user_genre = "");
+        alert("회원가입 성공!");
+        console.log(res);
+      });
     },
   },
   watch: {
