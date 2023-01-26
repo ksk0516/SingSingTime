@@ -1,38 +1,48 @@
 <template>
   <v-card>
     <v-layout>
-      <v-navigation-drawer class="sidebar" style="width: 200px">
-        <v-list>
-          <router-link to="/">
-            <v-list-item title="Home"></v-list-item>
-          </router-link>
+      <v-navigation-drawer
+        expand-on-hover
+        rail
+        class="sidebar"
+        style="transform: translateX(0%)"
+      >
+        <!-- <v-list>
+          <v-list-item
+            prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
+            title="Sandra Adams"
+            subtitle="sandra_a88@gmailcom"
+          ></v-list-item>
+        </v-list> -->
 
-          <router-link to="/rank">
-            <v-list-item title="rank"></v-list-item>
-          </router-link>
+        <v-list density="compact" nav>
+          <v-list-item prepend-icon="mdi-home" link>
+            <router-link to="/">
+              <v-list-item title="Home"></v-list-item>
+            </router-link>
+          </v-list-item>
 
-          <router-link to="/community">
-            <v-list-item title="community"></v-list-item>
-          </router-link>
+          <v-list-item prepend-icon="mdi-medal" link>
+            <router-link to="/rank">
+              <v-list-item title="rank"></v-list-item>
+            </router-link>
+          </v-list-item>
 
-          <router-link to="/conferences">
-            <v-list-item title="conferences"></v-list-item>
-          </router-link>
+          <v-list-item prepend-icon="mdi-forum" link>
+            <router-link to="/community">
+              <v-list-item title="community"></v-list-item>
+            </router-link>
+          </v-list-item>
 
-          <router-link to="/mypage">
-            <v-list-item title="mypage"></v-list-item>
-          </router-link>
+          <v-list-item prepend-icon="mdi-account" link>
+            <router-link to="/mypage">
+              <v-list-item title="mypage"></v-list-item>
+            </router-link>
+          </v-list-item>
         </v-list>
-
-        <template v-slot:append>
-          <div class="pa-2">
-            <v-btn block> Logout </v-btn>
-          </div>
-        </template>
       </v-navigation-drawer>
-      <v-main style="height: 80vh; overflow: scroll">
+      <v-main style="height: 84vh; overflow: scroll">
         <router-view />
-        <!--메인 화면 왜인지는 모름 -->
       </v-main>
     </v-layout>
   </v-card>
@@ -48,8 +58,16 @@ export default {
 .sidebar {
   height: 80vh;
   background-color: rgb(244, 247, 255);
+  padding: 20px;
+}
+.side_logo {
+  height: 70px;
+  width: 140px;
 }
 a {
   text-decoration: none;
+}
+.side {
+  width: 5vw;
 }
 </style>

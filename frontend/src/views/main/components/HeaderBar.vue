@@ -272,6 +272,7 @@ export default {
     const search_thing = () => {
       state.search = false;
     };
+    
     return {
       search_hover,
       state,
