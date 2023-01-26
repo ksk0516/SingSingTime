@@ -16,25 +16,25 @@
         </v-list> -->
 
         <v-list density="compact" nav>
-          <v-list-item prepend-icon="mdi-folder" link>
+          <v-list-item prepend-icon="mdi-home" link>
             <router-link to="/">
               <v-list-item title="Home"></v-list-item>
             </router-link>
           </v-list-item>
 
-          <v-list-item prepend-icon="mdi-folder" link>
+          <v-list-item prepend-icon="mdi-medal" link>
             <router-link to="/rank">
               <v-list-item title="rank"></v-list-item>
             </router-link>
           </v-list-item>
 
-          <v-list-item prepend-icon="mdi-folder" link>
+          <v-list-item prepend-icon="mdi-forum" link>
             <router-link to="/community">
               <v-list-item title="community"></v-list-item>
             </router-link>
           </v-list-item>
 
-          <v-list-item prepend-icon="mdi-folder" link>
+          <v-list-item prepend-icon="mdi-account" link>
             <router-link to="/mypage">
               <v-list-item title="mypage"></v-list-item>
             </router-link>

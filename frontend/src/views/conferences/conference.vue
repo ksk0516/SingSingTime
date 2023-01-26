@@ -1,9 +1,12 @@
 <template>
+  <!-- <iframe
+    width="750px"
+    height="500px"
+    :src="movieVideo"
+    frameborder="0"
+  ></iframe> -->
   <div id="main-container" class="container">
     <div id="join" v-if="!session">
-      <div id="img-div">
-        <img src="resources/images/openvidu_grey_bg_transp_cropped.png" />
-      </div>
       <div id="join-dialog" class="jumbotron vertical-center">
         <h1>Join a video session</h1>
         <div class="form-group">
@@ -11,15 +14,6 @@
             <label>Participant</label>
             <input
               v-model="myUserName"
-              class="form-control"
-              type="text"
-              required
-            />
-          </p>
-          <p>
-            <label>Session</label>
-            <input
-              v-model="mySessionId"
               class="form-control"
               type="text"
               required
@@ -35,6 +29,12 @@
     </div>
 
     <div id="session" v-if="session">
+      <!-- <iframe
+        width="750px"
+        height="500px"
+        :src="movieVideo"
+        frameborder="0"
+      ></iframe> -->
       <div id="session-header">
         <h1 id="session-title">{{ mySessionId }}</h1>
         <input
@@ -51,13 +51,13 @@
       <div id="video-container" class="col-md-6">
         <user-video
           :stream-manager="publisher"
-          @click.native="updateMainVideoStreamManager(publisher)"
+          @click="updateMainVideoStreamManager(publisher)"
         />
         <user-video
           v-for="sub in subscribers"
           :key="sub.stream.connection.connectionId"
           :stream-manager="sub"
-          @click.native="updateMainVideoStreamManager(sub)"
+          @click="updateMainVideoStreamManager(sub)"
         />
       </div>
     </div>
@@ -91,9 +91,17 @@ export default {
       subscribers: [],
 
       // Join form
-      mySessionId: "SessionA",
+      mySessionId: this.$route.params.Id,
       myUserName: "Participant" + Math.floor(Math.random() * 100),
     };
+  },
+  computed: {
+    movieVideo() {
+      return `https://www.youtube.com/embed/${this.$store.state.movieVideo.key}?autoplay=1`;
+    },
+    sessionId() {
+      return this.$route.params.Id;
+    },
   },
 
   methods: {
