@@ -51,7 +51,9 @@
         </template>
         <v-card>
           <v-card-title>
-            <span class="text-h5" style="margin: 10px"><b>회원가입</b></span>
+            <img class="logo" src="../../../assets/images/login_logo.png" style="width:220px; margin-left: 180px;"/>
+            <v-spacer></v-spacer>
+            <span class="text-h5" style="margin-left:22px" ><b>회원가입</b></span>
           </v-card-title>
           <v-card-text>
             <v-container>
@@ -129,7 +131,6 @@
                 </v-col>
               </v-row>
             </v-container>
-            <small>SingSingTime🎤</small>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -162,7 +163,9 @@
         </template>
         <v-card>
           <v-card-title>
-            <span class="text-h5"><b>로그인</b></span>
+            <img class="logo" src="../../../assets/images/login_logo.png" style="width:220px; margin-left: 180px;"/>
+            <v-spacer></v-spacer>
+            <span class="text-h5" style="margin-left:22px" ><b>로그인</b></span>
           </v-card-title>
           <v-card-text>
             <v-container>
@@ -183,7 +186,6 @@
                 </v-col>
               </v-row>
             </v-container>
-            <small>SingSingTime🎤</small>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
