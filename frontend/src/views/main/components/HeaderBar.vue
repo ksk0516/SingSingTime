@@ -126,7 +126,11 @@
             <v-btn color="blue darken-1" text @click="signup_dialog = false">
               Close
             </v-btn>
-            <v-btn color="blue darken-1" text @click="signup_dialog = false">
+            <v-btn
+              color="blue darken-1"
+              text
+              @click="(signup_dialog = false), save()"
+            >
               Save
             </v-btn>
           </v-card-actions>
@@ -191,6 +195,8 @@
 
 <script>
 import { reactive } from "vue";
+import axios from "axios";
+
 export default {
   name: "HeaderBar",
   data() {
@@ -255,7 +261,38 @@ export default {
       ],
     };
   },
-
+  methods: {
+    save: function () {
+      console.log(
+        this.user_id,
+        this.user_nickname,
+        this.user_password,
+        this.user_genre
+      );
+      const user = {
+        id: this.user_id,
+        password: this.user_password,
+        nickname: this.user_nickname,
+        genre: this.user_genre,
+      };
+      axios({
+        method: "post",
+        url: "http://localhost:8080/api/v1/users/",
+        data: user,
+      })
+        .then((res) => {
+          (this.user_id = ""),
+            (this.user_nickname = ""),
+            (this.user_password = ""),
+            (this.user_genre = "");
+          alert("회원가입 성공!");
+          console.log(res);
+        })
+        .catch(() => {
+          console.log("시발");
+        });
+    },
+  },
   watch: {
     group() {
       this.drawer = false;
@@ -272,7 +309,7 @@ export default {
     const search_thing = () => {
       state.search = false;
     };
-    
+
     return {
       search_hover,
       state,
