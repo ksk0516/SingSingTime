@@ -1,4 +1,5 @@
 <template>
+  <div class="scroll">
   <Highlight />
   <hr />
   <h2><b>Room List</b></h2>
@@ -13,6 +14,7 @@
       <conference />
     </li>
   </ul>
+  </div>
 </template>
 <style>
 .infinite-list {
@@ -37,7 +39,8 @@
   max-width: 25%;
   display: inline-block;
   cursor: pointer;
-}
+};
+
 </style>
 <script>
 import Conference from "./components/conference.vue";

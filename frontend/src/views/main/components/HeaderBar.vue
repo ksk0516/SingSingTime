@@ -2,7 +2,10 @@
   <v-card>
     <!-- <v-system-bar color="deep-purple darken-3"></v-system-bar> -->
     <v-bar class="header_bar" color="primary">
-      <img class="logo" src="../../../assets/images/logo.png" />
+          <button>
+            <img class="logo" src="../../../assets/images/logo.png" @click="clickLogo"/>
+          </button>
+    
       <!-- 
           <v-app-bar-nav-icon
           variant="text"
@@ -355,6 +358,10 @@ export default {
       console.log(state.token);
       router.push("/");
     };
+    const clickLogo = function () {
+      router.push("/");
+    };
+
     const clickLogin = function () {
       const user = {
         id: state.form.id,
@@ -387,6 +394,7 @@ export default {
       search_thing,
       clickLogin,
       logout,
+      clickLogo,
     };
   },
 };
