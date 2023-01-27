@@ -6,7 +6,7 @@
     frameborder="0"
   ></iframe> -->
   <div id="main-container" class="container">
-    <div id="session" v-if="name">
+    <div id="session" v-if="jwt">
       <!-- <iframe
         width="750px"
         height="500px"
@@ -89,7 +89,7 @@ export default {
   },
   methods: {
     getname() {
-      this.name = localStorage.getItem("name");
+      this.jwt = localStorage.getItem("jwt");
       console.log(this.name);
     },
     joinSession() {

@@ -368,13 +368,13 @@ export default {
         alert("로그인 성공!");
         // console.log(res);
         console.log("submit");
-        store.dispatch("accountStore/loginAction", {
-          id: state.form.id,
-          password: state.form.password,
-        });
-        state.token = res.data.accessToken;
+        // store.dispatch("accountStore/loginAction", {
+        //   id: state.form.id,
+        //   password: state.form.password,
+        // });
         console.log("accessToken " + store.getters["accountStore/getToken"]);
         console.log(res.data);
+        state.token = res.data.accessToken;
         localStorage.setItem("jwt", res.data.accessToken);
         // localStorage.setItem("nickname", state.form.user_nickname);
         window.location.reload(true);
