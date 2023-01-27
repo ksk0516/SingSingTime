@@ -72,9 +72,11 @@
     <v-row align="center" justify="center">
       <v-col sm="5" lg="10" class="d-flex">
         <h2 style="text-align: left"><b>My Highlight</b></h2>
-        <div class="custom-file" style="margin-top:25px; margin-left:25px;">
-          <input id="customFile" type="file" @change="handleFileChange"/>
-          <label class="custom-file-label" for="customFile">{{file_name}}</label>
+        <div class="custom-file" style="margin-top: 25px; margin-left: 25px">
+          <input id="customFile" type="file" @change="handleFileChange" />
+          <label class="custom-file-label" for="customFile">{{
+            file_name
+          }}</label>
         </div>
       </v-col>
     </v-row>

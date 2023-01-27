@@ -4,6 +4,7 @@ import ConferencesView from "../views/conferences/conference.vue";
 import HomeView from "../views/home/home.vue";
 import MypageView from "../views/mypage/mypage.vue";
 import RankView from "../views/rank/rank.vue";
+import ContentsView from "../views/contents/content.vue";
 
 const routes = [
   {
@@ -17,9 +18,15 @@ const routes = [
     component: RankView,
   },
   {
-    path: "/conferences/:Id/:name",
+    path: "/conferences/:Id",
     name: "ConferencesBox",
     component: ConferencesView,
+    props: true,
+  },
+  {
+    path: "/contents/:Id",
+    name: "ContentsBox",
+    component: ContentsView,
     props: true,
   },
   {
