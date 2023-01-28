@@ -10,6 +10,9 @@
     >
       <ContentBox />
     </li>
+    <div class="text-center">
+      <v-pagination v-model="page" :length=max_page circle></v-pagination>
+    </div>
   </ul>
 </template>
 
@@ -23,12 +26,19 @@ export default {
   components: {
     ContentBox,
   },
+  data() {
+    return {
+      page: 1,
+    };
+  },
   setup() {
     const router = useRouter();
     // const store = createStore();
     const state = reactive({
-      count: 12,
+      count: 54,
     });
+
+    const max_page = parseInt(state.count / 12);
 
     const load = function () {
       state.count += 4;
@@ -41,7 +51,7 @@ export default {
       });
     };
 
-    return { state, load, clickContent };
+    return { state, load, clickContent, max_page};
   },
 };
 </script>
