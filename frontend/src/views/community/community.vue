@@ -3,7 +3,7 @@
 
   <ul class="infinite-list" v-infinite-scroll="load" style="overflow: auto">
     <li
-      v-for="i in state.count"
+      v-for="i in video_list"
       class="infinite-list-item"
       @click="clickContent(i)"
       :key="i"
@@ -11,7 +11,11 @@
       <ContentBox />
     </li>
     <div class="text-center">
-      <v-pagination v-model="page" :length=max_page circle></v-pagination>
+      <v-pagination
+        v-model="state.page"
+        :length="max_page"
+        @click="consolemethod(state.page)"
+      ></v-pagination>
     </div>
   </ul>
 </template>
@@ -29,6 +33,7 @@ export default {
   data() {
     return {
       page: 1,
+      video_list: [],
     };
   },
   setup() {
@@ -36,9 +41,15 @@ export default {
     // const store = createStore();
     const state = reactive({
       count: 54,
+      page: 1,
     });
 
-    const max_page = parseInt(state.count / 12);
+    const max_page = parseInt(state.count / 12) + 1;
+
+    const video_list = [];
+    for (let i = 1 + (state.page - 1) * 12; i <= state.page * 12; i++) {
+      video_list.push(i);
+    }
 
     const load = function () {
       state.count += 4;
@@ -50,8 +61,20 @@ export default {
         params: { Id: id },
       });
     };
-
-    return { state, load, clickContent, max_page};
+    return { state, load, clickContent, max_page, video_list };
+  },
+  methods: {
+    consolemethod(value) {
+      this.video_list = [];
+      for (let i = 1 + (value - 1) * 12; i <= value * 12; i++) {
+        if (i > 54) {
+          return video_list;
+        }
+        this.video_list.push(i);
+      }
+      // this.$router.go()
+      return this.video_list;
+    },
   },
 };
 </script>
