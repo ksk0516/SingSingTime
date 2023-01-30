@@ -1,10 +1,10 @@
 <template>
-  <div class="scroll">
+   <div>
     <Highlight />
     <hr />
     <h2><b>Room List</b></h2>
 
-    <ul class="infinite-list" v-infinite-scroll="load" style="overflow: auto">
+    <ul class="infinite-list">
       <li
         v-for="i in state.count"
         @click="clickConference(i)"
@@ -15,6 +15,7 @@
       </li>
     </ul>
   </div>
+
 </template>
 <style>
 .infinite-list {
@@ -40,6 +41,18 @@
   display: inline-block;
   cursor: pointer;
 }
+
+
+::-webkit-scrollbar {
+  width: 15px;
+  height: 8px;
+  background-color: rgb(246, 246, 247); /* 또는 트랙에 추가한다 */
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(130, 166, 215);
+  border-radius: 10cm;
+}
+
 </style>
 <script>
 import Conference from "./components/conference.vue";
