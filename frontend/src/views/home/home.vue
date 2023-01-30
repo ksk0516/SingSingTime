@@ -1,5 +1,5 @@
 <template>
-   <div>
+  <div>
     <Highlight />
     <hr />
     <h2><b>Room List</b></h2>
@@ -15,7 +15,6 @@
       </li>
     </ul>
   </div>
-
 </template>
 <style>
 .infinite-list {
@@ -42,7 +41,6 @@
   cursor: pointer;
 }
 
-
 ::-webkit-scrollbar {
   width: 15px;
   height: 8px;
@@ -52,7 +50,6 @@
   background: rgb(130, 166, 215);
   border-radius: 10cm;
 }
-
 </style>
 <script>
 import Conference from "./components/conference.vue";
@@ -81,10 +78,12 @@ export default {
     };
 
     const clickConference = function (id) {
-      router.push({
-        name: "ConferencesBox",
-        params: { Id: id, name: "나다" },
-      });
+      const url= "#/conferences/"+id+"/"
+      window.open(url)
+      // router.push({
+      //   name: "ConferencesBox",
+      //   params: { Id: id},
+      // });
     };
 
     return { state, load, clickConference };
