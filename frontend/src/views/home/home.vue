@@ -1,10 +1,10 @@
 <template>
-  <div class="scroll">
+  <div>
     <Highlight />
     <hr />
     <h2><b>Room List</b></h2>
 
-    <ul class="infinite-list" v-infinite-scroll="load" style="overflow: auto">
+    <ul class="infinite-list">
       <li
         v-for="i in state.count"
         @click="clickConference(i)"
@@ -40,12 +40,21 @@
   display: inline-block;
   cursor: pointer;
 }
+
+::-webkit-scrollbar {
+  width: 15px;
+  height: 8px;
+  background-color: rgb(246, 246, 247); /* 또는 트랙에 추가한다 */
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(130, 166, 215);
+  border-radius: 10cm;
+}
 </style>
 <script>
 import Conference from "./components/conference.vue";
 import Highlight from "./components/highlight.vue";
 import { reactive } from "vue";
-import { useRouter } from "vue-router";
 // import { createStore } from "vuex";
 
 export default {
@@ -57,7 +66,6 @@ export default {
   },
 
   setup() {
-    const router = useRouter();
     // const store = createStore();
     const state = reactive({
       count: 12,
@@ -68,10 +76,12 @@ export default {
     };
 
     const clickConference = function (id) {
-      router.push({
-        name: "ConferencesBox",
-        params: { Id: id, name: "나다" },
-      });
+      const url = "#/conferences/" + id + "/";
+      window.open(url);
+      // router.push({
+      //   name: "ConferencesBox",
+      //   params: { Id: id},
+      // });
     };
 
     return { state, load, clickConference };
