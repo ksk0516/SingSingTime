@@ -1,45 +1,40 @@
-<!-- <template>
+<template>
   <h2><b>Today's Highlight</b></h2>
-  <v-carousel v-model="model" align="center">
-    <v-carousel-item v-for="(color, i) in colors" :key="color">
-      <v-sheet :color="color" height="100%" width="50%" tile>
+  <carousel
+    class=""
+    :items-to-show="3.95"
+    :wrap-around="true"
+    :transition="500"
+  >
+    <slide v-for="slide in 5" :key="slide">
+      <div class="carousel_item" @click="clickContent(slide)">
+        <div class="text-h6">
+          오늘의 {{ slide }}번째 영상<v-icon>mdi-heart</v-icon>
+        </div>
         <v-row
           class="fill-height"
-          align="start"
+          align="end"
           justify="space-between"
           style="padding-top: 20px"
         >
           <div class="text-h6" style="margin-left: 20px">View 1,332</div>
-          <div class="text-h6">
-            오늘의 {{ i + 1 }}번째 영상<v-icon>mdi-heart</v-icon>
-          </div>
           <div class="text-h6" style="margin-right: 20px">782 UP</div>
         </v-row>
-      </v-sheet>
-    </v-carousel-item>
-  </v-carousel>
-</template> -->
+      </div>
+    </slide>
 
-<template>
-  <h2><b>Today's Highlight</b></h2>
-  <div style="padding: 10px">
-    <carousel :items-to-show="3.95" :wrap-around="true" :transition="500">
-      <slide v-for="slide in 10" :key="slide">
-        <div class="carousel_item">{{ slide }}</div>
-      </slide>
-
-      <template #addons>
-        <navigation />
-        <pagination />
-      </template>
-    </carousel>
-  </div>
+    <template #addons>
+      <navigation />
+      <pagination />
+    </template>
+  </carousel>
 </template>
 
 <script>
 import { defineComponent } from "vue";
 import "vue3-carousel/dist/carousel.css";
 import { Carousel, Slide, Pagination, Navigation } from "vue3-carousel";
+import { useRouter } from "vue-router";
 
 export default defineComponent({
   name: "HighlightBox",
@@ -52,6 +47,16 @@ export default defineComponent({
     Slide,
     Pagination,
     Navigation,
+  },
+  setup() {
+    const router = useRouter();
+    const clickContent = function (id) {
+      router.push({
+        name: "ContentsBox",
+        params: { Id: "highlight" + id },
+      });
+    };
+    return { clickContent };
   },
 });
 </script>
@@ -75,31 +80,38 @@ export default defineComponent({
 
 .carousel__slide {
   opacity: 0.9;
-  transform: rotateY(-10deg) scale(0.9);
-}
-
-.carousel__slide--active ~ .carousel__slide {
   transform: rotateY(10deg) scale(0.9);
+  filter: brightness(60%);
+  /* 가운데 왼쪽 끝 */
 }
 
 .carousel__slide--prev {
   opacity: 1;
   transform: rotateY(-20deg) scale(0.95);
+  filter: brightness(90%);
+  /* 가운데 왼쪽 */
 }
 
 .carousel__slide--next {
   opacity: 1;
-  transform: rotateY(10deg) scale(0.95);
+  transform: rotateY(20deg) scale(0.95);
+  filter: brightness(90%);
+  /* 가운데 오른쪽 */
 }
 
 .carousel__slide--active {
   opacity: 1;
   transform: rotateY(0) scale(1.1);
+  filter: brightness(100%);
+}
+.carousel__slide--active :hover {
+  cursor: pointer;
 }
 .carousel_item {
   width: 500px;
   height: 300px;
-  padding: 15px;
+  padding: 20px;
+  padding-bottom: 40px;
   background-color: skyblue;
 }
 </style>

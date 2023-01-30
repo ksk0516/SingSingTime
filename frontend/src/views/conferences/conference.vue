@@ -177,7 +177,7 @@ export default {
 
       // Remove beforeunload listener
       window.removeEventListener("beforeunload", this.leaveSession);
-      this.$router.push("/");
+      window.close()
     },
 
     updateMainVideoStreamManager(stream) {

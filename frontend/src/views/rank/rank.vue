@@ -65,7 +65,7 @@
             class="people_rank1"
             style="height: 90px; border-top: 5px solid black"
           >
-            <img class="medal" src="@/assets/images/2nd.png" />
+            <img class="mini_medal" src="@/assets/images/2nd.png" />
           </div>
         </div>
         <div class="basebox1">
@@ -77,7 +77,7 @@
             class="people_rank1"
             style="height: 100px; border-top: 5px solid black"
           >
-            <img class="medal" src="@/assets/images/1st.png" />
+            <img class="mini_medal" src="@/assets/images/1st.png" />
           </div>
         </div>
         <div class="basebox1">
@@ -90,7 +90,7 @@
             class="people_rank1"
             style="height: 40px; border-top: 5px solid black"
           >
-            <img class="medal" src="@/assets/images/3rd.png" />
+            <img class="mini_medal" src="@/assets/images/3rd.png" />
           </div>
         </div>
       </div>
@@ -108,7 +108,7 @@
             class="people_rank1"
             style="height: 90px; border-top: 5px solid black"
           >
-            <img class="medal" src="@/assets/images/2nd.png" />
+            <img class="mini_medal" src="@/assets/images/2nd.png" />
           </div>
         </div>
         <div class="basebox1">
@@ -120,7 +120,7 @@
             class="people_rank1"
             style="height: 100px; border-top: 5px solid black"
           >
-            <img class="medal" src="@/assets/images/1st.png" />
+            <img class="mini_medal" src="@/assets/images/1st.png" />
           </div>
         </div>
         <div class="basebox1">
@@ -133,7 +133,7 @@
             class="people_rank1"
             style="height: 40px; border-top: 5px solid black"
           >
-            <img class="medal" src="@/assets/images/3rd.png" />
+            <img class="mini_medal" src="@/assets/images/3rd.png" />
           </div>
         </div>
       </div>
@@ -148,6 +148,9 @@ export default {
 </script>
 
 <style>
+.mini_medal {
+  width: 50px;
+}
 .ex {
   height: 70px;
 }
