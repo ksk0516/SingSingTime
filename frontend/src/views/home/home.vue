@@ -1,19 +1,19 @@
 <template>
   <div class="scroll">
-  <Highlight />
-  <hr />
-  <h2><b>Room List</b></h2>
+    <Highlight />
+    <hr />
+    <h2><b>Room List</b></h2>
 
-  <ul class="infinite-list" v-infinite-scroll="load" style="overflow: auto">
-    <li
-      v-for="i in state.count"
-      @click="clickConference(i)"
-      class="infinite-list-item"
-      :key="i"
-    >
-      <conference />
-    </li>
-  </ul>
+    <ul class="infinite-list" v-infinite-scroll="load" style="overflow: auto">
+      <li
+        v-for="i in state.count"
+        @click="clickConference(i)"
+        class="infinite-list-item"
+        :key="i"
+      >
+        <conference />
+      </li>
+    </ul>
   </div>
 </template>
 <style>
@@ -39,8 +39,7 @@
   max-width: 25%;
   display: inline-block;
   cursor: pointer;
-};
-
+}
 </style>
 <script>
 import Conference from "./components/conference.vue";
