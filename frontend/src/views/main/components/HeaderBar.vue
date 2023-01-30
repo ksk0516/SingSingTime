@@ -360,6 +360,7 @@ export default {
       localStorage.removeItem("nickname");
       state.token = false;
       console.log(state.token);
+      window.location.reload(true);
       router.push("/");
     };
     const clickLogo = function () {

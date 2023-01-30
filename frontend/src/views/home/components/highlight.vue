@@ -1,4 +1,4 @@
-<template>
+<!-- <template>
   <h2><b>Today's Highlight</b></h2>
   <v-carousel v-model="model" align="center">
     <v-carousel-item v-for="(color, i) in colors" :key="color">
@@ -18,16 +18,88 @@
       </v-sheet>
     </v-carousel-item>
   </v-carousel>
+</template> -->
+
+<template>
+  <h2><b>Today's Highlight</b></h2>
+  <div style="padding: 10px">
+    <carousel :items-to-show="3.95" :wrap-around="true" :transition="500">
+      <slide v-for="slide in 10" :key="slide">
+        <div class="carousel_item">{{ slide }}</div>
+      </slide>
+
+      <template #addons>
+        <navigation />
+        <pagination />
+      </template>
+    </carousel>
+  </div>
 </template>
 
 <script>
-export default {
+import { defineComponent } from "vue";
+import "vue3-carousel/dist/carousel.css";
+import { Carousel, Slide, Pagination, Navigation } from "vue3-carousel";
+
+export default defineComponent({
   name: "HighlightBox",
   data: () => ({
     model: 0,
     colors: ["primary", "secondary", "yellow darken-2", "red", "orange"],
   }),
-};
+  components: {
+    Carousel,
+    Slide,
+    Pagination,
+    Navigation,
+  },
+});
 </script>
 
-<style></style>
+<style scoped>
+.carousel__slide {
+  padding: 5px;
+}
+
+.carousel__viewport {
+  perspective: 2000px;
+}
+
+.carousel__track {
+  transform-style: preserve-3d;
+}
+
+.carousel__slide--sliding {
+  transition: 0.5s;
+}
+
+.carousel__slide {
+  opacity: 0.9;
+  transform: rotateY(-10deg) scale(0.9);
+}
+
+.carousel__slide--active ~ .carousel__slide {
+  transform: rotateY(10deg) scale(0.9);
+}
+
+.carousel__slide--prev {
+  opacity: 1;
+  transform: rotateY(-20deg) scale(0.95);
+}
+
+.carousel__slide--next {
+  opacity: 1;
+  transform: rotateY(10deg) scale(0.95);
+}
+
+.carousel__slide--active {
+  opacity: 1;
+  transform: rotateY(0) scale(1.1);
+}
+.carousel_item {
+  width: 500px;
+  height: 300px;
+  padding: 15px;
+  background-color: skyblue;
+}
+</style>
