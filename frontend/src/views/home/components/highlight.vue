@@ -1,28 +1,33 @@
 <template>
   <h2><b>Today's Highlight</b></h2>
-    <carousel class="" :items-to-show="3.95" :wrap-around="true" :transition="500">
-      <slide v-for="slide in 5" :key="slide">
-          <div class="carousel_item" @click="clickContent(slide)">
-            <div class="text-h6">
-              오늘의 {{ slide }}번째 영상<v-icon>mdi-heart</v-icon>
-            </div>
-            <v-row
-              class="fill-height"
-              align="end"
-              justify="space-between"
-              style="padding-top: 20px"
-            >
-              <div class="text-h6" style="margin-left: 20px">View 1,332</div>
-              <div class="text-h6" style="margin-right: 20px">782 UP</div>
-            </v-row>
-          </div>
-      </slide>
+  <carousel
+    class=""
+    :items-to-show="3.95"
+    :wrap-around="true"
+    :transition="500"
+  >
+    <slide v-for="slide in 5" :key="slide">
+      <div class="carousel_item" @click="clickContent(slide)">
+        <div class="text-h6">
+          오늘의 {{ slide }}번째 영상<v-icon>mdi-heart</v-icon>
+        </div>
+        <v-row
+          class="fill-height"
+          align="end"
+          justify="space-between"
+          style="padding-top: 20px"
+        >
+          <div class="text-h6" style="margin-left: 20px">View 1,332</div>
+          <div class="text-h6" style="margin-right: 20px">782 UP</div>
+        </v-row>
+      </div>
+    </slide>
 
-      <template #addons>
-        <navigation />
-        <pagination />
-      </template>
-    </carousel>
+    <template #addons>
+      <navigation />
+      <pagination />
+    </template>
+  </carousel>
 </template>
 
 <script>
@@ -43,16 +48,16 @@ export default defineComponent({
     Pagination,
     Navigation,
   },
-  setup(){
+  setup() {
     const router = useRouter();
     const clickContent = function (id) {
       router.push({
         name: "ContentsBox",
-        params: { Id: "highlight"+id },
-      }); 
+        params: { Id: "highlight" + id },
+      });
     };
-    return {clickContent}
-  }
+    return { clickContent };
+  },
 });
 </script>
 
@@ -82,7 +87,7 @@ export default defineComponent({
 
 .carousel__slide--prev {
   opacity: 1;
-  transform: rotateY(-20deg) scale(0.95); 
+  transform: rotateY(-20deg) scale(0.95);
   filter: brightness(90%);
   /* 가운데 왼쪽 */
 }

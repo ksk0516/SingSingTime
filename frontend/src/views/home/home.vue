@@ -55,7 +55,6 @@
 import Conference from "./components/conference.vue";
 import Highlight from "./components/highlight.vue";
 import { reactive } from "vue";
-import { useRouter } from "vue-router";
 // import { createStore } from "vuex";
 
 export default {
@@ -67,7 +66,6 @@ export default {
   },
 
   setup() {
-    const router = useRouter();
     // const store = createStore();
     const state = reactive({
       count: 12,
@@ -78,8 +76,8 @@ export default {
     };
 
     const clickConference = function (id) {
-      const url= "#/conferences/"+id+"/"
-      window.open(url)
+      const url = "#/conferences/" + id + "/";
+      window.open(url);
       // router.push({
       //   name: "ConferencesBox",
       //   params: { Id: id},

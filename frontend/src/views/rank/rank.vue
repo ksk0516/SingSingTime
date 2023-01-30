@@ -148,7 +148,7 @@ export default {
 </script>
 
 <style>
-.mini_medal{
+.mini_medal {
   width: 50px;
 }
 .ex {
