@@ -2,10 +2,14 @@
   <v-card>
     <!-- <v-system-bar color="deep-purple darken-3"></v-system-bar> -->
     <v-bar class="header_bar" color="primary">
-          <button>
-            <img class="logo" src="../../../assets/images/logo.png" @click="clickLogo"/>
-          </button>
-    
+      <button>
+        <img
+          class="logo"
+          src="../../../assets/images/logo.png"
+          @click="clickLogo"
+        />
+      </button>
+
       <!-- 
           <v-app-bar-nav-icon
           variant="text"
@@ -356,6 +360,7 @@ export default {
       localStorage.removeItem("nickname");
       state.token = false;
       console.log(state.token);
+      window.location.reload(true);
       router.push("/");
     };
     const clickLogo = function () {

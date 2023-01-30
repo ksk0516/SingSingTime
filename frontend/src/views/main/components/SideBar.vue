@@ -34,10 +34,15 @@
             </router-link>
           </v-list-item>
 
-          <v-list-item prepend-icon="mdi-account" link>
+          <v-list-item prepend-icon="mdi-account" link v-show="state.token">
             <router-link to="/mypage">
               <v-list-item title="mypage"></v-list-item>
             </router-link>
+          </v-list-item>
+          <v-list-item prepend-icon="mdi-account" link v-show="state.token">
+            <!-- <router-link to="/mypage"> -->
+            <v-list-item title="createroom"></v-list-item>
+            <!-- </router-link> -->
           </v-list-item>
         </v-list>
       </v-navigation-drawer>
@@ -49,8 +54,19 @@
 </template>
 
 <script>
+import { reactive } from "vue";
+
 export default {
   name: "SideBar",
+  setup() {
+    const state = reactive({
+      token: localStorage.getItem("jwt"),
+    });
+
+    return {
+      state,
+    };
+  },
 };
 </script>
 
