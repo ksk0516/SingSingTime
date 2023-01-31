@@ -2,6 +2,8 @@ package com.ssafy.api.controller;
 
 import com.ssafy.api.service.DiaryService;
 import com.ssafy.db.entity.Diary;
+import com.ssafy.db.entity.Video;
+import com.ssafy.db.repository.VideoRepository;
 import io.openvidu.java.client.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,7 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @CrossOrigin(origins = "*")
 @RestController
@@ -88,5 +93,19 @@ public class OpenviduController {
 		Long diaryId = diaryService.keepVideo(video, diary);
 		return diaryId;
 	}
+
+	@Autowired
+	VideoRepository videoRepository;
+
+	@ResponseBody
+	@GetMapping("/sort/video")
+	public ResponseEntity<List<Video>> sortVideo(){
+		List<Video> list = videoRepository.findHighlightList();
+		for(Video video : list){
+			System.out.println("video = " + video);
+		}
+		return new ResponseEntity<List<Video>>(list, HttpStatus.OK);
+	}
+
 
 }
