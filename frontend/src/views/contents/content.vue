@@ -1,16 +1,16 @@
 <template>
-  <v-column justify="center" align="center">
-    <v-row>
-      <h3 style="margin-left:30px;"><b>어제자 광주 김범수 대결 영상 ㄷㄷ</b></h3>
-    </v-row>
+  <h3 style="margin-left: 30px"><b>어제자 광주 김범수 대결 영상 ㄷㄷ</b></h3>
+  <div justify="center" align="center">
     <v-row>
       <v-col lg="8">
-        <div style="width: 70%;">
-        </div>
+        <div style="width: 70%">영상 들어갈 자리</div>
       </v-col>
-      <v-col lg="3" class="comment">댓글</v-col>
+      <v-col lg="3" class="comment">
+        <textarea name="" id="" cols="30" rows="10"></textarea>
+        <input type="text" />
+      </v-col>
     </v-row>
-  </v-column>
+  </div>
 </template>
 
 <script>
@@ -20,7 +20,7 @@ export default {
 </script>
 
 <style>
-.comment{
+.comment {
   border: 1px solid black;
   height: 100%;
 }

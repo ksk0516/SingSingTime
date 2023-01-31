@@ -1,15 +1,14 @@
 <template>
   <h2><b>Community</b></h2>
-  <div>
-    <v-row justify="end" style="margin-right:60px;">
-      <div style="width:400px;">
-      <v-text-field
-        hide-details
-        placeholder="검색"
-        single-line
-        @keydown.enter="community_search_thing"
-        class="commu_search"
-      ></v-text-field>
+    <v-row justify="end" style="margin-right: 60px">
+      <div style="width: 400px">
+        <v-text-field
+          hide-details
+          placeholder="검색"
+          single-line
+          @keydown.enter="community_search_thing"
+          class="commu_search"
+        ></v-text-field>
       </div>
       <v-btn
         class="inline"
@@ -25,7 +24,7 @@
             variant="text"
             @click="content_dialog = true"
             v-on="on"
-            v-show="!state.token"
+            v-show="state.token"
           >
             업로드
           </v-btn>
@@ -47,7 +46,11 @@
               <v-row>
                 <v-col cols="12">
                   <label for="title">제목</label>
-                  <textarea name="title" style="width: 100%"></textarea>
+                  <textarea
+                    name="title"
+                    style="width: 100%"
+                    v-model="state.form.title"
+                  ></textarea>
                 </v-col>
                 <v-col cols="12">
                   <label for="context">내용</label>
@@ -55,16 +58,12 @@
                     name="context"
                     required
                     style="height: 200px; width: 100%"
+                    v-model="state.form.context"
                   ></textarea>
                 </v-col>
-                <div
-                  class="custom-file"
-                  style="margin-top: 25px; margin-left: 25px"
-                >
-                  <input id="customFile" type="file" @change="handleFileChange" />
-                  <label class="custom-file-label" for="customFile">{{
-                    file_name
-                  }}</label>
+                <div class="custom-file">
+                  <v-file-input id="customFile" @change="changeFile"/>
+                  <label class="custom-file-label" for="customFile">{{state.form.video.name}}</label>
                 </div>
               </v-row>
             </v-container>
@@ -77,7 +76,7 @@
             <v-btn
               color="blue darken-1"
               text
-              @click="(content_dialog = false), clickLogin()"
+              @click="(content_dialog = false), submit()"
             >
               Save
             </v-btn>
@@ -103,13 +102,13 @@
         ></v-pagination>
       </div>
     </ul>
-  </div>
 </template>
 
 <script>
 import ContentBox from "./component/content.vue";
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
+import axios from "axios";
 
 export default {
   name: "CommunityBox",
@@ -121,6 +120,7 @@ export default {
       page: 1,
       video_list: [],
       content_dialog: false,
+      video: null,
     };
   },
   setup() {
@@ -133,7 +133,9 @@ export default {
       token: localStorage.getItem("jwt"),
       form: {
         id: "",
-        password: "",
+        title: "",
+        context: "",
+        video: "",
       },
     });
 
@@ -154,15 +156,48 @@ export default {
         params: { Id: id },
       });
     };
-    
-    // const community_search_hover = () => {
-    //   state.community_search = !state.community_search;
-    //   // console.log(state.community_search);
-    // };
+
     const community_search_thing = () => {
       state.community_search = false;
     };
-    return { state, load, clickContent, max_page, video_list, community_search_thing };
+
+    const uploadVideo = function () {
+      const info = {
+        id: state.form.id,
+        title: state.form.title,
+        context: state.form.context,
+        video: state.form.video
+      };
+      console.log(info.video)
+      console.log(111)
+      axios({
+        method: "post",
+        url: "http://localhost:8080/diary/video",
+        data: info,
+        headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+      })
+        .then((res) => {
+          alert("비디오 업로드 성공!");
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log("비디오 업로드 실패");
+          console.log(state.form.video);
+          // console.log(state.form.video.proxy);
+          console.log(err);
+        });
+    };
+    return {
+      state,
+      load,
+      clickContent,
+      max_page,
+      video_list,
+      community_search_thing,
+      uploadVideo,
+    };
   },
   methods: {
     consolemethod(value) {
@@ -176,6 +211,32 @@ export default {
       // this.$router.go()
       return this.video_list;
     },
+    async submit() {
+      const formData = new FormData();
+      formData.append("video", this.video.target.files[0])
+
+      axios({
+        method: "post",
+        url: "http://localhost:8080/diary/video",
+        data: formData,
+        headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+      })
+        .then((res) => {
+          alert("비디오 업로드 성공!");
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log("비디오 업로드 실패");
+          // console.log(state.form.video);
+          console.log(this.video.target.files[0]);
+          console.log(err);
+        });
+    },
+    changeFile(file) {
+      this.video = file
+    }
   },
 };
 </script>
@@ -208,7 +269,7 @@ export default {
 .upload {
   border: 1px solid rgb(186, 205, 255);
   background-color: aliceblue;
-  margin-top: 25px; 
+  margin-top: 25px;
 }
 
 textarea {
@@ -217,8 +278,8 @@ textarea {
   border-radius: 6px;
 }
 
-.commu_search{
-  margin-top:15px;
-  margin-bottom:10px;
+.commu_search {
+  margin-top: 15px;
+  margin-bottom: 10px;
 }
 </style>
