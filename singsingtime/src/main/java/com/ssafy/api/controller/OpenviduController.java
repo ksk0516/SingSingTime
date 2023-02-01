@@ -1,6 +1,6 @@
 package com.ssafy.api.controller;
 
-import com.ssafy.api.service.DiaryService;
+//import com.ssafy.api.service.DiaryService;
 import com.ssafy.db.entity.Diary;
 import com.ssafy.db.entity.Video;
 import com.ssafy.db.repository.VideoRepository;
@@ -69,43 +69,5 @@ public class OpenviduController {
 		Connection connection = session.createConnection(properties);
 		return new ResponseEntity<>(connection.getToken(), HttpStatus.OK);
 	}
-
-	@Autowired
-	DiaryService diaryService;
-	@ResponseBody   // Long 타입을 리턴하고 싶은 경우 붙여야 함 (Long - 객체)
-	@PostMapping(value="/diary/image",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public Long saveDiary(HttpServletRequest request, @RequestParam(value="image") MultipartFile image, Diary diary) throws IOException {
-		System.out.println("DiaryController.saveDiary");
-		System.out.println(image);
-		System.out.println(diary);
-		System.out.println("------------------------------------------------------");
-		Long diaryId = diaryService.keepDiary(image, diary);
-		return diaryId;
-	}
-
-	@ResponseBody   // Long 타입을 리턴하고 싶은 경우 붙여야 함 (Long - 객체)
-	@PostMapping(value="/diary/video",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-	public Long saveVideo(HttpServletRequest request, @RequestParam(value="video") MultipartFile video, Diary diary) throws IOException {
-		System.out.println("DiaryController.saveDiary");
-//		System.out.println(video);
-		System.out.println(diary);
-		System.out.println("------------------------------------------------------");
-		Long diaryId = diaryService.keepVideo(video, diary);
-		return diaryId;
-	}
-
-	@Autowired
-	VideoRepository videoRepository;
-
-	@ResponseBody
-	@GetMapping("/sort/video")
-	public ResponseEntity<List<Video>> sortVideo(){
-		List<Video> list = videoRepository.findHighlightList();
-		for(Video video : list){
-			System.out.println("video = " + video);
-		}
-		return new ResponseEntity<List<Video>>(list, HttpStatus.OK);
-	}
-
 
 }
