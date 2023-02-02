@@ -327,7 +327,7 @@ export default {
   },
   methods: {
     async save() {
-      const validate = this.$refs.form.validate()
+      const validate = this.$refs.form.validate();
       // console.log(validate)
       // console.log(
       //   this.user_id,
@@ -336,11 +336,11 @@ export default {
       //   this.user_genre
       // );
 
-      const genre_list = []
-      for (let i =0; i <= this.user_genre.length-1 ; i++) {
-        genre_list.push(this.user_genre[i])
-      } 
-      const genre_string = genre_list.join(',')
+      const genre_list = [];
+      for (let i = 0; i <= this.user_genre.length - 1; i++) {
+        genre_list.push(this.user_genre[i]);
+      }
+      const genre_string = genre_list.join(",");
       const user = {
         name: this.user_name,
         id: this.user_id,
@@ -363,7 +363,7 @@ export default {
               (this.user_genre = "");
             alert("회원가입 성공!");
             console.log(res);
-            console.log(genre_string)
+            console.log(genre_string);
           })
           .catch((err) => {
             console.log(err);
