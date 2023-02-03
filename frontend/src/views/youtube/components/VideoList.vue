@@ -25,7 +25,6 @@ export default {
   methods: {
     ...mapMutations(["setVideo"]),
   },
-
 };
 </script>
 

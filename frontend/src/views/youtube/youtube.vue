@@ -8,11 +8,10 @@
           <SearchBar />
         </div>
       </div>
-        <div class="col-4" @click="cancel">
-          <VideoList />
-        </div>
+      <div class="col-4" @click="cancel">
+        <VideoList />
+      </div>
     </div>
-    
   </Modal>
 </template>
 

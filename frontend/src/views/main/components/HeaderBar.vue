@@ -354,24 +354,6 @@ export default {
         nickname: this.user_nickname,
         genre: genre_string,
       };
-<<<<<<< HEAD
-      axios({
-        method: "post",
-        url: "http://localhost:8080/api/v1/users/",
-        data: user,
-      })
-        .then((res) => {
-          (this.user_id = ""),
-            (this.user_nickname = ""),
-            (this.user_password = ""),
-            (this.user_genre = "");
-          alert("회원가입 성공!");
-          console.log(res);
-        })
-        .catch((res) => {
-          alert(res);
-        });
-=======
       if (validate) {
         axios({
           method: "post",
@@ -393,7 +375,6 @@ export default {
             console.log(err);
           });
       }
->>>>>>> ecf69bfe9f7f9738bff76a017c8542625dbbda16
     },
   },
   watch: {
@@ -450,35 +431,20 @@ export default {
         .then((res) => {
           alert("로그인 성공!");
           // console.log(res);
-<<<<<<< HEAD
-          console.log("submit");
-=======
           // console.log("submit");
->>>>>>> ecf69bfe9f7f9738bff76a017c8542625dbbda16
           // store.dispatch("accountStore/loginAction", {
           //   id: state.form.id,
           //   password: state.form.password,
           // });
-<<<<<<< HEAD
-          console.log("accessToken " + store.getters["accountStore/getToken"]);
-          console.log(res.data);
-=======
           // console.log("accessToken " + store.getters["accountStore/getToken"]);
           // console.log(res.data);
->>>>>>> ecf69bfe9f7f9738bff76a017c8542625dbbda16
           state.token = res.data.accessToken;
           localStorage.setItem("jwt", res.data.accessToken);
           // localStorage.setItem("nickname", state.form.user_nickname);
           window.location.reload(true);
         })
-<<<<<<< HEAD
-        .catch((res) => {
-          alert(res);
-          console.log(res);
-=======
         .catch(() => {
           alert("올바르지않은 아이디 혹은 비밀번호 입니다.");
->>>>>>> ecf69bfe9f7f9738bff76a017c8542625dbbda16
         });
       // 로그인 클릭 시 validate 체크 후 그 결과 값에 따라, 로그인 API 호출 또는 경고창 표시
     };

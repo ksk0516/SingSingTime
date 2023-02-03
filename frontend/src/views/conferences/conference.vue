@@ -13,43 +13,43 @@
       @click="handleClick"
       value="유튜브"
     />
+    <div v-if="sharing === true" class="buttomMenu">
+      <button
+        class="btn btn-large btn-default footerBtn"
+        type="button"
+        id="buttonLeaveSession"
+        @click="startScreenSharing()"
+      >
+        <b-icon
+          icon="file-arrow-up"
+          class="buttomMenuIcon"
+          aria-hidden="true"
+        ></b-icon>
+        <span class="footerBtnText">화면공유</span>
+      </button>
+    </div>
+    <div v-else class="buttomMenu">
+      <button
+        class="btn btn-large btn-default footerBtn"
+        type="button"
+        id="buttonLeaveSession"
+        @click="leaveSessionForScreenSharing()"
+      >
+        <b-icon
+          icon="file-arrow-down"
+          class="buttomMenuIcon"
+          aria-hidden="true"
+        ></b-icon>
+        <span class="footerBtnText">공유중지</span>
+      </button>
+      <!-- 나가기 버튼 -->
+    </div>
     <YouTube ref="modal" :content="modalContent" />
     <div id="session" v-if="jwt">
       <div id="session-header">
         <h1 id="session-title">{{ mySessionId }} 번방</h1>
       </div>
-      <div v-if="sharing === true" class="buttomMenu">
-          <button
-            class="btn btn-large btn-default footerBtn"
-            type="button"
-            id="buttonLeaveSession"
-            @click="startScreenSharing()"
-          >
-            <b-icon
-              icon="file-arrow-up"
-              class="buttomMenuIcon"
-              aria-hidden="true"
-            ></b-icon>
-            <span class="footerBtnText">화면공유</span>
-          </button>
-        </div>
 
-        <div v-else class="buttomMenu">
-          <button
-            class="btn btn-large btn-default footerBtn"
-            type="button"
-            id="buttonLeaveSession"
-            @click="leaveSessionForScreenSharing()"
-          >
-            <b-icon
-              icon="file-arrow-down"
-              class="buttomMenuIcon"
-              aria-hidden="true"
-            ></b-icon>
-            <span class="footerBtnText">공유중지</span>
-          </button>
-          <!-- 나가기 버튼 -->
-        </div>
       <!-- <video
         src="https://sstvideo.s3.ap-northeast-2.amazonaws.com/images/test.mp4"
         width="800"
@@ -58,16 +58,25 @@
         class="music"
       ></video> -->
 
-      <div v-if="video.id" class="embed-responsive embed-responsive-16by9" style="border: 1px solid white; height: 500px; width: 800px; margin: auto;">
-    <iframe
-      class="embed-responsive-item"
-      frameborder="0"
-      allowfullscreen="1"
-      allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-      :src="`https://www.youtube.com/embed/${video.id.videoId}`"
-      style="width: 800px; height: 500px; "
-    ></iframe>
-  </div>
+      <div
+        v-if="video.id"
+        class="embed-responsive embed-responsive-16by9"
+        style="
+          border: 1px solid white;
+          height: 500px;
+          width: 800px;
+          margin: auto;
+        "
+      >
+        <iframe
+          class="embed-responsive-item"
+          frameborder="0"
+          allowfullscreen="1"
+          allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+          :src="`https://www.youtube.com/embed/${video.id.videoId}`"
+          style="width: 800px; height: 500px"
+        ></iframe>
+      </div>
       <div class="play" style="display: flex">
         <div id="main-video" class="user_video">
           <user-video :stream-manager="mainStreamManager" />
@@ -88,6 +97,21 @@
             />
           </div>
         </div>
+        <div id="main-video" class="col-md-6">
+          <user-video :stream-manager="mainStreamManager" />
+        </div>
+        <div id="video-container" class="col-md-6" style="margin-left: 600px">
+          <user-video
+            :stream-manager="publisher"
+            @click="updateMainVideoStreamManager(publisher)"
+          />
+          <user-video
+            v-for="sub in subscribers"
+            :key="sub.stream.connection.connectionId"
+            :stream-manager="sub"
+            @click="updateMainVideoStreamManager(sub)"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -98,13 +122,15 @@ import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "./components/UserVideo.vue";
 import YouTube from "../youtube/youtube.vue";
-import {ref} from "vue"
+import { ref } from "vue";
 import { mapGetters } from "vuex";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 
 const APPLICATION_SERVER_URL =
   process.env.NODE_ENV === "production" ? "" : "http://localhost:8080/";
+
+// const APPLICATION_SERVER_URL = "http://localhost:5000/";
 
 export default {
   name: "App",
@@ -126,6 +152,16 @@ export default {
       // Join form
       mySessionId: this.$route.params.Id,
       myUserName: localStorage.name,
+
+      //share video
+      OVForScreenShare: undefined,
+      sessionForScreenShare: undefined,
+      sharingPublisher: undefined,
+      sharing: true,
+      spublisher: undefined,
+      sminStreamManager: undefined,
+      isScreenShared: false,
+      mainOnOff: false,
     };
   },
   computed: {
@@ -280,8 +316,101 @@ export default {
       );
       return response.data; // The token
     },
+    startScreenSharing() {
+      this.OVForScreenShare = new OpenVidu();
+      this.sessionForScreenShare = this.OVForScreenShare.initSession();
+
+      var mySessionId = this.mySessionId;
+
+      this.getToken(mySessionId).then((token) => {
+        this.sessionForScreenShare
+          .connect(token, { clientData: this.myUserName })
+          .then(() => {
+            this.spublisher = this.OVForScreenShare.initPublisher(undefined, {
+              audioSource: true,
+              videoSource: "screen",
+              publishVideo: true,
+              resolution: "1280x720",
+              frameRate: 30,
+              // insertMode: "APPEND",
+              mirror: true,
+            });
+            // console.log("publisher",this.spublisher);
+            this.spublisher.once("accessAllowed", () => {
+              try {
+                console.log("subscriber >>>>> ", this.subscribers);
+                this.isScreenShared = true;
+                this.session.unpublish(this.publisher); // 송출하고 있는거 중단 (안하면 에러) -- 세션을 없앤다는 뜻.
+
+                this.mainStreamManager = undefined;
+                this.OV = undefined;
+                this.sharing = !this.sharing; // 화면 공유 버튼에서 중지 버튼으로 change toggle
+                const constraints = {
+                  width: { min: 640, ideal: 1280 },
+                  height: { min: 480, ideal: 720 },
+                  advanced: [
+                    { width: 1920, height: 1280 },
+                    { aspectRatio: 1.333 },
+                  ],
+                };
+                this.spublisher.stream
+                  .getMediaStream()
+                  .getVideoTracks()[0]
+                  .applyConstraints(constraints, () => {}),
+                  this.spublisher.stream
+                    .getMediaStream()
+                    .getVideoTracks()[0]
+                    .addEventListener("ended", () => {
+                      console.log('User pressed the "Stop sharing" button');
+                      this.leaveSessionForScreenSharing();
+                      this.isScreenShared = false;
+                    });
+              } catch (error) {
+                console.error("Error applying constraints: ", error);
+              }
+            });
+            this.spublisher.once("accessDenied", () => {
+              console.warn("ScreenShare: Access Denied");
+            });
+            this.mainStreamManager = this.spublisher;
+            this.sharingPublisher = this.spublisher;
+            this.sessionForScreenShare.publish(this.sharingPublisher);
+          })
+          .catch((error) => {
+            console.warn(
+              "There was an error connecting to the session:",
+              error.code,
+              error.message
+            );
+          });
+      });
+    },
+    leaveSessionForScreenSharing() {
+      // 화면 공유 중지
+      this.sharing = !this.sharing; // 화면 공유 버튼에서 중지 버튼으로 change toggle
+      this.isScreenShared = false;
+
+      var mySessionId = this.mySessionId;
+      console.log(mySessionId); // 제대로있고.
+      this.sessionForScreenShare.unpublish(this.spublisher); // 송출하고 있는거 중단 (안하면 에러)
+      //  if (this.sessionForScreenShare) this.sessionForScreenShare.disconnect();
+      this.sessionForScreenShare = undefined;
+      this.smainStreamManager = undefined;
+      this.sharingPublisher = undefined;
+      this.spublisher = undefined;
+      this.OVForScreenShare = undefined;
+
+      this.session.publish(this.publisher).then(() => {
+        // 송출하기
+        this.publisher(this.publisher);
+      });
+      window.removeEventListener(
+        "beforeunload",
+        this.leaveSessionForScreenSharing
+      );
+    },
   },
-  setup(){
+  setup() {
     const modal = ref(null);
     const modalContent = ref([
       "확인/취소를 누르고",
@@ -304,7 +433,7 @@ export default {
       modalContent,
       result,
       handleClick,
-    }
+    };
   },
 };
 </script>
