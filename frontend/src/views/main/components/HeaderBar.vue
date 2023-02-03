@@ -22,7 +22,7 @@
 
       <!-- 
           <v-app-bar-nav-icon
-          variant="text"
+          variant="text"                
           @click.stop="drawer = !drawer"
         ></v-app-bar-nav-icon> 
       -->
@@ -79,9 +79,17 @@
               ><b>회원가입</b></span
             >
           </v-card-title>
-          <v-card-text>
-            <v-container>
+          <v-card-text style="padding-bottom: 0px">
+            <v-form ref="form" @submit.prevent="save">
               <v-row>
+                <v-col cols="6" style="padding-top: 0px; padding-bottom: 0px">
+                  <v-text-field
+                    v-model="user_name"
+                    label="이름"
+                    :rules="name_rule"
+                    required
+                  ></v-text-field>
+                </v-col>
                 <v-col cols="9" style="padding-top: 0px; padding-bottom: 0px">
                   <v-text-field
                     v-model="user_id"
@@ -91,7 +99,10 @@
                     required
                   ></v-text-field>
                 </v-col>
-                <v-btn color="primary" style="margin-top: 22px"
+                <v-btn
+                  color="primary"
+                  style="margin-top: 10px"
+                  @click="id_check"
                   >중복 확인</v-btn
                 >
 
@@ -104,7 +115,7 @@
                     required
                   ></v-text-field>
                 </v-col>
-                <v-btn color="primary" style="margin-top: 22px"
+                <v-btn color="primary" style="margin-top: 10px"
                   >중복 확인</v-btn
                 >
                 <v-col cols="12" style="padding-top: 0px; padding-bottom: 5px">
@@ -156,7 +167,7 @@
                   ></v-autocomplete>
                 </v-col>
               </v-row>
-            </v-container>
+            </v-form>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
@@ -247,7 +258,7 @@
 <script>
 import { reactive, onMounted } from "vue";
 import axios from "axios";
-import { useStore } from "vuex";
+// import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 
 export default {
@@ -256,6 +267,12 @@ export default {
     return {
       signup_dialog: false,
       login_dialog: false,
+      user_name: "",
+      name_rule: [
+        (v) => !!v || "이름은 필수 입력사항 입니다",
+        (v) =>
+          /^[a-zA-Z가-힣]*$/.test(v) || "이름에는 숫자가 들어갈 수 없습니다.",
+      ],
       user_id: "",
       id_rule: [
         (v) => !!v || "아이디는 필수 입력사항 입니다",
@@ -270,7 +287,7 @@ export default {
       nickname_rule: [
         (v) => !!v || "닉네임은 필수 입력사항 입니다",
         (v) =>
-          /^[a-zA-Z가-힣]*$/.test(v) ||
+          /^[a-zA-Z가-힣0-9]+$/.test(v) ||
           "닉네임은 영문 또는 한글로 입력 가능합니다.",
         (v) =>
           !((v.length <= 1) | (v.length >= 11)) ||
@@ -315,19 +332,29 @@ export default {
     };
   },
   methods: {
-    save: function () {
-      console.log(
-        this.user_id,
-        this.user_nickname,
-        this.user_password,
-        this.user_genre
-      );
+    async save() {
+      const validate = this.$refs.form.validate();
+      // console.log(validate)
+      // console.log(
+      //   this.user_id,
+      //   this.user_nickname,
+      //   this.user_password,
+      //   this.user_genre
+      // );
+
+      const genre_list = [];
+      for (let i = 0; i <= this.user_genre.length - 1; i++) {
+        genre_list.push(this.user_genre[i]);
+      }
+      const genre_string = genre_list.join(",");
       const user = {
+        name: this.user_name,
         id: this.user_id,
         password: this.user_password,
         nickname: this.user_nickname,
-        genre: this.user_genre,
+        genre: genre_string,
       };
+<<<<<<< HEAD
       axios({
         method: "post",
         url: "http://localhost:8080/api/v1/users/",
@@ -344,6 +371,29 @@ export default {
         .catch((res) => {
           alert(res);
         });
+=======
+      if (validate) {
+        axios({
+          method: "post",
+          url: "http://3.36.120.87:8080/api/v1/users/",
+          data: user,
+        })
+          .then((res) => {
+            (this.user_name = ""),
+              (this.user_id = ""),
+              (this.user_nickname = ""),
+              (this.user_password = ""),
+              (this.user_password_confirm = ""),
+              (this.user_genre = "");
+            alert("회원가입 성공!");
+            console.log(res);
+            console.log(genre_string);
+          })
+          .catch((err) => {
+            console.log(err);
+          });
+      }
+>>>>>>> ecf69bfe9f7f9738bff76a017c8542625dbbda16
     },
   },
   watch: {
@@ -352,7 +402,7 @@ export default {
     },
   },
   setup() {
-    const store = useStore();
+    // const store = useStore();
     const router = useRouter();
     const state = reactive({
       search: false,
@@ -394,30 +444,78 @@ export default {
       };
       axios({
         method: "post",
-        url: "http://localhost:8080/api/v1/auth/login",
+        url: "http://3.36.120.87:8080/api/v1/auth/login",
         data: user,
       })
         .then((res) => {
           alert("로그인 성공!");
           // console.log(res);
+<<<<<<< HEAD
           console.log("submit");
+=======
+          // console.log("submit");
+>>>>>>> ecf69bfe9f7f9738bff76a017c8542625dbbda16
           // store.dispatch("accountStore/loginAction", {
           //   id: state.form.id,
           //   password: state.form.password,
           // });
+<<<<<<< HEAD
           console.log("accessToken " + store.getters["accountStore/getToken"]);
           console.log(res.data);
+=======
+          // console.log("accessToken " + store.getters["accountStore/getToken"]);
+          // console.log(res.data);
+>>>>>>> ecf69bfe9f7f9738bff76a017c8542625dbbda16
           state.token = res.data.accessToken;
           localStorage.setItem("jwt", res.data.accessToken);
           // localStorage.setItem("nickname", state.form.user_nickname);
           window.location.reload(true);
         })
+<<<<<<< HEAD
         .catch((res) => {
           alert(res);
           console.log(res);
+=======
+        .catch(() => {
+          alert("올바르지않은 아이디 혹은 비밀번호 입니다.");
+>>>>>>> ecf69bfe9f7f9738bff76a017c8542625dbbda16
         });
       // 로그인 클릭 시 validate 체크 후 그 결과 값에 따라, 로그인 API 호출 또는 경고창 표시
     };
+    const id_check = function () {
+      const info = {
+        id: state.form.id,
+      };
+      axios({
+        method: "post",
+        url: "#",
+        data: info,
+      })
+        .then(() => {
+          alert("아이디 중복체크 성공");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
+    const nickname_check = function () {
+      const info = {
+        nickname: state.form.nickname,
+      };
+      axios({
+        method: "post",
+        url: "#",
+        data: info,
+      })
+        .then(() => {
+          alert("닉네임 중복체크 성공");
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    };
+
     return {
       search_hover,
       state,
@@ -425,6 +523,8 @@ export default {
       clickLogin,
       logout,
       clickLogo,
+      id_check,
+      nickname_check,
     };
   },
 };

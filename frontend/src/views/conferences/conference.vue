@@ -18,6 +18,38 @@
       <div id="session-header">
         <h1 id="session-title">{{ mySessionId }} 번방</h1>
       </div>
+      <div v-if="sharing === true" class="buttomMenu">
+          <button
+            class="btn btn-large btn-default footerBtn"
+            type="button"
+            id="buttonLeaveSession"
+            @click="startScreenSharing()"
+          >
+            <b-icon
+              icon="file-arrow-up"
+              class="buttomMenuIcon"
+              aria-hidden="true"
+            ></b-icon>
+            <span class="footerBtnText">화면공유</span>
+          </button>
+        </div>
+
+        <div v-else class="buttomMenu">
+          <button
+            class="btn btn-large btn-default footerBtn"
+            type="button"
+            id="buttonLeaveSession"
+            @click="leaveSessionForScreenSharing()"
+          >
+            <b-icon
+              icon="file-arrow-down"
+              class="buttomMenuIcon"
+              aria-hidden="true"
+            ></b-icon>
+            <span class="footerBtnText">공유중지</span>
+          </button>
+          <!-- 나가기 버튼 -->
+        </div>
       <!-- <video
         src="https://sstvideo.s3.ap-northeast-2.amazonaws.com/images/test.mp4"
         width="800"
