@@ -1,30 +1,33 @@
 <template>
   <Modal ref="baseModal">
-    <div class="content-container">
-      <h1>방 만들기</h1>
-      <v-text-field
-        v-model="state.conferencename"
-        label="방 이름"
-      ></v-text-field>
+    <div class="containers">
+      <div class="row align-items-center">
+        <div class="col-12">
+          <h1 class="text-center">Youtube Search</h1>
+          <button class="btn cancel" @click="cancel">취소</button>
+          <SearchBar />
+        </div>
+      </div>
+        <div class="col-4" @click="cancel">
+          <VideoList />
+        </div>
     </div>
-    <div class="buttons-container">
-      <button class="btn confirm" @click="confirm">확인</button>
-      <button class="btn cancel" @click="cancel">취소</button>
-    </div>
+    
   </Modal>
 </template>
 
 <script>
-import Modal from "@/views/createconference/conponents/Modal.vue";
+import SearchBar from "./components/SearchBar.vue";
+import VideoList from "./components/VideoList.vue";
+import Modal from "./components/Modal.vue";
 import { ref, reactive } from "vue";
 
 export default {
-  name: "ConfirmationModal",
+  name: "App",
   components: {
+    SearchBar,
+    VideoList,
     Modal,
-  },
-  props: {
-    content: Array,
   },
   setup() {
     // 자식 컴포넌트를 핸들링하기 위한 ref
@@ -62,16 +65,10 @@ export default {
   },
 };
 </script>
+
 <style>
-.content-container {
-  text-align: center;
-}
-.buttons-container {
-  /* border: 1px solid black; */
-  width: fit-content;
-  margin: auto;
-}
-.cancel {
-  margin-left: 15px;
+.containers {
+  width: 100%;
+  height: 90vh;
 }
 </style>

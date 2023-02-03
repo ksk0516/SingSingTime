@@ -35,7 +35,7 @@ public class User extends BaseEntity {
     private String nickname;
     private int championCnt;
     private String prefferedGenre;
-    private int rank;
+    private int userRank;
 
 //    private String role;
 }

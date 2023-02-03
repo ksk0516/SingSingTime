@@ -1,7 +1,10 @@
-import { createStore } from "vuex";
+import Vue from "vue";
+import Vuex from "vuex";
 import axios from "axios";
 
-export default createStore({
+Vue.use(Vuex);
+
+export default new Vuex.Store({
   state: {
     // data 저장소 ~= methods
     userInput: "",
@@ -38,7 +41,7 @@ export default createStore({
       context.commit("setUserInput", e.target.value);
       // 1. 입력된 검색어를 가지고,
       const baseURL = "https://www.googleapis.com/youtube/v3/search";
-      const API_KEY = "AIzaSyBGF5ljIuwHbPn27YSImtkkgk8KooR8q7I";
+      const API_KEY = process.env.VUE_APP_YOUTUBE_API_KEY;
       // 2. Youtube API에 요청을 보내어
       axios
         .get(baseURL, {
