@@ -27,7 +27,6 @@
         ></v-app-bar-nav-icon> 
       -->
       <v-spacer></v-spacer>
-<<<<<<< HEAD
       <div style="width: 60%; padding-right: 20px;">
         <div style="text-align: right">
           <h4 v-show="state.token">{{ state.user_id }}님 환영합니다</h4>
@@ -45,28 +44,6 @@
             style="width: 100%; height: 96px;"
             v-show="!state.search"
           ></div>
-=======
-
-      <!-- <v-text-field
-        hide-details
-        placeholder="검색"
-        single-line
-        style="margin: 20px"
-        v-show="state.search"
-        @keydown.enter="search_thing"
-      ></v-text-field> -->
-
-      <v-btn
-        @click="search_hover"
-        class="inline"
-        variant="text"
-        icon="mdi-magnify"
-        style="margin-top: 25px"
-      ></v-btn>
-
-      <v-dialog v-model="signup_dialog" persistent max-width="600px">
-        <template v-slot:activator="{ on }">
->>>>>>> ac53f5c897263e6d1d3ceeaea937f70c0d70e170
           <v-btn
             @click="search_hover"
             class="inline"
@@ -409,7 +386,6 @@ export default {
         nickname: this.user_nickname,
         genre: genre_string,
       };
-<<<<<<< HEAD
       axios({
         method: "post",
         url: "http://localhost:8080/api/v1/users/",
@@ -426,29 +402,6 @@ export default {
         .catch((res) => {
           alert(res);
         });
-=======
-      if (validate) {
-        axios({
-          method: "post",
-          url: "http://3.36.120.87:8080/api/v1/users/",
-          data: user,
-        })
-          .then((res) => {
-            (this.user_name = ""),
-              (this.user_id = ""),
-              (this.user_nickname = ""),
-              (this.user_password = ""),
-              (this.user_password_confirm = ""),
-              (this.user_genre = "");
-            alert("회원가입 성공!");
-            console.log(res);
-            console.log(genre_string);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      }
->>>>>>> ecf69bfe9f7f9738bff76a017c8542625dbbda16
     },
   },
 
@@ -502,28 +455,19 @@ export default {
       };
       axios({
         method: "post",
-        url: "http://3.36.120.87:8080/api/v1/auth/login",
+        url: "http://localhost:8080/api/v1/auth/login",
         data: user,
       })
         .then((res) => {
           alert("로그인 성공!");
           // console.log(res);
-<<<<<<< HEAD
           console.log("submit");
-=======
-          // console.log("submit");
->>>>>>> ecf69bfe9f7f9738bff76a017c8542625dbbda16
           // store.dispatch("accountStore/loginAction", {
           //   id: state.form.id,
           //   password: state.form.password,
           // });
-<<<<<<< HEAD
-          console.log("accessToken " + store.getters["accountStore/getToken"]);
-          console.log(res.data);
-=======
           // console.log("accessToken " + store.getters["accountStore/getToken"]);
-          // console.log(res.data);
->>>>>>> ecf69bfe9f7f9738bff76a017c8542625dbbda16
+          console.log(res.data);
           state.token = res.data.accessToken;
           localStorage.setItem("jwt", res.data.accessToken);
           localStorage.setItem("Id", state.form.id);
@@ -541,24 +485,11 @@ export default {
               console.log(res);
             })
             .catch(() => {
-              console.log("불러오기 실패");
+              alert("올바르지않은 아이디 혹은 비밀번호 입니다.");
             });
           window.location.reload(true);
         })
-<<<<<<< HEAD
-        .catch(() => {
-          alert("올바르지 않은 아이디 혹은 비밀번호 입니다.");
-=======
-<<<<<<< HEAD
-        .catch((res) => {
-          alert(res);
-          console.log(res);
-=======
-        .catch(() => {
-          alert("올바르지않은 아이디 혹은 비밀번호 입니다.");
->>>>>>> ecf69bfe9f7f9738bff76a017c8542625dbbda16
->>>>>>> ac53f5c897263e6d1d3ceeaea937f70c0d70e170
-        });
+
       // 로그인 클릭 시 validate 체크 후 그 결과 값에 따라, 로그인 API 호출 또는 경고창 표시
     };
     const id_check = function () {
