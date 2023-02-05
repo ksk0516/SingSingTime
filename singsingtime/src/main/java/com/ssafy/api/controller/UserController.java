@@ -1,5 +1,7 @@
 package com.ssafy.api.controller;
 
+import com.ssafy.api.request.MySongAddPostReq;
+import com.ssafy.api.request.SongRegisterPostReq;
 import com.ssafy.api.request.UserRegisterPostReq;
 import com.ssafy.api.request.UserUpdatePatchReq;
 import com.ssafy.api.response.UserRes;
@@ -25,20 +27,16 @@ import java.util.List;
  */
 @Api(value = "유저 API", tags = {"User"})
 @RestController
-@RequestMapping("/api/v1/users")
+@RequestMapping("/users")
 public class UserController {
 	
 	@Autowired
-	UserService userService;
+	private UserService userService;
 
 	@Autowired
-	SongService songService;
-
+	private SongService songService;
 	@Autowired
-	UserRepository userRepository;
-
-	@Autowired
-	PasswordEncoder passwordEncoder;
+	private PasswordEncoder passwordEncoder;
 
 	@PostMapping()
 	@ApiOperation(value = "회원 가입", notes = "<strong>아이디와 패스워드</strong>를 통해 회원가입 한다.") 
@@ -127,25 +125,44 @@ public class UserController {
 			@ApiResponse(code = 200, message = "Success"),
 	})
 	public ResponseEntity<? extends BaseResponseBody> delete(@PathVariable String userId){
-		System.out.println("con 116 userId = " + userId);
 		userService.deleteUser(userId);
 		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Success"));
 	}
 
+	@PostMapping("/songs")
+	public ResponseEntity<? extends BaseResponseBody> registerSong(@RequestBody SongRegisterPostReq registerInfo){
+		songService.registerSong(registerInfo);
+		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Success"));
+	}
 	@GetMapping("/songs")
 	public ResponseEntity<List<Song>> getAllSongList(){
 		List<Song> songList =songService.getAllSongList();
-
 		return ResponseEntity.status(200).body(songList);
 	}
+
+	@PostMapping("me/songs")
+	public ResponseEntity<? extends BaseResponseBody> addMySongList(@ApiIgnore Authentication authentication, @RequestBody MySongAddPostReq addInfo){
+		SsafyUserDetails userDetails = (SsafyUserDetails)authentication.getDetails();
+		String userId = userDetails.getUsername();
+		songService.addMySong(userId, addInfo);
+		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Success"));
+	}
 	@GetMapping("me/songs")
-	public ResponseEntity<UserRes> getMySongList(@ApiIgnore Authentication authentication){
+	public ResponseEntity<List<Song>> getMySongList(@ApiIgnore Authentication authentication){
 		SsafyUserDetails userDetails = (SsafyUserDetails)authentication.getDetails();
 		String userId = userDetails.getUsername();
 		User user = userService.getUserByUserId(userId);
-
-		return ResponseEntity.status(200).body(UserRes.of(user));
+		// fk 필요해서 getId 사용
+		List<Song> songList = songService.getMySongList(user.getId());
+		return ResponseEntity.status(200).body(songList);
 	}
-	
 
+	@DeleteMapping("me/songs/{userSongId}")
+	@ApiResponses({
+			@ApiResponse(code = 200, message = "Success"),
+	})
+	public ResponseEntity<? extends BaseResponseBody> deleteMySong(@PathVariable Long userSongId){
+		songService.deleteMySong(userSongId);
+		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Success"));
+	}
 }
