@@ -1,13 +1,17 @@
 <template>
-  <div class="p-2">
-    <section @click="selectVideo">
-      <v-img :src="youtubeImageSrc" alt="youtube-thumbnail-image" width="200px"></v-img>
-      <span class="listitem"><h5>{{ video.snippet.title }}</h5>
-      </span>
-      
+  <div class="p-2" style="">
+    <section @click="selectVideo" style="display: flex">
+      <div>
+        <v-img
+          :src="youtubeImageSrc"
+          alt="youtube-thumbnail-image"
+          width="200px"
+        ></v-img>
+      </div>
+      <h5>{{ video.snippet.title }}</h5>
     </section>
   </div>
-  </template>
+</template>
 
 <script>
 import _ from "lodash";
@@ -21,9 +25,9 @@ export default {
   },
   methods: {
     selectVideo: function () {
-      this.$store.state.video=this.video
+      this.$store.state.video = this.video;
       this.$emit("select-video", this.video);
-      console.log(this.$store.state.video)
+      console.log(this.$store.state.video);
     },
   },
   computed: {

@@ -1,7 +1,7 @@
 <template>
   <div class="list">
     <SongListItem
-      v-for="(video) in videos"
+      v-for="video in videos"
       :video="video"
       @select-video="onSelectVideo"
     />
@@ -19,7 +19,7 @@ export default {
   },
   methods: {
     onSelectVideo: function (video) {
-      this.$emit('select-video', video)
+      this.$emit("select-video", video);
       this.session
         .signal({
           data: JSON.stringify(video.id.videoId),

@@ -24,7 +24,7 @@
         />
       </div>
     </div>
-    <Song :session="session"/>
+    <Song :session="session" />
   </div>
 </template>
 
@@ -32,7 +32,6 @@
 import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "./components/UserVideo.vue";
-import YouTube from "../youtube/youtube.vue";
 import { ref } from "vue";
 import { mapGetters } from "vuex";
 import Song from "./components/Song/Song.vue";
@@ -49,7 +48,6 @@ export default {
 
   components: {
     UserVideo,
-    YouTube,
     Song,
   },
 
@@ -65,16 +63,6 @@ export default {
       // Join form
       mySessionId: this.$route.params.Id,
       myUserName: localStorage.name,
-
-      //share video
-      OVForScreenShare: undefined,
-      sessionForScreenShare: undefined,
-      sharingPublisher: undefined,
-      sharing: true,
-      spublisher: undefined,
-      sminStreamManager: undefined,
-      isScreenShared: false,
-      mainOnOff: false,
     };
   },
   computed: {
@@ -288,73 +276,69 @@ export default {
   float: right;
 }
 #video-container p {
-   font-family:'IM_Hyemin-Bold';
-   display: inline-block;
-   background: #f8f8f8;
-   padding-left: 5px;
-   padding-right: 5px;
-   color: #3c90c9;
-   font-weight: bold;
-   border-radius: 8px;
+  font-family: "IM_Hyemin-Bold";
+  display: inline-block;
+  background: #f8f8f8;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #3c90c9;
+  font-weight: bold;
+  border-radius: 8px;
 }
 #video-container video + div {
-  
   text-align: center;
   /* line-height: 75px; */
-   float: left;
-   width: 28%;
-   position: relative;
-   margin-left:-28.5%;
-   /* display: flex; */
-   /* justify-content: space-around; */
+  float: left;
+  width: 28%;
+  position: relative;
+  margin-left: -28.5%;
+  /* display: flex; */
+  /* justify-content: space-around; */
 }
 #video-container video {
-   /* position: relative; */
-   float: left;
-   width: 16%;
-   margin-left:0.6%;
-   border:3px solid;
-   border-color:rgb(255, 255, 255);
-   /* cursor: pointer; */
-   /* margin:  2%;  */
-   /* margin-left: 5%; */
-   display: flex;
-   align-items: center;
-   justify-content: space-around;
+  /* position: relative; */
+  float: left;
+  width: 16%;
+  margin-left: 0.6%;
+  border: 3px solid;
+  border-color: rgb(255, 255, 255);
+  /* cursor: pointer; */
+  /* margin:  2%;  */
+  /* margin-left: 5%; */
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
 }
 .participation {
   margin: 0 2.2vw;
   padding: 2vh;
   /* width: 95vw; */
-   /* height: 22vh; */
-   /* text-align: justify; */
+  /* height: 22vh; */
+  /* text-align: justify; */
   /* border: 3px solid #ffa500; */
-   display: flex;
-   flex-direction: row;
-   /* align-items: center;
+  display: flex;
+  flex-direction: row;
+  /* align-items: center;
    justify-content: space-around;   */
 }
 video {
-   
-   padding-top:1.8vh;
-   /* 맨 아래에 나오는 카메라화면 */
-   /* width: ; */
-      width: 90%;
-   /* height: 48vh; */
-   height: auto;
-   position: relative;
-
+  padding-top: 1.8vh;
+  /* 맨 아래에 나오는 카메라화면 */
+  /* width: ; */
+  width: 90%;
+  /* height: 48vh; */
+  height: auto;
+  position: relative;
 }
 #main-video p {
-   /* position: absolute; */
-   display: inline-block;
-   background: #f8f8f8;
-   padding-left: 5px;
-   padding-right: 5px;
-   font-size: 22px;
-   color: #777777;
-   font-weight: bold;
-   border-radius: 5px;
+  /* position: absolute; */
+  display: inline-block;
+  background: #f8f8f8;
+  padding-left: 5px;
+  padding-right: 5px;
+  font-size: 22px;
+  color: #777777;
+  font-weight: bold;
+  border-radius: 5px;
 }
-
 </style>
