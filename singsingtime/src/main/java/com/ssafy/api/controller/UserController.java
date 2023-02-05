@@ -3,9 +3,11 @@ package com.ssafy.api.controller;
 import com.ssafy.api.request.UserRegisterPostReq;
 import com.ssafy.api.request.UserUpdatePatchReq;
 import com.ssafy.api.response.UserRes;
+import com.ssafy.api.service.SongService;
 import com.ssafy.api.service.UserService;
 import com.ssafy.common.auth.SsafyUserDetails;
 import com.ssafy.common.model.response.BaseResponseBody;
+import com.ssafy.db.entity.Song;
 import com.ssafy.db.entity.User;
 import com.ssafy.db.repository.UserRepository;
 import io.swagger.annotations.*;
@@ -15,6 +17,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
+
+import java.util.List;
 
 /**
  * 유저 관련 API 요청 처리를 위한 컨트롤러 정의.
@@ -26,6 +30,9 @@ public class UserController {
 	
 	@Autowired
 	UserService userService;
+
+	@Autowired
+	SongService songService;
 
 	@Autowired
 	UserRepository userRepository;
@@ -71,13 +78,13 @@ public class UserController {
 	}
 
 
-	@GetMapping("/{userId}")
+	@GetMapping("/id/{userId}")
 	@ApiResponses({
 			@ApiResponse(code = 200, message = "사용 가능한 ID 입니다."),
 			@ApiResponse(code = 409, message = "이미 존재하는 사용자 ID 입니다.")
 	})
 	public ResponseEntity<? extends BaseResponseBody> checkIDDuplication(@PathVariable String userId){
-
+		System.out.println("id check 80");
 		if(userService.checkUserID(userId) > 0){
 			return ResponseEntity.status(409).body(BaseResponseBody.of(409, "이미 존재하는 사용자 ID 입니다."));
 		}
@@ -86,7 +93,7 @@ public class UserController {
 		}
 	}
 
-	@GetMapping("/{nickname}")
+	@GetMapping("/nickname/{nickname}")
 	@ApiResponses({
 			@ApiResponse(code = 200, message = "사용 가능한 닉네임 입니다."),
 			@ApiResponse(code = 409, message = "이미 존재하는 닉네임 입니다.")
@@ -125,6 +132,20 @@ public class UserController {
 		return ResponseEntity.status(200).body(BaseResponseBody.of(200, "Success"));
 	}
 
+	@GetMapping("/songs")
+	public ResponseEntity<List<Song>> getAllSongList(){
+		List<Song> songList =songService.getAllSongList();
 
+		return ResponseEntity.status(200).body(songList);
+	}
+	@GetMapping("me/songs")
+	public ResponseEntity<UserRes> getMySongList(@ApiIgnore Authentication authentication){
+		SsafyUserDetails userDetails = (SsafyUserDetails)authentication.getDetails();
+		String userId = userDetails.getUsername();
+		User user = userService.getUserByUserId(userId);
+
+		return ResponseEntity.status(200).body(UserRes.of(user));
+	}
+	
 
 }
