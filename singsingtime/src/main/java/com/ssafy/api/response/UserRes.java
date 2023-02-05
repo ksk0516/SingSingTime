@@ -18,30 +18,30 @@ import java.util.List;
 @ApiModel("UserResponse")
 public class UserRes{
 	@ApiModelProperty(name="User ID")
-	String userId;
+	private String userId;
 
-	@ApiModelProperty(name="User password")
-	String password;
+//	@ApiModelProperty(name="User password")
+//	private String password;
 
 	@ApiModelProperty(name="User nickname")
-	String nickname;
+	private String nickname;
 
 	@ApiModelProperty(name="User championCnt")
-	int championCnt;
+	private int championCnt;
 
 	@ApiModelProperty(name="User rank")
-	int rank;
+	private int userRank;
 	//노래 리스트도 추가해야함. 고민중.
 	@ApiModelProperty(name="User songList")
-	List<Song> songList;
+	private List<Song> songList;
 	
 	public static UserRes of(User user) {
 		UserRes res = new UserRes();
 		res.setUserId(user.getUserId());
-		res.setPassword(user.getPassword());
+//		res.setPassword(user.getPassword());
 		res.setNickname(user.getNickname());
 		res.setChampionCnt(user.getChampionCnt());
-		res.setRank(user.getUserRank());
+		res.setUserRank(user.getUserRank());
 //		List<UserSong> songList = user.getSongList();
 //		res.setSongList(user.getSongList());
 		return res;
