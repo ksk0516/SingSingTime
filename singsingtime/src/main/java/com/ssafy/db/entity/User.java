@@ -17,6 +17,8 @@ import java.util.List;
 /**
  * 유저 모델 정의.
  */
+@Builder
+@AllArgsConstructor
 @Data
 @Entity
 @NoArgsConstructor
@@ -29,18 +31,20 @@ public class User extends BaseEntity {
     private String password;
     private String name;
     private String nickname;
+    private String email;
     private int championCnt;
-    private String preferedGenre;
+    private String genre;
     private int userRank;
-    @Builder
-    public User(String UserId, String password, String nickname, int championCnt,
-    String preferedGenre,int userRank){
-        this.userId = userId;
-        this.password =password;
-        this.nickname=nickname;
-        this.championCnt=championCnt;
-        this.preferedGenre=preferedGenre;
-        this.userRank=userRank;
-    }
+
+//    @Builder
+//    public User(String UserId, String password, String nickname, int championCnt,
+//    String preferedGenre,int userRank){
+//        this.userId = userId;
+//        this.password =password;
+//        this.nickname=nickname;
+//        this.championCnt=championCnt;
+//        this.preferedGenre=preferedGenre;
+//        this.userRank=userRank;
+//    }
 //    private String role;
 }
