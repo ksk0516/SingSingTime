@@ -1,5 +1,5 @@
 import { createStore } from "vuex";
-import createPersistedState from 'vuex-persistedstate';
+import createPersistedState from "vuex-persistedstate";
 import accountStore from "./accountStore";
 import nicknameStore from "./nicknameStore";
 import youtubeStore from "./youtubeStore";
@@ -12,7 +12,7 @@ export default createStore({
   },
   plugins: [
     createPersistedState({
-      paths: ['nicknameStore'],
+      paths: ["nicknameStore"],
     }),
   ],
 });

@@ -276,7 +276,7 @@
 </template>
 
 <script>
-import { reactive, onMounted, onUpdated } from "vue";
+import { reactive, onMounted } from "vue";
 import axios from "axios";
 import { useStore } from "vuex";
 import { useRouter } from "vue-router";
@@ -310,10 +310,10 @@ export default {
     };
   },
   computed: {
-        my_nickname(){
-            return useStore().getters["nicknameStore/getNickname"]
-        }
+    my_nickname() {
+      return useStore().getters["nicknameStore/getNickname"];
     },
+  },
 
   watch: {
     group() {
@@ -455,20 +455,18 @@ export default {
           })
             .then((res) => {
               store.dispatch("nicknameStore/saveNickname", {
-                nickname : res.data.nickname,
+                nickname: res.data.nickname,
               });
             })
             .catch((err) => {
               alert(err);
             });
-            window.location.reload(true);
+          window.location.reload(true);
         })
         .catch(() => {
           alert("올바르지않은 아이디 혹은 비밀번호 입니다.");
         });
-      
     };
-
 
     //로그아웃
     const logout = function () {
@@ -528,7 +526,6 @@ export default {
     onMounted(() => {
       // console.log(loginForm.value)
     });
-
 
     return {
       search_hover,
