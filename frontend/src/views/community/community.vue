@@ -219,6 +219,8 @@ export default {
       this.token = localStorage.getItem("jwt")
       const formData = new FormData();
       formData.append("video", this.video.target.files[0]);
+      formData.append("title", this.state.form.title);
+      formData.append("context", this.state.form.context);
 
       axios({
         method: "post",
