@@ -6,6 +6,7 @@
         hide-details
         placeholder="검색"
         single-line
+        v-model="state.searchkeyword"
         @keydown.enter="community_search_thing"
         class="commu_search"
       ></v-text-field>
@@ -15,6 +16,7 @@
       variant="text"
       icon="mdi-magnify"
       style="margin-top: 20px"
+      @click="searchstart()"
     ></v-btn>
 
     <v-dialog v-model="content_dialog" max-width="600px">
@@ -62,7 +64,12 @@
                 ></textarea>
               </v-col>
               <div class="custom-file">
-                <v-file-input id="customFile" @change="changeFile" label= "비디오를 업로드 하세요." style="width:530px; padding-left: 10px;"/>
+                <v-file-input
+                  id="customFile"
+                  @change="changeFile"
+                  label="비디오를 업로드 하세요."
+                  style="width: 530px; padding-left: 10px"
+                />
                 <label class="custom-file-label" for="customFile">{{
                   state.form.video.name
                 }}</label>
@@ -87,7 +94,7 @@
     </v-dialog>
   </v-row>
 
-  <ul class="infinite-list">
+  <ul class="infinite-list" >
     <li
       v-for="i in video_list"
       class="infinite-list-item"
@@ -108,7 +115,7 @@
 
 <script>
 import ContentBox from "./component/content.vue";
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 
@@ -131,6 +138,7 @@ export default {
     const state = reactive({
       count: 54,
       page: 1,
+      searchkeyword:"",
       community_search: false,
       token: localStorage.getItem("jwt"),
       form: {
@@ -174,7 +182,7 @@ export default {
       console.log(111);
       axios({
         method: "post",
-        url: "http://localhost:8080/diary/video",
+        url: "http://localhost:8080/api/v1/videos",
         data: info,
         headers: {
           "Content-Type": "multipart/form-data",
@@ -191,6 +199,31 @@ export default {
           console.log(err);
         });
     };
+    const searchfinish = false;
+    const searchstart = function () {
+      // 검색버튼 눌렀을때 실행
+      if (state.searchkeyword == "") {
+        alert("키워드가 없습니다!");
+      } else {
+        console.log(state.searchkeyword)
+        axios({
+          method: "POST",
+          url: `http://localhost:8080/api/v1/videos/search/${state.searchkeyword}`,
+        })
+          .then((res) => {
+            console.log(res);
+            contentlist = res.data;
+            searchcnt = contentlist[Object.keys(contentlist).length - 1].cnt;
+            contentlist.pop();
+            alert("검색완료!");
+            searchfinish = true;
+            state.searchkeyword = "";
+          })
+          .catch((err) => {
+            alert(err);
+          });
+      }
+    };
     return {
       state,
       load,
@@ -199,6 +232,8 @@ export default {
       video_list,
       community_search_thing,
       uploadVideo,
+      searchstart,
+      searchfinish,
     };
   },
   methods: {
