@@ -28,7 +28,7 @@
       <v-spacer></v-spacer>
       <div style="width: 60%; padding-right: 20px">
         <div style="text-align: right">
-          <h4 v-show="state.token">{{ user_nickname.nickname }}님 환영합니다</h4>
+          <h4 v-show="state.token">{{ state.nickname }}님 환영합니다</h4>
         </div>
         <div style="display: flex; width: 100%">
           <v-text-field
@@ -134,6 +134,19 @@
                       @click="nickname_check"
                       >중복 확인</v-btn
                     >
+                    <v-col
+                      cols="12"
+                      style="padding-top: 0px; padding-bottom: 5px"
+                    >
+                      <v-text-field
+                        v-model="signup_state.form.email"
+                        label="이메일"
+                        hint="이메일 형식에 맞춰 작성해 주세요"
+                        persistent-hint
+                        :rules="rule.email_rule"
+                        required
+                      ></v-text-field>
+                    </v-col>
                     <v-col
                       cols="12"
                       style="padding-top: 0px; padding-bottom: 5px"
@@ -311,11 +324,6 @@ export default {
       ],
     };
   },
-  computed: {
-    my_nickname() {
-      return useStore().getters["nicknameStore/getNickname"];
-    },
-  },
 
   watch: {
     group() {
@@ -328,12 +336,14 @@ export default {
     const state = reactive({
       search: false,
       token: localStorage.getItem("jwt"),
+      nickname: localStorage.getItem("nickname")
     });
 
     const signup_state = reactive({
       form: {
         name: "",
         id: "",
+        email: "",
         password: "",
         password_confirm: "",
         nickname: "",
@@ -407,8 +417,8 @@ export default {
 
       axios({
         method: "post",
-        // url: "http://localhost:8080/api/v1/users/",
-        url: import.meta.env.VITE_APP_URL + "/api/v1/users/",
+        url: "http://localhost:8080/api/v1/users/",
+        // url: import.meta.env.VITE_APP_URL + "/api/v1/users/",
         data: user,
       })
         .then((res) => {
@@ -416,6 +426,7 @@ export default {
             (signup_state.form.id = ""),
             (signup_state.form.nickname = ""),
             (signup_state.form.password = ""),
+            (signup_state.form.password_confirm = ""),
             (signup_state.form.genre = "");
           alert("회원가입 성공!");
           console.log(res);
@@ -426,9 +437,6 @@ export default {
     };
 
     // 로그인
-    const user_nickname = reactive({
-      nickname : store.getters["nicknameStore/getNickname"],
-    })
     const clickLogin = function () {
       const user = {
         id: login_state.form.id,
@@ -442,7 +450,7 @@ export default {
         .then((res) => {
           alert("로그인 성공!");
           // console.log(res);
-          console.log("submit");
+          // console.log("submit");
           // console.log("accessToken " + store.getters["accountStore/getToken"]);
           state.token = res.data.accessToken;
           store.dispatch("accountStore/loginAction", {
@@ -460,26 +468,28 @@ export default {
             },
           })
             .then((res) => {
-              store.dispatch("nicknameStore/saveNickname", {
+              store.dispatch("accountStore/saveNickname", {
                 nickname: res.data.nickname,
               });
-              console.log(res)
-
+              localStorage.setItem("nickname", res.data.nickname)
             })
             .catch((err) => {
               alert(err);
             });
           window.location.reload(true);
+          // router.push("/");
         })
         .catch(() => {
           alert("올바르지않은 아이디 혹은 비밀번호 입니다.");
         });
     };
 
+
     //로그아웃
     const logout = function () {
       localStorage.removeItem("jwt");
       localStorage.removeItem("vuex");
+      localStorage.removeItem("nickname");
       state.token = false;
       console.log(state.token);
       window.location.reload(true);
@@ -515,6 +525,7 @@ export default {
         .catch((err) => {
           alert(err.response.data.message);
         });
+      
     };
 
     const clickLogo = function () {
@@ -532,7 +543,7 @@ export default {
     };
 
     onMounted(() => {
-      // console.log(loginForm.value)
+
     });
 
     return {
@@ -542,7 +553,6 @@ export default {
       login_state,
       rule,
       save,
-      user_nickname,
       clickLogin,
       logout,
       id_check,
