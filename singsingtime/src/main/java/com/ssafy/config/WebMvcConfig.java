@@ -16,7 +16,6 @@ import javax.servlet.Filter;
 
 @Configuration
 public class WebMvcConfig implements WebMvcConfigurer {
-<<<<<<< HEAD
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
@@ -38,29 +37,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 //            .maxAge(3000);
 //
 //}
-=======
-//    @Bean
-//    public CorsConfigurationSource corsConfigurationSource() {
-//        CorsConfiguration configuration = new CorsConfiguration();
-//        // configuration.addAllowedOrigin("*");
-//        configuration.addAllowedOriginPattern("*");
-//        configuration.addAllowedMethod("*");
-//        configuration.addAllowedHeader("*");
-//        configuration.addExposedHeader(JwtTokenUtil.HEADER_STRING);
-//        configuration.setAllowCredentials(true);
-//        configuration.setMaxAge(3600L);
-//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-//        source.registerCorsConfiguration("/**", configuration);
-//        return source;
-//    }
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/**")
-                .allowedOrigins("*").allowedMethods("GET","POST","PUT","DELETE","HEAD")
-                .maxAge(3000);
-
-    }
->>>>>>> a477ee5591b1680a2c7ab466fba17dcfa8f1f4ec
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
     		registry.addResourceHandler("/resources/**")
