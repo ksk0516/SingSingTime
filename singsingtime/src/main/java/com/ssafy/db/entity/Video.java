@@ -19,6 +19,7 @@ public class Video extends BaseEntity {
     private String description;
     private String url;
     private int likeCnt;
+    private int viewCnt;
     @ManyToOne(fetch = FetchType.LAZY) // 여러 영상 - 하나의 유저
     @JoinColumn(name="userId")
     private User user;
