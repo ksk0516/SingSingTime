@@ -15,7 +15,7 @@
                   class="text-h6 text-black d-flex flex-column justify-space-between"
                   style="padding: 0px; height: 100%"
                 >
-                  <p class="song_info" align="start">{{ item.title }}</p>
+                  <p class="song_info" align="start">{{ content.id }}</p>
                   <div class="d-flex justify-space-between info_box">
                     <div class="champion_info">{{ item.title }}</div>
                     <div class="view_info">광주김</div>
@@ -34,11 +34,14 @@
 <script>
 export default {
   name: "ContentBox",
+  props: {
+    content: Object,
+  },
   data: () => ({
     icons: ["mdi-rewind", "mdi-play", "mdi-fast-forward"],
     items: [
       {
-        title: "01/07 광주김범수 대결 영상ㄷ",
+        // title: "01/07 광주김범수 대결 영상ㄷ",
         img: "https://images.unsplash.com/photo-1429514513361-8fa32282fd5f?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=3264&q=80",
       },
     ],
