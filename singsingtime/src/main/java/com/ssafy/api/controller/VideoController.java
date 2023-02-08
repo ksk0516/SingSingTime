@@ -2,6 +2,8 @@ package com.ssafy.api.controller;
 
 //import com.ssafy.api.service.DiaryService;
 import com.ssafy.api.request.*;
+import com.ssafy.api.request.VideoRegisterPostReq;
+import com.ssafy.api.request.VideoUpdatePatchReq;
 import com.ssafy.api.service.VideoService;
 import com.ssafy.common.auth.SsafyUserDetails;
 import com.ssafy.common.model.response.BaseResponseBody;
@@ -15,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.List;
 
