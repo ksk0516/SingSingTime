@@ -478,7 +478,7 @@ export default {
       const token = localStorage.getItem("jwt");
       axios({
         method: "get",
-        url: `http://localhost:8080/api/v1/users/me`,
+        url: `https://i8c105.p.ssafy.io/api/v1/users/me`,
         headers: {
           Authorization: `Bearer ${token}`,
         },

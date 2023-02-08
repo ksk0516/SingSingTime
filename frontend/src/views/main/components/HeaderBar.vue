@@ -471,7 +471,7 @@ export default {
       };
       axios({
         method: "post",
-        url: "http://localhost:8080/api/v1/auth/login",
+        url: "https://i8c105.p.ssafy.io/api/v1/auth/login",
         data: user,
       })
         .then((res) => {
@@ -489,7 +489,7 @@ export default {
           localStorage.setItem("jwt", res.data.accessToken);
           axios({
             method: "get",
-            url: `http://localhost:8080/api/v1/users/me`,
+            url: `https://i8c105.p.ssafy.io/api/v1/users/me`,
             headers: {
               Authorization: `Bearer ${state.token}`,
             },
@@ -530,7 +530,7 @@ export default {
       // console.log(state.form.id);
       axios({
         method: "get",
-        url: `http://localhost:8080/api/v1/users/id/${signup_state.form.id}`,
+        url: `https://i8c105.p.ssafy.io/api/v1/users/id/${signup_state.form.id}`,
       })
         .then((res) => {
           // console.log(res.data.message);
@@ -546,7 +546,7 @@ export default {
     const nickname_check = function () {
       axios({
         method: "get",
-        url: `http://localhost:8080/api/v1/users/nickname/${signup_state.form.nickname}`,
+        url: `https://i8c105.p.ssafy.io/api/v1/users/nickname/${signup_state.form.nickname}`,
       })
         .then((res) => {
           // console.log(res.data.message);
