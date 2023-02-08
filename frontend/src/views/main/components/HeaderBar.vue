@@ -438,8 +438,8 @@ export default {
       } else {
         axios({
           method: "post",
-          url: "http://localhost:8080/api/v1/users/",
-          // url: import.meta.env.VITE_APP_URL + "/api/v1/users/",
+          // url: "http://localhost:8080/api/v1/users/",
+          url: import.meta.env.VITE_APP_URL + "/api/v1/users/",
           data: user,
           // headers: {
           //   "Content-Type": "application/json; charset=utf-8",
@@ -471,7 +471,7 @@ export default {
       };
       axios({
         method: "post",
-        url: "https://i8c105.p.ssafy.io/api/v1/auth/login",
+        url: import.meta.env.VITE_APP_URL + "/api/v1/auth/login/",
         data: user,
       })
         .then((res) => {
