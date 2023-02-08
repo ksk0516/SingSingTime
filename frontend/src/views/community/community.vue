@@ -271,6 +271,7 @@ export default {
       axios({
         method: "get",
         url: "http://localhost:8080/api/v1/videos",
+
       })
         .then((res) => {
           console.log(res)
