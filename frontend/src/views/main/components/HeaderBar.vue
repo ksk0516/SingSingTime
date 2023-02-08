@@ -1,4 +1,4 @@
-<template>
+<template class="signup">
   <v-card>
     <!-- <v-system-bar color="deep-purple darken-3"></v-system-bar> -->
     <v-bar
@@ -48,7 +48,7 @@
             style="margin-top: 25px"
           ></v-btn>
 
-          <v-dialog v-model="signup_dialog" persistent max-width="600px">
+          <v-dialog v-model="state.signup_dialog" persistent max-width="600px">
             <template v-slot:activator="{ on }">
               <v-btn
                 class="inline"
@@ -64,7 +64,7 @@
               <v-btn
                 class="inline"
                 variant="text"
-                @click="signup_dialog = true"
+                @click="state.signup_dialog = true"
                 v-on="on"
                 v-show="!state.token"
               >
@@ -72,7 +72,7 @@
               </v-btn>
             </template>
             <v-card>
-              <v-card-title>
+              <v-card-title style="padding: 0px">
                 <img
                   class="logo"
                   src="../../../assets/images/login_logo.png"
@@ -92,7 +92,7 @@
                     >
                       <v-text-field
                         v-model="signup_state.form.name"
-                        label="이름"
+                        label="이름*"
                         :rules="rule.name_rule"
                         required
                       ></v-text-field>
@@ -103,7 +103,7 @@
                     >
                       <v-text-field
                         v-model="signup_state.form.id"
-                        label="아이디"
+                        label="아이디*"
                         hint="영문과 숫자를 포함하여 5자~10자 이내로 작성해주세요"
                         :rules="rule.id_rule"
                         required
@@ -122,7 +122,7 @@
                     >
                       <v-text-field
                         v-model="signup_state.form.nickname"
-                        label="닉네임"
+                        label="닉네임*"
                         hint="2자~10자 이내로 작성해주세요"
                         :rules="rule.nickname_rule"
                         required
@@ -140,7 +140,7 @@
                     >
                       <v-text-field
                         v-model="signup_state.form.email"
-                        label="이메일"
+                        label="이메일*"
                         hint="이메일 형식에 맞춰 작성해 주세요"
                         persistent-hint
                         :rules="rule.email_rule"
@@ -201,14 +201,14 @@
                 <v-btn
                   color="blue darken-1"
                   text
-                  @click="signup_dialog = false"
+                  @click="state.signup_dialog = false"
                 >
                   Close
                 </v-btn>
                 <v-btn
                   color="blue darken-1"
                   text
-                  @click="(signup_dialog = false), save()"
+                  @click="(state.signup_dialog = false), save()"
                 >
                   Save
                 </v-btn>
@@ -219,12 +219,12 @@
       </div>
 
       <!--로그인-->
-      <v-dialog v-model="login_dialog" persistent max-width="600px">
+      <v-dialog v-model="state.login_dialog" persistent max-width="600px">
         <template v-slot:activator="{ on }">
           <v-btn
             class="inline"
             variant="text"
-            @click="login_dialog = true"
+            @click="state.login_dialog = true"
             v-on="on"
             v-show="!state.token"
           >
@@ -248,7 +248,7 @@
                   <v-text-field
                     label="아이디"
                     v-model="login_state.form.id"
-                    @keyup.enter="(login_dialog = false), clickLogin()"
+                    @keyup.enter="(state.login_dialog = false), clickLogin()"
                   ></v-text-field>
                 </v-col>
                 <v-col cols="12">
@@ -257,7 +257,7 @@
                     type="password"
                     v-model="login_state.form.password"
                     required
-                    @keyup.enter="(login_dialog = false), clickLogin()"
+                    @keyup.enter="(state.login_dialog = false), clickLogin()"
                   ></v-text-field>
                 </v-col>
               </v-row>
@@ -265,13 +265,13 @@
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="blue darken-1" text @click="login_dialog = false">
+            <v-btn color="blue darken-1" text @click="state.login_dialog = false">
               Close
             </v-btn>
             <v-btn
               color="blue darken-1"
               text
-              @click="(login_dialog = false), clickLogin()"
+              @click="(state.login_dialog = false), clickLogin()"
             >
               Save
             </v-btn>
@@ -300,8 +300,6 @@ export default {
   name: "HeaderBar",
   data() {
     return {
-      signup_dialog: false,
-      login_dialog: false,
       drawer: false,
       group: null,
       items: [
@@ -336,7 +334,9 @@ export default {
     const state = reactive({
       search: false,
       token: localStorage.getItem("jwt"),
-      nickname: localStorage.getItem("nickname")
+      nickname: localStorage.getItem("nickname"),
+      signup_dialog: false,
+      login_dialog: false,
     });
 
     const signup_state = reactive({
@@ -348,6 +348,8 @@ export default {
         password_confirm: "",
         nickname: "",
         genre: "",
+        idCheck : false,
+        nicknameCheck : false,
       },
     });
     const login_state = reactive({
@@ -381,6 +383,15 @@ export default {
           !((v.length <= 1) | (v.length >= 11)) ||
           "닉네임은 2자 이상  10자 이하로 작성해 주세요.",
       ],
+      email_rule: [
+        (v) => !!v || "이메일을 입력해주세요.",
+        (v) => {
+          const replaceV = v.replace(/(\s*)/g, "");
+          const pattern =
+            /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/;
+          return pattern.test(replaceV) || "이메일 형식으로 입력해주세요";
+        },
+      ],
       password_rule: [
         (v) => !!v || "비밀번호는 필수 입력사항 입니다",
         (v) =>
@@ -393,8 +404,7 @@ export default {
       password_confirm_rule: [
         (v) => !!v || "비밀번호 확인은 필수 입력사항 입니다",
         (v) =>
-          v === signup_state.form.password_confirm ||
-          "비밀번호가 일치하지 않습니다.",
+          v === signup_state.form.password || "비밀번호가 일치하지 않습니다.",
       ],
     };
 
@@ -403,37 +413,54 @@ export default {
       // const validate = this.$refs.form.validate();
 
       const genre_list = [];
-      for (let i = 0; i <= signup_state.form.genre.length - 1; i++) {
+      for (let i = 1; i <= signup_state.form.genre.length - 1; i++) {
         genre_list.push(signup_state.form.genre[i]);
       }
       const genre_string = genre_list.join(",");
       const user = {
         name: signup_state.form.name,
         id: signup_state.form.id,
+        email: signup_state.form.email,
         password: signup_state.form.password,
         nickname: signup_state.form.nickname,
         genre: genre_string,
       };
 
-      axios({
-        method: "post",
-        url: "http://localhost:8080/api/v1/users/",
-        // url: import.meta.env.VITE_APP_URL + "/api/v1/users/",
-        data: user,
-      })
-        .then((res) => {
-          (signup_state.form.name = ""),
-            (signup_state.form.id = ""),
-            (signup_state.form.nickname = ""),
-            (signup_state.form.password = ""),
-            (signup_state.form.password_confirm = ""),
-            (signup_state.form.genre = "");
-          alert("회원가입 성공!");
-          console.log(res);
+      if (!user.name || !user.id || !user.email || !user.password || !user.nickname ) {
+        alert('필수 입력란을 모두 입력해주세요.')
+        state.signup_dialog = true;
+      } else if (!signup_state.form.idCheck){
+        alert('아이디 중복체크를 진행해주세요')
+        state.signup_dialog = true;
+      } else if (!signup_state.form.nicknameCheck) {
+        alert('닉네임 중복체크를 진행해주세요')
+        state.signup_dialog = true;
+      } else {
+        axios({
+          method: "post",
+          url: "http://localhost:8080/api/v1/users/",
+          // url: import.meta.env.VITE_APP_URL + "/api/v1/users/",
+          data: user,
+          // headers: {
+          //   "Content-Type": "application/json; charset=utf-8",
+          // },
         })
-        .catch((err) => {
-          alert(err);
-        });
+          .then((res) => {
+            (signup_state.form.name = ""),
+              (signup_state.form.id = ""),
+              (signup_state.form.email = ""),
+              (signup_state.form.nickname = ""),
+              (signup_state.form.password = ""),
+              (signup_state.form.password_confirm = ""),
+              (signup_state.form.genre = "");
+            alert("회원가입 성공!");
+            console.log(res);
+          })
+          .catch((err) => {
+            alert(err);
+          });
+      }
+
     };
 
     // 로그인
@@ -458,7 +485,7 @@ export default {
             password: login_state.form.password,
             token: state.token,
           });
-          console.log(2222222)
+          // console.log(2222222);
           localStorage.setItem("jwt", res.data.accessToken);
           axios({
             method: "get",
@@ -471,10 +498,13 @@ export default {
               store.dispatch("accountStore/saveNickname", {
                 nickname: res.data.nickname,
               });
-              localStorage.setItem("nickname", res.data.nickname)
+              console.log(3333333);
+              localStorage.setItem("nickname", res.data.nickname);
             })
             .catch((err) => {
               alert(err);
+              login_state.form.id= "";
+              login_state.form.password = "";
             });
           window.location.reload(true);
           // router.push("/");
@@ -483,7 +513,6 @@ export default {
           alert("올바르지않은 아이디 혹은 비밀번호 입니다.");
         });
     };
-
 
     //로그아웃
     const logout = function () {
@@ -504,7 +533,8 @@ export default {
         url: `http://localhost:8080/api/v1/users/id/${signup_state.form.id}`,
       })
         .then((res) => {
-          console.log(res.data.message);
+          // console.log(res.data.message);
+          signup_state.form.idCheck = true
           alert(res.data.message);
         })
         .catch((err) => {
@@ -519,13 +549,13 @@ export default {
         url: `http://localhost:8080/api/v1/users/nickname/${signup_state.form.nickname}`,
       })
         .then((res) => {
-          console.log(res.data.message);
+          // console.log(res.data.message);
+          signup_state.form.nicknameCheck = true
           alert(res.data.message);
         })
         .catch((err) => {
           alert(err.response.data.message);
         });
-      
     };
 
     const clickLogo = function () {
@@ -543,7 +573,26 @@ export default {
     };
 
     onMounted(() => {
-
+      // 로그인 후 닉네임 반환이 잘 안되어서 마운티드에도 한번 더 넣어놓음
+      if (state.token) {
+        axios({
+          method: "get",
+          url: `http://localhost:8080/api/v1/users/me`,
+          headers: {
+            Authorization: `Bearer ${state.token}`,
+          },
+        })
+          .then((res) => {
+            store.dispatch("accountStore/saveNickname", {
+              nickname: res.data.nickname,
+            });
+            console.log(3333333);
+            localStorage.setItem("nickname", res.data.nickname);
+          })
+          .catch((err) => {
+            alert(err);
+          });
+      }
     });
 
     return {
@@ -580,8 +629,8 @@ export default {
 .logo {
   height: 70px;
   width: 140px;
-  margin: 10px;
-  margin-bottom: 16px;
+  /* margin: 10px;
+  margin-bottom: 16px; */
 }
 .inputdata {
   margin-top: 20px;

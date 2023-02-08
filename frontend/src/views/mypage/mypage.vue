@@ -22,7 +22,7 @@
               <!--회원정보 수정-->
               <v-dialog v-model="update_dialog" persistent max-width="600px">
                 <template v-slot:activator="{ on }">
-                  <v-row justify="end" style="margin-right:20px;">  
+                  <v-row justify="end" style="margin-right: 20px">
                     <v-btn
                       class="inline"
                       color="yellow-lighten-5"
@@ -98,6 +98,21 @@
                           @click="nickname_check"
                           >중복 확인</v-btn
                         >
+
+                        <v-col
+                          cols="12"
+                          style="padding-top: 0px; padding-bottom: 5px"
+                        >
+                          <v-text-field
+                            v-model="update_state.form.email"
+                            label="이메일*"
+                            hint="이메일 형식에 맞춰 작성해 주세요"
+                            persistent-hint
+                            :rules="rule.email_rule"
+                            required
+                          ></v-text-field>
+                        </v-col>
+
                         <v-col
                           cols="12"
                           style="padding-top: 0px; padding-bottom: 5px"
@@ -185,9 +200,7 @@
                               <v-btn
                                 color="blue darken-1"
                                 text
-                                @click="
-                                  (confirm_dialog = false), userDelete()
-                                "
+                                @click="(confirm_dialog = false), userDelete()"
                               >
                                 네
                               </v-btn>
@@ -314,7 +327,7 @@ export default {
       id: null,
       password: null,
       nickname: null,
-    })
+    });
 
     const token = localStorage.getItem("jwt");
 
@@ -323,6 +336,7 @@ export default {
       form: {
         name: "",
         id: "",
+        email: "",
         password: "",
         password_confirm: "",
         nickname: "",
@@ -353,6 +367,15 @@ export default {
         (v) =>
           !((v.length <= 1) | (v.length >= 11)) ||
           "닉네임은 2자 이상  10자 이하로 작성해 주세요.",
+      ],
+      email_rule: [
+        (v) => !!v || "이메일을 입력해주세요.",
+        (v) => {
+          const replaceV = v.replace(/(\s*)/g, "");
+          const pattern =
+            /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/;
+          return pattern.test(replaceV) || "이메일 형식으로 입력해주세요";
+        },
       ],
       password_rule: [
         (v) => !!v || "비밀번호는 필수 입력사항 입니다",
@@ -385,6 +408,7 @@ export default {
       const user = {
         name: update_state.form.name,
         id: update_state.form.id,
+        email: update_state.form.email,
         password: update_state.form.password,
         nickname: update_state.form.nickname,
         genre: genre_string,
@@ -399,7 +423,7 @@ export default {
         .then((res) => {
           alert("회원정보 수정 성공!");
           console.log(res);
-          
+
           // store와 localstorage에 수정된 정보 반영
           store.dispatch("accountStore/loginAction", {
             id: update_state.form.id,
@@ -409,7 +433,7 @@ export default {
           store.dispatch("accountStore/saveNickname", {
             nickname: update_state.form.nickname,
           });
-          localStorage.setItem("nickname", update_state.form.nickname)
+          localStorage.setItem("nickname", update_state.form.nickname);
           // console.log(localStorage.getItem("nickname"))
           window.location.reload(true);
         })
@@ -445,7 +469,7 @@ export default {
       // console.log(state.form.id);
 
       // store에서 유저 정보 가져오기
-      const all = computed(() => store.getters['accountStore/getAll']);
+      const all = computed(() => store.getters["accountStore/getAll"]);
       user_info.token = all.value.token;
       user_info.id = all.value.id;
       user_info.password = all.value.password;
@@ -460,6 +484,7 @@ export default {
         },
       })
         .then((res) => {
+          console.log(33333333333)
           console.log(res);
           // 유저 정보 저장
           state.id = res.data.userId;
@@ -471,9 +496,10 @@ export default {
           update_state.form.name = res.data.name;
           update_state.form.id = res.data.userId;
           update_state.form.nickname = res.data.nickname;
+          update_state.form.email = res.data.email;
           update_state.form.password = user_info.password;
           update_state.form.password_confirm = user_info.password;
-          update_state.form.genre = res.data.genre; 
+          update_state.form.genre = res.data.genre;
         })
         .catch((err) => {
           // console.log(token)
