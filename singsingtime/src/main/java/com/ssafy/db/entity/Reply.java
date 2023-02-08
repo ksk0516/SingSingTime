@@ -19,6 +19,8 @@ public class Reply extends BaseEntity {
     @Column(nullable = false)
     private String context;
 
+    private int likeCnt;
+    
     @ManyToOne // 여러 답글 - 한 영상글
     @JoinColumn(name = "videoId")
     private Video video;

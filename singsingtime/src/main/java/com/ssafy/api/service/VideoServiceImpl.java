@@ -1,9 +1,13 @@
 package com.ssafy.api.service;
 
+import com.ssafy.api.request.ReplyCreatePostReq;
+import com.ssafy.api.request.ReplyUpdatePutReq;
 import com.ssafy.api.request.VideoRegisterPostReq;
 import com.ssafy.api.request.VideoUpdatePatchReq;
+import com.ssafy.db.entity.Reply;
 import com.ssafy.db.entity.User;
 import com.ssafy.db.entity.Video;
+import com.ssafy.db.repository.ReplyRepository;
 import com.ssafy.db.repository.UserRepository;
 import com.ssafy.db.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,7 +20,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-
 @Service
 public class VideoServiceImpl implements VideoService{
     @Autowired
@@ -24,6 +27,8 @@ public class VideoServiceImpl implements VideoService{
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private ReplyRepository replyRepository;
     @Override
     public List<Video> getAllVideo() {
         return videoRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
@@ -61,11 +66,47 @@ public class VideoServiceImpl implements VideoService{
         videoRepository.deleteById(videoId);
     }
 
+    @Transactional
     @Override
     public void addLikesCnt(Long videoId) {
         Video video = videoRepository.getVideoById(videoId);
         video.setLikeCnt(video.getLikeCnt() + 1);
-        videoRepository.save(video);
+    }
+
+    @Override
+    public void createReply(String userId, ReplyCreatePostReq replyReq) {
+        Video video = videoRepository.findById(replyReq.getVideoId()).orElseThrow(() -> new NoSuchElementException());
+        User user = userRepository.findByUserId(userId).orElseThrow(() -> new NoSuchElementException());
+        Reply reply = Reply.builder()
+                .user(user)
+                .video(video)
+                .context(replyReq.getContext())
+                .build();
+        replyRepository.save(reply);
+    }
+
+    @Transactional
+    @Override
+    public void updateReply(String userId, ReplyUpdatePutReq replyReq) {
+        Reply reply = replyRepository.findById(replyReq.getReplyId()).orElseThrow(()-> new NoSuchElementException());
+        if(reply.getUser().getUserId().equals(userId)){
+            reply.setContext(replyReq.getContext());
+        }
+    }
+
+    @Override
+    public void deleteReply(String userId, Long replyId) {
+        Reply reply = replyRepository.findById(replyId).orElseThrow(()-> new NoSuchElementException());
+        if(reply.getUser().getUserId().equals(userId)){
+            replyRepository.deleteById(replyId);
+        }
+    }
+
+    @Transactional
+    @Override
+    public void addReplyLikesCnt(Long replyId) {
+        Reply reply = replyRepository.findById(replyId).orElseThrow(()-> new NoSuchElementException());
+        reply.setLikeCnt(reply.getLikeCnt() + 1);
     }
 
     @Autowired
