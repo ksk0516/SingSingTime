@@ -2,7 +2,9 @@ package com.ssafy.api.service;
 
 import com.ssafy.api.request.VideoRegisterPostReq;
 import com.ssafy.api.request.VideoUpdatePatchReq;
+import com.ssafy.db.entity.User;
 import com.ssafy.db.entity.Video;
+import com.ssafy.db.repository.UserRepository;
 import com.ssafy.db.repository.VideoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -12,11 +14,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class VideoServiceImpl implements VideoService{
     @Autowired
     private final VideoRepository videoRepository;
+
+    @Autowired
+    private UserRepository userRepository;
     @Override
     public List<Video> getAllVideo() {
         return videoRepository.findAll(Sort.by(Sort.Direction.DESC, "id"));
@@ -30,7 +37,8 @@ public class VideoServiceImpl implements VideoService{
     @Override
     public void updateVideo(MultipartFile file, VideoUpdatePatchReq videoReq, String userId) throws IOException {
         Video video = videoRepository.getVideoById(videoReq.getVideoId());
-        video.setUserId(userId);
+        Optional<User> user = userRepository.findByUserId(userId);
+        video.setUser(user.orElseThrow(()-> new NoSuchElementException()));
         video.setTitle(videoReq.getTitle());
         video.setDescription(videoReq.getContext());
         if(!file.isEmpty()) {
@@ -50,7 +58,8 @@ public class VideoServiceImpl implements VideoService{
     @Override @Transactional
     public void uploadVideo(MultipartFile file, VideoRegisterPostReq videoReq, String userId) throws IOException {
         Video video = new Video();
-        video.setUserId(userId);
+        Optional<User> user = userRepository.findByUserId(userId);
+        video.setUser(user.orElseThrow(()-> new NoSuchElementException()));
         video.setTitle(videoReq.getTitle());
         video.setDescription(videoReq.getContext());
         if(!file.isEmpty()) {
