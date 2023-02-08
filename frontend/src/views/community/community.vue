@@ -94,9 +94,11 @@
     </v-dialog>
   </v-row>
 
+  <v-btn @click="uploadVideo">비디오 ㅁ디테일</v-btn>
+  <v-btn @click="procy">비디오 디테일</v-btn>
   <ul class="infinite-list" >
     <li
-      v-for="i in video_list"
+      v-for="i in state.content_list"
       class="infinite-list-item"
       @click="clickContent(i)"
       :key="i"
@@ -115,7 +117,7 @@
 
 <script>
 import ContentBox from "./component/content.vue";
-import { reactive, ref } from "vue";
+import { reactive, ref, toRaw } from "vue";
 import { useRouter } from "vue-router";
 import axios from "axios";
 
@@ -148,6 +150,8 @@ export default {
         context: "",
         video: "",
       },
+      content_list : [],
+      // bundle_content : [],
     });
 
     const max_page = parseInt(state.count / 12) + 1;
@@ -171,36 +175,46 @@ export default {
     const community_search_thing = () => {
       state.community_search = false;
     };
-
     const uploadVideo = function () {
-      const info = {
-        id: state.form.id,
-        title: state.form.title,
-        context: state.form.context,
-        video: state.form.video,
-      };
-      console.log(info.video);
-      console.log(111);
       axios({
-        method: "post",
+        method: "get",
         url: "http://localhost:8080/api/v1/videos",
-        data: info,
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${state.token}`,
-        },
       })
-        .then((res) => {
-          alert("비디오 업로드 성공!");
-          console.log(res);
-        })
-        .catch((err) => {
-          console.log("비디오 업로드 실패");
-          console.log(state.form.video);
-          // console.log(state.form.video.proxy);
-          console.log(err);
-        });
+      .then((res) => {
+        alert("비디오 디테일!");
+        // console.log(res)
+        state.content_list = res.data
+        // const count = res.data.length;
+        for(let i=0; i<res.data.lenth; i++) {
+          const content = reactive({
+            title: res.data[i].title,
+            id: res.data[i].id,
+            description: res.data[i].description,
+          })
+          state.content_list.push(content)
+          // console.log(content)
+        }
+        console.log(state.content_list);
+      })
+      .catch((err) => {
+        console.log("비디오 디테일 실패");
+        console.log(state.form.video);
+        // console.log(state.form.video.proxy);
+        console.log(err);
+      });
     };
+    const procy = function(){
+      const bundle_content=toRaw(state.content_list)
+      console.log(bundle_content)
+      // const test = [bundle_content];
+      const test2 = [];
+      for (let i = 0; i< bundle_content.length; i++) {
+        test2.push(bundle_content[i].id);
+      }
+      console.log(typeof test2)
+      return test2;
+    };
+
     const searchfinish = false;
     const searchstart = function () {
       // 검색버튼 눌렀을때 실행
@@ -236,6 +250,7 @@ export default {
       uploadVideo,
       searchstart,
       searchfinish,
+      procy,
     };
   },
   methods: {

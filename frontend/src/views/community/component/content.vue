@@ -15,10 +15,10 @@
                   class="text-h6 text-black d-flex flex-column justify-space-between"
                   style="padding: 0px; height: 100%"
                 >
-                  <p class="song_info" align="start">비 - 폴킴</p>
+                  <p class="song_info" align="start">{{ item.title }}</p>
                   <div class="d-flex justify-space-between info_box">
-                    <div class="champion_info">챔피온 : 광주김범수</div>
-                    <div class="view_info">1,809 View</div>
+                    <div class="champion_info">{{ item.title }}</div>
+                    <div class="view_info">광주김</div>
                   </div>
                 </v-card-title>
               </v-img>
