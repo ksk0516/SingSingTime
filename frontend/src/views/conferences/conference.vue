@@ -51,16 +51,10 @@
           <div></div>
         </div>
         <div class="smallboxl">
-          <!-- <user-video
+          <user-video
             :stream-manager="publisher"
             @click.native="updateMainVideoStreamManager(publisher)"
-          /> -->
-          <user-video
-          v-for="sub in subscribers"
-          :key="sub.stream.connection.connectionId"
-          :stream-manager="sub"
-          @click.native="updateMainVideoStreamManager(sub)"
-        />
+          />
         </div>
         <div class="musicbox">
           <SongDetail v-if="!this.selectedVideo" :session="session" />
@@ -108,7 +102,7 @@ props:{
     return {
       items: [
         {
-          icon: '별이될께-디셈버123',
+          icon: '별이될께-디셈버',
           text: 'JwH89XpCrnI',
         },
         {
