@@ -257,7 +257,7 @@ export default {
         console.log(state.searchkeyword);
         axios({
           method: "POST",
-          url: `http://localhost:8080/api/v1/videos/search/${state.searchkeyword}`,
+          url: import.meta.env.VITE_APP_URL+`/api/v1/videos/search/${state.searchkeyword}`,
         })
           .then((res) => {
             console.log(res);
@@ -265,7 +265,7 @@ export default {
             searchcnt = contentlist[Object.keys(contentlist).length - 1].cnt;
             contentlist.pop();
             alert("검색완료!");
-            searchfinish = true;
+            // searchfinish = true;
             state.searchkeyword = "";
           })
           .catch((err) => {
@@ -276,7 +276,7 @@ export default {
     onMounted(() => {
       axios({
         method: "get",
-        url: "http://localhost:8080/api/v1/videos",
+        url: import.meta.env.VITE_APP_URL+"/api/v1/videos",
 
       })
         .then((res) => {
@@ -338,7 +338,7 @@ export default {
   
         axios({
           method: "post",
-          url: "http://localhost:8080/api/v1/videos",
+          url: import.meta.env.VITE_APP_URL+"/api/v1/videos",
           data: formData,
           headers: {
             "Content-Type": "multipart/form-data",
