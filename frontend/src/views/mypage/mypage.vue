@@ -237,7 +237,11 @@
           <h2 style="text-align: left">
             <b>My Playlist</b><v-icon>mdi-music</v-icon>
           </h2>
-          <v-dialog v-model="state.playlist_dialog" persistent max-width="600px">
+          <v-dialog
+            v-model="state.playlist_dialog"
+            persistent
+            max-width="600px"
+          >
             <template v-slot:activator="{ on }">
               <v-btn
                 class="inline"
@@ -259,11 +263,11 @@
               <v-card-text>
                 <v-container>
                   <v-row>
-                    <v-col >
+                    <v-col style="padding: 0px">
                       <v-text-field
                         label="키워드"
+                        class="keyword"
                         v-model="state.keyword"
-                        @keyup.enter="state.playlist_dialog = false"
                       ></v-text-field>
                     </v-col>
                   </v-row>
@@ -272,16 +276,25 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" text @click="state.playlist_dialog = false">
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  @click="state.playlist_dialog = false"
+                >
                   Close
                 </v-btn>
-                <v-btn color="blue darken-1" text @click="state.playlist_dialog = false">
+                <v-btn
+                  color="blue darken-1"
+                  text
+                  @click="(state.playlist_dialog = false), addMyPlaylist()"
+                >
                   Save
                 </v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
         </v-row>
+        <myplaylistBox />
       </v-col>
     </v-row>
     <br />
@@ -308,11 +321,13 @@ import { useStore } from "vuex";
 import { useRouter } from "vue-router";
 import { reactive } from "vue";
 import playlistBox from "./component/playlistBox.vue";
+import myplaylistBox from "./component/myplaylistBox.vue";
 
 export default {
   name: "MypageBox",
   components: {
     playlistBox,
+    myplaylistBox,
   },
   data: () => ({
     confirm_dialog: false,
@@ -431,7 +446,7 @@ export default {
 
       axios({
         method: "put",
-        url: `http://localhost:8080/api/v1/users/${state.id}`,
+        url: import.meta.env.VITE_APP_URL + "/api/v1/users/my-page",
         // url: import.meta.env.VITE_APP_URL + "/api/v1/users/",
         data: user,
       })
@@ -462,7 +477,8 @@ export default {
     const userDelete = function () {
       axios({
         method: "delete",
-        url: `http://localhost:8080/api/v1/users/${state.id}`,
+        url: import.meta.env.VITE_APP_URL + "/api/v1/users/my-page",
+        // url : `http://localhost:8080/api/v1/users/${state.id}`
         // url: import.meta.env.VITE_APP_URL + "/api/v1/users/",
       })
         .then((res) => {
@@ -480,6 +496,35 @@ export default {
         });
     };
 
+    const playlist = computed(() => store.getters["playlistStore/getPickList"]);
+    const addMyPlaylist = function () {
+      console.log("================================================");
+      console.log(playlist.value);
+      const valueLength = playlist.value.length;
+      for (let i = 0; i < valueLength; i++) {
+        const addSong = {
+          songId: playlist.value[i],
+        };
+        console.log(playlist.value[i]);
+        axios({
+          method: "post",
+          // url: import.meta.env.VITE_APP_URL + "/api/v1/users/songs",
+          url: import.meta.env.VITE_APP_URL + "/api/v1/users/my-page/songs",
+          headers: {
+            Authorization: `Bearer ${user_info.token}`,
+          },
+          data: addSong,
+        })
+          .then((res) => {
+            console.log(res);
+          })
+          .catch((err) => {
+            console.log(err);
+            console.log(addSong);
+          });
+      }
+    };
+
     onMounted(() => {
       // console.log(state.form.id);
 
@@ -493,7 +538,8 @@ export default {
       const token = localStorage.getItem("jwt");
       axios({
         method: "get",
-        url: import.meta.env.VITE_APP_URL + "/api/v1/users/me",
+        url: import.meta.env.VITE_APP_URL + "/api/v1/users/my-page",
+        // url : "http://localhost:8080/api/v1/users/me",
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -538,6 +584,8 @@ export default {
       rule,
       update,
       userDelete,
+      playlist,
+      addMyPlaylist,
     };
   },
 };

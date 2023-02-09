@@ -1,15 +1,17 @@
 <template>
   <v-row justify="sapce-between">
-    <v-col align="start">제목</v-col>
-    <v-col align="end">가수</v-col>
+    <v-col align="start" class="header_info"><h4>제목</h4></v-col>
+    <v-col align="center" class="header_info"><h4>가수</h4></v-col>
+    <v-col align="end" class="header_info"><h4>추가</h4></v-col>
+  </v-row >
+  <v-row >
+    <ul style="margin-top:5px;">
+      <p v-for="song in state.songs" :key="song">
+        <songInfo :song="song" />
+        <hr>
+      </p>
+    </ul>
   </v-row>
-  <ul>
-    <li
-      v-for="song in state.songs"
-      :key="song"
-      <songInfo :song="song"/>
-    ></li>
-  </ul>
 </template>
 
 <script>
@@ -32,10 +34,12 @@ export default {
       songs: [],
     });
     onMounted(() => {
+      console.log(3333333)
       axios({
         method: "get",
-        url: import.meta.env.VITE_APP_URL + "/api/v1/users/songs",
+        // url: "http://localhost:8080/api/v1/users/songs",
         // url: import.meta.env.VITE_APP_URL + "/api/v1/users/",
+        url: import.meta.env.VITE_APP_URL+"/api/v1/users/songs",
       })
         .then((res) => {
           console.log(res.data);
@@ -46,7 +50,7 @@ export default {
           console.log(err);
         });
     });
-    // 사이트에 등록된 전체 노래 조회
+
     return {
       state,
     };
@@ -55,4 +59,11 @@ export default {
 </script>
 
 <style>
+.header_info {
+  padding-top:0px;
+  padding-bottom: 0px;
+  margin-bottom:5px;
+  background-color:aliceblue;
+  color:black;
+}
 </style>
