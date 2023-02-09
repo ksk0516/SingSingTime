@@ -1,31 +1,28 @@
 package com.ssafy.api.service;
 
-<<<<<<< HEAD
 import com.ssafy.api.request.PlayroomCreateReq;
 import com.ssafy.api.request.PlayroomStatusReq;
 import com.ssafy.api.response.PlayroomStatusRes;
 import com.ssafy.db.entity.Playroom;
 import com.ssafy.db.entity.Song;
-=======
-import com.ssafy.db.entity.Playroom;
->>>>>>> b399807521a7873f01c59efd04bdc58eda160b08
+import com.ssafy.db.entity.User;
 
 import java.util.List;
+import java.util.Map;
 
 public interface PlayroomService {
     public List<Playroom> getPlayroom();
     public List<Playroom> getPlayroomByTitle(String keyword);
-<<<<<<< HEAD
 
-    public List<Song> getChampionSongList(int sessionId);
+    public List<Song> getChampionSongList(String sessionId);
 
-    public void createRoom(PlayroomCreateReq playroomCreateReq);
+//    public void createRoom(PlayroomCreateReq playroomCreateReq);
 
     void startSong(PlayroomStatusReq playroomStatusReq);
 
     public PlayroomStatusRes endSong(PlayroomStatusReq playroomStatusReq);
-}
 
-=======
+    int checkPlayRoom(Map<String, Object> params);
+
+    void createPlayRoom(Map<String, Object> params, User user);
 }
->>>>>>> b399807521a7873f01c59efd04bdc58eda160b08
