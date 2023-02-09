@@ -2139,3 +2139,13 @@ java.sql.SQLException: Incorrect string value: '\xEC\x86\xA1\xEC\x86\xA1...' for
 2023-02-09 16:05:04.658 DEBUG 5604 --- [http-nio-127.0.0.1-8080-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json, application/json, application/*+json, application/cbor]
 2023-02-09 16:05:04.673 DEBUG 5604 --- [http-nio-127.0.0.1-8080-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[Video(title=fff, description=xxx, url=https://sstvideo.s3.ap-northeast-2.amazonaws.com/images/seonk (truncated)...]
 2023-02-09 16:05:04.677 DEBUG 5604 --- [http-nio-127.0.0.1-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2023-02-09 16:09:41.379 DEBUG 5604 --- [http-nio-127.0.0.1-8080-exec-10] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/users/my-page", parameters={}
+2023-02-09 16:09:41.380 DEBUG 5604 --- [http-nio-127.0.0.1-8080-exec-10] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.ssafy.api.controller.UserController#getUserInfo(Authentication)
+2023-02-09 16:09:41.381 DEBUG 5604 --- [http-nio-127.0.0.1-8080-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json, application/json, application/*+json, application/cbor]
+2023-02-09 16:09:41.382 DEBUG 5604 --- [http-nio-127.0.0.1-8080-exec-10] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [com.ssafy.api.response.UserRes@535db529]
+2023-02-09 16:09:41.383 DEBUG 5604 --- [http-nio-127.0.0.1-8080-exec-10] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
+2023-02-09 16:09:41.384 DEBUG 5604 --- [http-nio-127.0.0.1-8080-exec-1] o.s.web.servlet.DispatcherServlet        : GET "/api/v1/videos/daily-video", parameters={}
+2023-02-09 16:09:41.385 DEBUG 5604 --- [http-nio-127.0.0.1-8080-exec-1] s.w.s.m.m.a.RequestMappingHandlerMapping : Mapped to com.ssafy.api.controller.VideoController#getDailyVideo()
+2023-02-09 16:09:41.386 DEBUG 5604 --- [http-nio-127.0.0.1-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Using 'application/json', given [application/json, text/plain, */*] and supported [application/json, application/*+json, application/json, application/*+json, application/cbor]
+2023-02-09 16:09:41.391 DEBUG 5604 --- [http-nio-127.0.0.1-8080-exec-1] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[Video(title=fff, description=xxx, url=https://sstvideo.s3.ap-northeast-2.amazonaws.com/images/seonk (truncated)...]
+2023-02-09 16:09:41.392 DEBUG 5604 --- [http-nio-127.0.0.1-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
