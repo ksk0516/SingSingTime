@@ -1,7 +1,6 @@
 <template>
   <div id="main-container" class="container">
     <div style="color:white; display: flex; justify-content: space-between;">
-      <Chatting/>
       <div style="margin-left: 50%;">
         <h1>{{ this.mySessionId }}</h1>
       </div>
@@ -9,7 +8,7 @@
         <input
         class="btn btn-large btn-danger"
         type="button"
-        @click="show"
+        @click="isShow"
         value="노래"
         />
         <input
@@ -88,7 +87,6 @@ import { ref } from "vue";
 import { mapGetters } from "vuex";
 import Modal from "./components/Modal.vue";
 import SongDetail from "./components/SongDetail.vue";
-import Chatting from "./Chatting.vue";
 
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
@@ -102,17 +100,15 @@ export default {
     UserVideo,
     Modal,
     SongDetail,
-    Chatting,
   },
 props:{
   id:"",
-  session: Object,
 },
   data() {
     return {
       items: [
         {
-          icon: '별이될께-디셈버',
+          icon: '별이될께-디셈버123',
           text: 'JwH89XpCrnI',
         },
         {
@@ -148,7 +144,7 @@ props:{
       videos: [],
       selectedVideo: "", // 선택한 비디오를 SongDetail.vue 로 보내고, 출력
       selectvideo: "",
-      show: false,
+      showValue: false,
       dialog: false,
       // OpenVidu objects
       OV: undefined,
@@ -194,7 +190,7 @@ props:{
     onInputSearch: function (inputText) {
       console.log("데이터가 Search로부터 올라왔다.");
 
-      this.show = true;
+      this.showValue = true;
       console.log(inputText);
       this.inputValue = inputText;
       // part(필수), key(필수), q(검색어), type(video만) 매개 변수를 요청에 넣어서 보냄
@@ -375,7 +371,7 @@ props:{
     const baseModal = ref(null);
     // Promise 객체를 핸들링하기 위한 ref
     const resolvePromise = ref(null);
-    const show = () => {
+    const isShow = () => {
       // baseModal을 직접 컨트롤합니다.
       baseModal.value.open();
       // Promise 객체를 사용하여, 현재 모달에서 확인 / 취소의
@@ -391,18 +387,18 @@ props:{
     const confirm = () => {
       baseModal.value.close();
       resolvePromise.value(true);
-      const url = "#/conferences/" + state.conferencename + "/";
+      const url = "#/conferences/" + this.store.state.conferencename + "/";
       window.open(url);
-      state.conferencename = "";
+      this.store.state.conferencename = "";
     };
 
     const cancel = () => {
       baseModal.value.close();
       resolvePromise.value(false);
-      state.conferencename = "";
+      this.store.state.conferencename = "";
     };
     // async-await을 사용하여, Modal로부터 응답을 기다리게 된다.
-    return { baseModal, show, confirm, cancel, afterselect };
+    return { baseModal, isShow, confirm, cancel, afterselect };
   },
 };
 </script>
