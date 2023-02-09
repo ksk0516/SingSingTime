@@ -21,7 +21,7 @@ public interface VideoService {
 
     Video getDetailVideo(Long videoId);
 
-    void deleteVideo(Long videoId);
+    void deleteVideo(Long videoId, String userId);
 
     void addLikesCnt(Long videoId);
 
@@ -32,4 +32,10 @@ public interface VideoService {
     void deleteReply(String userId, Long replyId);
 
     void addReplyLikesCnt(Long replyId);
+
+    List<Video> getMyVideo(Long id);
+
+    List<Video> getDailyVideo();
+
+    List<Video> getWeeklyVideo();
 }

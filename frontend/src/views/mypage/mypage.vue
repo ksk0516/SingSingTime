@@ -245,10 +245,7 @@
                 class="plus"
                 @click="add_dialog = true"
               >
-<<<<<<< HEAD
                 +
-=======
->>>>>>> 49a0c0223d88138047923057fcdc21b2cc2344b3
               </v-btn>
             </template>
             <v-card>
@@ -321,10 +318,7 @@ export default {
       nickname: "",
       championCnt: "",
       userRank: "",
-<<<<<<< HEAD
       user_dialog: false,
-=======
->>>>>>> 49a0c0223d88138047923057fcdc21b2cc2344b3
     });
 
     // store 연결해서 가져온 유저 데이터
@@ -422,7 +416,7 @@ export default {
 
       axios({
         method: "put",
-        url: `http://localhost:8080/api/v1/users/${state.id}`,
+        url: import.meta.env.VITE_APP_URL + `/api/v1/users/${state.id}`,
         // url: import.meta.env.VITE_APP_URL + "/api/v1/users/",
         data: user,
       })
@@ -453,7 +447,7 @@ export default {
     const userDelete = function () {
       axios({
         method: "delete",
-        url: `http://localhost:8080/api/v1/users/${state.id}`,
+        url: import.meta.env.VITE_APP_URL + `/api/v1/users/${state.id}`,
         // url: import.meta.env.VITE_APP_URL + "/api/v1/users/",
       })
         .then((res) => {
@@ -484,7 +478,7 @@ export default {
       const token = localStorage.getItem("jwt");
       axios({
         method: "get",
-        url: `http://localhost:8080/api/v1/users/me`,
+        url: `https://i8c105.p.ssafy.io/api/v1/users/me`,
         headers: {
           Authorization: `Bearer ${token}`,
         },

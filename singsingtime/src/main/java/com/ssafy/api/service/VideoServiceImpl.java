@@ -61,9 +61,13 @@ public class VideoServiceImpl implements VideoService{
         return video;
     }
 
+    @Transactional
     @Override
-    public void deleteVideo(Long videoId) {
-        videoRepository.deleteById(videoId);
+    public void deleteVideo(Long videoId, String userId) {
+        Video video = videoRepository.findById(videoId).orElseThrow(()-> new NoSuchElementException());
+        if(video.getUser().getUserId().equals(userId)){
+            videoRepository.deleteById(videoId);
+        }
     }
 
     @Transactional
@@ -84,7 +88,6 @@ public class VideoServiceImpl implements VideoService{
                 .build();
         replyRepository.save(reply);
     }
-
     @Transactional
     @Override
     public void updateReply(String userId, ReplyUpdatePutReq replyReq) {
@@ -93,7 +96,7 @@ public class VideoServiceImpl implements VideoService{
             reply.setContext(replyReq.getContext());
         }
     }
-
+    @Transactional
     @Override
     public void deleteReply(String userId, Long replyId) {
         Reply reply = replyRepository.findById(replyId).orElseThrow(()-> new NoSuchElementException());
@@ -107,6 +110,24 @@ public class VideoServiceImpl implements VideoService{
     public void addReplyLikesCnt(Long replyId) {
         Reply reply = replyRepository.findById(replyId).orElseThrow(()-> new NoSuchElementException());
         reply.setLikeCnt(reply.getLikeCnt() + 1);
+    }
+
+    @Override
+    public List<Video> getMyVideo(Long id) {
+        List<Video> myVideoList = videoRepository.findAllById(id);
+        return myVideoList;
+    }
+
+    @Override
+    public List<Video> getDailyVideo() {
+        List<Video> dailyVideoList = videoRepository.getDailyVideo();
+        return dailyVideoList;
+    }
+
+    @Override
+    public List<Video> getWeeklyVideo() {
+        List<Video> weeklyVideoList = videoRepository.getWeeklyVideo();
+        return weeklyVideoList;
     }
 
     @Autowired
