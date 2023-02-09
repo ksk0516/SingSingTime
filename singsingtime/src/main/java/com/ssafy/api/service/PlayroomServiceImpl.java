@@ -1,4 +1,5 @@
 package com.ssafy.api.service;
+<<<<<<< HEAD
 import com.ssafy.api.request.PlayroomCreateReq;
 import com.ssafy.api.request.PlayroomStatusReq;
 import com.ssafy.api.response.PlayroomStatusRes;
@@ -14,6 +15,15 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
+=======
+
+import com.ssafy.db.entity.Playroom;
+import com.ssafy.db.repository.PlayroomRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.List;
+>>>>>>> b399807521a7873f01c59efd04bdc58eda160b08
 
 @Service
 @RequiredArgsConstructor
@@ -21,9 +31,12 @@ public class PlayroomServiceImpl implements PlayroomService{
 
     private final PlayroomRepository playroomRepository;
 
+<<<<<<< HEAD
     private final UserSongRepository userSongRepository;
     private final UserRepository userRepository;
 
+=======
+>>>>>>> b399807521a7873f01c59efd04bdc58eda160b08
     @Override
     public List<Playroom> getPlayroom() {
         List<Playroom> list = playroomRepository.findAll();
@@ -35,6 +48,7 @@ public class PlayroomServiceImpl implements PlayroomService{
         List<Playroom> list = playroomRepository.findByTitle(keyword);
         return list;
     }
+<<<<<<< HEAD
 
     @Override
     public List<Song> getChampionSongList(int sessionId) {
@@ -109,3 +123,6 @@ public class PlayroomServiceImpl implements PlayroomService{
 
 }
 
+=======
+}
+>>>>>>> b399807521a7873f01c59efd04bdc58eda160b08
