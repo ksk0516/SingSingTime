@@ -336,7 +336,7 @@ props:{
       .catch((err) => {
             alert(err);
           });
-    }
+    },
     /**
      * --------------------------------------------
      * GETTING A TOKEN FROM YOUR APPLICATION SERVER
