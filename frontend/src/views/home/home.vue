@@ -11,14 +11,14 @@
         class="infinite-list-item"
         :key="playroom.title"
       >
-        <conference />
+        <conference :playroom="playroom"/>
         <div class="roominfo">
           <p>방 제목 : {{ playroom.title }}</p>
           <p>인원수 : {{ playroom.userCnt }}/{{ 6 }}</p>
           <p>챔피언 : {{ playroom.champion }}</p>
         </div>
       </li>
-    </ul>너 팀
+    </ul>
   </div>
 </template>
 <style>
