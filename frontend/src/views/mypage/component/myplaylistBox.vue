@@ -2,7 +2,6 @@
   <v-row justify="sapce-between">
     <v-col align="start"><h4>제목</h4></v-col>
     <v-col align="center"><h4>가수</h4></v-col>
-    <v-col align="end"><h4>삭제</h4></v-col>
   </v-row>
   <ul style="margin-top:5px;">
     <p v-for="mysong in state.mysongs" :key="mysong">
@@ -16,6 +15,7 @@
 import axios from "axios";
 import { onMounted, reactive } from "vue";
 import mysongInfo from './mysongInfo.vue'
+
 
 export default {
   name: "myplaylistBox",
