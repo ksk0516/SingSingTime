@@ -65,10 +65,9 @@
         <div class="smallboxl">
           <!--스몰박스 left, 노래화면 왼쪽. 여기에 스트림매니저로 챔피언을 넘겨줘야함-->
           <v-card color="primary">챔피언</v-card>
-
           <user-video
-            :stream-manager="publisher"
-            @click.native="updateMainVideoStreamManager(publisher)"
+            :stream-manager="championStreamManager"
+            @click.native="updateMainVideoStreamManager(championStreamManager)"
           />
         </div>
         <v-btn>투표</v-btn>
@@ -91,19 +90,31 @@
           <!--스몰박스 right, 노래화면 오른쪽, 여기에 챌린져가 들어가야 함-->
           <v-card color="secondary">도전자</v-card>
           <user-video
-            :stream-manager="publisher"
-            @click.native="updateMainVideoStreamManager(publisher)"
+            :stream-manager="challengerStreamManager"
+            @click.native="
+              updateMainVideoStreamManager(challengerStreamManager)
+            "
           />
         </div>
       </div>
     </div>
 
+    <input
+      class="btn btn-large btn-danger"
+      type="button"
+      @click="challenge(myUserId)"
+      value="대결 신청"
+    />
     <!-- 관중들 들어갈 자리 -->
     <v-card class="audiences" color="success" style="width: 200px"
       >관람객</v-card
     >
     <div class="smallboxb">
       <!--스몰박스 right, 노래화면 오른쪽-->
+      <user-video
+        :stream-manager="publisher"
+        @click.native="updateMainVideoStreamManager(publisher)"
+      />
       <user-video
         v-for="sub in subscribers"
         :key="sub.stream.connection.connectionId"
@@ -118,8 +129,8 @@
 import axios from "axios";
 import { OpenVidu } from "openvidu-browser";
 import UserVideo from "./components/UserVideo.vue";
-import { ref } from "vue";
-import { mapGetters } from "vuex";
+import { ref, computed, toRaw } from "vue";
+import { mapGetters, useStore } from "vuex";
 import Modal from "./components/Modal.vue";
 import SongDetail from "./components/SongDetail.vue";
 import ReadyDetail from "./components/ReadyDetail.vue";
@@ -141,40 +152,6 @@ export default {
   },
   data() {
     return {
-      items: [
-        {
-          icon: "별이될께-디셈버",
-          text: "JwH89XpCrnI",
-        },
-        {
-          icon: "출발-김동률",
-          text: "N1B3jJzmdmM",
-        },
-        {
-          icon: "어제보다 오늘 더-김종국",
-          text: "ICwHBPum4QY",
-        },
-        {
-          icon: "heartshaker-twice",
-          text: "LPwUWNfMXJM",
-        },
-        {
-          icon: "홍연-안예은",
-          text: "dxQm3HKwaYA",
-        },
-        {
-          icon: "그대를 사랑하는 10가지 이유-이석훈",
-          text: "VSs38DHeRPc",
-        },
-        {
-          icon: "라라라-sg워너비",
-          text: "IExTwnAf1Zo",
-        },
-        {
-          icon: "내사람-sg워너비",
-          text: "hjIP6Tue8aI",
-        },
-      ],
       inputValue: "",
       videos: [],
       selectedVideo: "", // 선택한 비디오를 SongDetail.vue 로 보내고, 출력
@@ -190,12 +167,18 @@ export default {
       // Join form
       mySessionId: this.$route.params.Id,
       myUserName: localStorage.getItem("nickname"),
+      myUserId: localStorage.getItem("userId"),
       token: null, // jwt토큰, 오픈비두 세션 접속용 getToken 파라미터랑 다름, this.token으로 구분
       sessionInfo: null,
       champion: "",
       championSongList: [],
       readyVideo: false,
       ready: false,
+      challenger: "",
+      waitingQueue: [],
+      allUsers: [],
+      championStreamManager: undefined,
+      challengerStreamManager: undefined,
     };
   },
   computed: {
@@ -205,13 +188,17 @@ export default {
     sessionId() {
       return this.$route.params.Id;
     },
+
+    ...mapGetters({
+      userInfo: "accountStore/getAll",
+    }),
+
     ...mapGetters(["video"]),
   },
   created() {
     // console.log(playroom+"그냥");
     this.joinSession();
     this.getname();
-    this.getSessionInfo();
     console.log("====================================================");
     console.log(this.subscribers);
   },
@@ -317,7 +304,16 @@ export default {
       // On every new Stream received...
       this.session.on("streamCreated", ({ stream }) => {
         const subscriber = this.session.subscribe(stream);
+
+        // const all = computed(() => this.$store.getters["accountStore/getAll"]);
+        // const all = this.userInfo;
+        // console.log("aaaaaaaaaaaaaaaa222");
+        // console.log(all.id);
+
+        // console.log("aaaaaaaaaaaaaaaa");
+        console.log(subscriber);
         this.subscribers.push(subscriber);
+        this.allUsers.push(subscriber);
       });
 
       // On every Stream destroyed...
@@ -343,13 +339,17 @@ export default {
         // First param is the token. Second param can be retrieved by every user on event
         // 'streamCreated' (property Stream.connection.data), and will be appended to DOM as the user's nickname
         this.session
-          .connect(token, { clientData: this.myUserName })
+          .connect(token, {
+            clientId: this.myUserId,
+            clientNickname: this.myUserName,
+          })
           .then(() => {
             // --- 5) Get your own camera stream with the desired properties ---
 
             // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
             // element: we will manage it on our own) and with the desired properties
             let publisher = this.OV.initPublisher(undefined, {
+              userId: "1",
               audioSource: undefined, // The source of audio. If undefined default microphone
               videoSource: undefined, // The source of video. If undefined default webcam
               publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
@@ -362,11 +362,14 @@ export default {
 
             // Set the main video in the page to display our webcam and store our Publisher
             this.mainStreamManager = publisher;
+            this.allUsers.push(publisher);
             this.publisher = publisher;
 
             // --- 6) Publish your stream ---
 
             this.session.publish(this.publisher);
+
+            this.getSessionInfo();
           })
           .catch((error) => {
             console.log(
@@ -413,6 +416,20 @@ export default {
           this.sessionInfo = res.data;
           this.champion = res.data.champion;
           this.getChampionList();
+          console.log("hhhhhhhhhhhh");
+          // console.log(toRaw(this.allUsers).length);
+          // console.log(this.champion);
+          for (let user of this.allUsers) {
+            // console.log("ttttttttt");
+
+            console.log(user.stream.connection.data);
+            if (
+              JSON.parse(user.stream.connection.data).clientId == this.champion
+            ) {
+              this.championStreamManager = user;
+              // console.log(this.championStreamManager);
+            }
+          }
         })
         .catch((err) => {
           alert(err);
@@ -432,6 +449,44 @@ export default {
         .catch((err) => {
           alert(err);
         });
+    },
+
+    challenge(myUserId) {
+      if (this.challenger == "") {
+        this.challenger = myUserId;
+        // console.log("Hihihihi");
+        // console.log(this.allUsers);
+        for (let user of this.allUsers) {
+          if (
+            JSON.parse(user.stream.connection.data).clientId == this.challenger
+          ) {
+            this.challengerStreamManager = user;
+            console.log(this.challengerStreamManager);
+          }
+        }
+        console.log(this.challenger);
+        return;
+      }
+      if (this.challenger == myUserId) {
+        alert("이미 도전자입니다.");
+        return;
+      }
+      for (let userId of this.waitingQueue) {
+        if (userId === myUserId) {
+          alert("이미 신청하셨습니다!!");
+          return;
+        }
+      }
+      enqueue(myUserId);
+      console.log(111111113231232131);
+      console.log(this.waitingQueue);
+
+      const enqueue = (data) => {
+        if (this.waitingQueue) this.waitingQueue.push(data);
+      };
+      const dequeue = () => {
+        return this.waitingQueue.shift();
+      };
     },
     /**
      * --------------------------------------------
@@ -486,6 +541,7 @@ export default {
   },
   setup() {
     // 자식 컴포넌트를 핸들링하기 위한 ref
+    const store = useStore();
     const baseModal = ref(null);
     // Promise 객체를 핸들링하기 위한 ref
     const resolvePromise = ref(null);
@@ -516,7 +572,7 @@ export default {
       this.store.state.conferencename = "";
     };
     // async-await을 사용하여, Modal로부터 응답을 기다리게 된다.
-    return { baseModal, isShow, confirm, cancel, afterselect };
+    return { baseModal, isShow, confirm, cancel, afterselect, store };
   },
 };
 </script>
