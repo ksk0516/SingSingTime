@@ -301,6 +301,13 @@ export default {
 
       // --- 3) Specify the actions when events take place in the session ---
 
+      // 도전 이벤트 발생했을 때
+      this.session.on("signal:challenge", (event) => {
+        console.log("challenge!!!!!!!!!!!!!!!!!!!");
+        console.log(event.target);
+        this.challengerStreamManager = event.target;
+      });
+
       // On every new Stream received...
       this.session.on("streamCreated", ({ stream }) => {
         const subscriber = this.session.subscribe(stream);
@@ -311,7 +318,6 @@ export default {
         // console.log(all.id);
 
         // console.log("aaaaaaaaaaaaaaaa");
-        console.log(subscriber);
         this.subscribers.push(subscriber);
         this.allUsers.push(subscriber);
       });
@@ -349,7 +355,6 @@ export default {
             // Init a publisher passing undefined as targetElement (we don't want OpenVidu to insert a video
             // element: we will manage it on our own) and with the desired properties
             let publisher = this.OV.initPublisher(undefined, {
-              userId: "1",
               audioSource: undefined, // The source of audio. If undefined default microphone
               videoSource: undefined, // The source of video. If undefined default webcam
               publishAudio: true, // Whether you want to start publishing with your audio unmuted or not
@@ -461,7 +466,22 @@ export default {
             JSON.parse(user.stream.connection.data).clientId == this.challenger
           ) {
             this.challengerStreamManager = user;
+            console.log("sssssssssssssss");
             console.log(this.challengerStreamManager);
+            console.log(this.publisher);
+
+            this.session
+              .signal({
+                data: this.publsiher,
+                type: "challenge",
+              })
+              .then(() => {
+                console.log("도전 시그널 전송");
+              })
+              .catch((err) => {
+                console.log(err);
+                console.log("도전 전송 에러");
+              });
           }
         }
         console.log(this.challenger);
