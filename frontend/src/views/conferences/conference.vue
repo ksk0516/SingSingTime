@@ -31,12 +31,25 @@
             </h3>
             <h1>노래목록</h1>
             <hr />
-            <v-list-item-group v-model="model">
+            <!-- <v-list-item-group v-model="model">
               <v-list-item
-                v-for="item in items"
+                v-for="championSong in championSongList"
                 @click="afterselect(), onSelectVideo(item)"
               >
                 <v-list-item-title v-text="item.icon"></v-list-item-title>
+              </v-list-item>
+            </v-list-item-group> -->
+
+            <v-list-item-group v-model="model">
+              <v-list-item
+                v-for="championSong in championSongList"
+                @click="onSelectSong(championSong), afterselect()"
+                :key="championSong.title"
+              >
+                <v-list-item-title
+                  >{{ championSong.title }}
+                  {{ championSong.singer }}</v-list-item-title
+                >
               </v-list-item>
             </v-list-item-group>
           </v-list>
@@ -51,6 +64,8 @@
 
         <div class="smallboxl">
           <!--스몰박스 left, 노래화면 왼쪽. 여기에 스트림매니저로 챔피언을 넘겨줘야함-->
+          <v-card color="primary">챔피언</v-card>
+
           <user-video
             :stream-manager="publisher"
             @click.native="updateMainVideoStreamManager(publisher)"
@@ -64,7 +79,6 @@
 
         <!--스몰박스 right, 노래화면 오른쪽, 여기에 챌린져가 들어가야 함-->
         <!-- <div class="smallboxr"> 
-          <user-video
             <user-video
             :stream-manager="challenger" 
             @click.native="updateMainVideoStreamManager(challenger)"
@@ -74,7 +88,8 @@
 
         <!--비디오 위치 테스트용으로 퍼블리셔 넣어놓음 -->
         <div class="smallboxr">
-          <!--스몰박스 left, 노래화면 왼쪽. 여기에 스트림매니저로 챔피언을 넘겨줘야함-->
+          <!--스몰박스 right, 노래화면 오른쪽, 여기에 챌린져가 들어가야 함-->
+          <v-card color="secondary">도전자</v-card>
           <user-video
             :stream-manager="publisher"
             @click.native="updateMainVideoStreamManager(publisher)"
@@ -84,6 +99,9 @@
     </div>
 
     <!-- 관중들 들어갈 자리 -->
+    <v-card class="audiences" color="success" style="width: 200px"
+      >관람객</v-card
+    >
     <div class="smallboxb">
       <!--스몰박스 right, 노래화면 오른쪽-->
       <user-video
@@ -225,7 +243,7 @@ export default {
       console.log(this.readyVideo);
       this.session
         .signal({
-          data: JSON.stringify(video.text),
+          data: JSON.stringify(championSong.title),
           type: "song",
         })
         .then(() => {
@@ -238,6 +256,23 @@ export default {
         });
       console.log(this.$store.state.video);
     },
+    // onSelectVideo: function (video) {
+    //   this.session
+    //     .signal({
+    //       data: JSON.stringify(video.text),
+    //       type: "song",
+    //     })
+    //     .then(() => {
+    //       console.log("노래방 시그널 전송");
+    //       this.readyVideo = true;
+    //       // console.log(video.id.videoId)
+    //     })
+    //     .catch((err) => {
+    //       console.log(err);
+    //       console.log("전송 에러");
+    //     });
+    //   console.log(this.$store.state.video);
+    // },
     onInputSearch: function (inputText) {
       console.log("데이터가 Search로부터 올라왔다.");
 
@@ -403,10 +438,11 @@ export default {
         method: "get",
         url:
           import.meta.env.VITE_APP_URL +
-          `/api/v1/playrooms/playlist/${this.champion}`,
+          `/api/v1/playrooms/playlist/${this.mySessionId}`,
       })
         .then((res) => {
-          this.championSongList = res.data.songs;
+          this.championSongList = res.data;
+          console.log(res.data);
         })
         .catch((err) => {
           alert(err);
@@ -506,13 +542,21 @@ export default {
   margin: auto;
   padding: 0;
 }
+.audiences {
+  width: 10%;
+  justify-content: center;
+  align-items: center;
+  margin: auto;
+}
 .smallboxb {
-  position: absolute;
+  /* position: absolute; */
   display: flex;
-  justify-content: space-around;
-  margin-left: 100px;
+  justify-content: center;
+  align-items: center;
+  /* justify-content: space-around; */
+  margin-left: 200px;
   margin-right: 200px;
-  width: 100%;
+  width: 60%;
   margin: auto;
   padding: 0;
 }
