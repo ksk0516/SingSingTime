@@ -61,7 +61,7 @@
       <div id="video-container" class="bigbox">
         <!-- <div id="video-container" class=""> -->
         <!-- 나 -->
-
+        <!-- <v-col> -->
         <div class="smallboxl">
           <!--스몰박스 left, 노래화면 왼쪽. 여기에 스트림매니저로 챔피언을 넘겨줘야함-->
           <v-card color="primary">챔피언</v-card>
@@ -71,9 +71,20 @@
             @click.native="updateMainVideoStreamManager(publisher)"
           />
         </div>
-        <v-btn>투표</v-btn>
+        <VoteChampion v-if="this.voteBtnShow" @voteChampion="voteChampion" />
+        <!-- </v-col> -->
         <div class="musicbox">
-          <SongDetail v-if="this.selectedVideo" :session="session" />
+          <SongDetail
+            v-if="this.selectedVideo && !this.finish"
+            :session="session"
+            @endGame="endGame"
+          />
+          <v-row v-if="this.finish" justify="center">
+            <h1 style="color: orange">
+              {{ this.winner }}
+            </h1>
+            <h1>의 승리입니다!!</h1>
+          </v-row>
           <ReadyDetail v-if="this.readyVideo && !this.selectedVideo" />
         </div>
 
@@ -87,6 +98,7 @@
         </div> -->
 
         <!--비디오 위치 테스트용으로 퍼블리셔 넣어놓음 -->
+        <!-- <v-col> -->
         <div class="smallboxr">
           <!--스몰박스 right, 노래화면 오른쪽, 여기에 챌린져가 들어가야 함-->
           <v-card color="secondary">도전자</v-card>
@@ -95,6 +107,11 @@
             @click.native="updateMainVideoStreamManager(publisher)"
           />
         </div>
+        <VoteChallenger
+          v-if="this.voteBtnShow"
+          @voteChallenger="voteChallenger"
+        />
+        <!-- </v-col> -->
       </div>
     </div>
 
@@ -123,6 +140,8 @@ import { mapGetters } from "vuex";
 import Modal from "./components/Modal.vue";
 import SongDetail from "./components/SongDetail.vue";
 import ReadyDetail from "./components/ReadyDetail.vue";
+import VoteChallenger from "./components/VoteChallenger.vue";
+import VoteChampion from "./components/VoteChampion.vue";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 const API_KEY = "AIzaSyBGF5ljIuwHbPn27YSImtkkgk8KooR8q7I";
@@ -135,6 +154,8 @@ export default {
     Modal,
     SongDetail,
     ReadyDetail,
+    VoteChallenger,
+    VoteChampion,
   },
   props: {
     id: "",
@@ -194,8 +215,14 @@ export default {
       sessionInfo: null,
       champion: "",
       championSongList: [],
-      readyVideo: false,
+      readyVideo: false, // 미러볼 비디오 화면을 띄울지 결정할 변수
       ready: false,
+      voteBtnShow: false,
+      test: false,
+      finish: false,
+      likeChampion: 0,
+      likeChallenger: 0,
+      winner: "",
     };
   },
   computed: {
@@ -218,6 +245,7 @@ export default {
   mounted() {
     // this.getReadyVideo();
     // this.ready = !this.ready;
+    this.test = !this.test;
   },
   updated() {
     this.getReadyVideo();
@@ -242,12 +270,18 @@ export default {
     onSelectVideo: function (championSong) {
       this.readyVideo = false;
       this.selectedVideo = true;
+      this.voteBtnShow = true;
+      this.finish = false;
       console.log(this.readyVideo);
       this.session
         .signal({
           data: JSON.stringify(championSong.title),
-          type: "song",
+          type: "songTitle",
         })
+        // .signal({
+        //   data : championSong.id,
+        //   type: "songId",
+        // })
         .then(() => {
           console.log("노래방 시그널 전송");
           // console.log(video.id.videoId)
@@ -256,6 +290,11 @@ export default {
           console.log(err);
           console.log("전송 에러");
         });
+      this.session.signal({
+        // data: championSong.part4 + 10,
+        data: 5,
+        type: "songTime",
+      });
       console.log(this.$store.state.video);
     },
     onInputSearch: function (inputText) {
@@ -432,6 +471,25 @@ export default {
         .catch((err) => {
           alert(err);
         });
+    },
+    endGame() {
+      this.finish = true;
+      // console.log("게임 종료!!!!!!!" + this.finish)
+      if (this.likeChampion >= this.likeChallenger) {
+        this.winner = "챔피언";
+      } else {
+        this.winner = "도전자";
+      }
+      this.likeChampion = 0;
+      this.likeChallenger = 0;
+    },
+    voteChampion() {
+      this.voteBtnShow = false;
+      this.likeChampion += 1;
+    },
+    voteChallenger() {
+      this.voteBtnShow = false;
+      this.likeChallenger += 1;
     },
     /**
      * --------------------------------------------
