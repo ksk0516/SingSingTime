@@ -24,7 +24,7 @@ import VueCountdown from "@chenfengyuan/vue-countdown";
 export default {
   name: "SongDetail",
   components: {
-    VueCountdown
+    VueCountdown,
   },
   data: function () {
     return {
@@ -44,7 +44,11 @@ export default {
       console.log(event.data);
       const id = event.data.slice(1, -1);
       console.log("session에서 받은 id : " + id);
-      this.videoId = "https://sstvideo.s3.ap-northeast-2.amazonaws.com/images/"+id+".mp4";
+      this.videoId =
+        "https://sstvideo.s3.ap-northeast-2.amazonaws.com/images/" +
+        id +
+        ".mp4";
+      console.log(11111111111111111111111);
       console.log(id);
       this.video = true;
     });

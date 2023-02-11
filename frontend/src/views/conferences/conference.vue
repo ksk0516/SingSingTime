@@ -43,7 +43,7 @@
             <v-list-item-group v-model="model">
               <v-list-item
                 v-for="championSong in championSongList"
-                @click="onSelectSong(championSong), afterselect()"
+                @click="onSelectVideo(championSong), afterselect()"
                 :key="championSong.title"
               >
                 <v-list-item-title
@@ -122,7 +122,7 @@ import { ref } from "vue";
 import { mapGetters } from "vuex";
 import Modal from "./components/Modal.vue";
 import SongDetail from "./components/SongDetail.vue";
-import ReadyDetail from './components/ReadyDetail.vue'
+import ReadyDetail from "./components/ReadyDetail.vue";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 const API_KEY = "AIzaSyBGF5ljIuwHbPn27YSImtkkgk8KooR8q7I";
@@ -133,7 +133,7 @@ export default {
   components: {
     UserVideo,
     Modal,
-    SongDetail, 
+    SongDetail,
     ReadyDetail,
   },
   props: {
@@ -230,14 +230,16 @@ export default {
         })
         .then(() => {
           this.readyVideo = true;
-          console.log("레디화면 시그널 전송")
+          console.log("레디화면 시그널 전송");
         })
         .catch((err) => {
-          console.log("레디화면 전송 실패 ㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜ")
-          console.log(err)
-        } )
+          console.log(
+            "레디화면 전송 실패 ㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜㅜ"
+          );
+          console.log(err);
+        });
     },
-    onSelectVideo: function (video) {
+    onSelectVideo: function (championSong) {
       this.readyVideo = false;
       this.selectedVideo = true;
       console.log(this.readyVideo);
@@ -256,23 +258,6 @@ export default {
         });
       console.log(this.$store.state.video);
     },
-    // onSelectVideo: function (video) {
-    //   this.session
-    //     .signal({
-    //       data: JSON.stringify(video.text),
-    //       type: "song",
-    //     })
-    //     .then(() => {
-    //       console.log("노래방 시그널 전송");
-    //       this.readyVideo = true;
-    //       // console.log(video.id.videoId)
-    //     })
-    //     .catch((err) => {
-    //       console.log(err);
-    //       console.log("전송 에러");
-    //     });
-    //   console.log(this.$store.state.video);
-    // },
     onInputSearch: function (inputText) {
       console.log("데이터가 Search로부터 올라왔다.");
 
@@ -391,7 +376,7 @@ export default {
             );
           });
       });
-      
+
       window.addEventListener("beforeunload", this.leaveSession);
     },
 
