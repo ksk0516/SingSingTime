@@ -12,7 +12,7 @@
         padding-bottom: 50px;
       "
     >
-      <div style="margin-left: 40%">
+      <div style="margin-left: 40%" v-if="this.readyVideo && !this.selectedVideo">
         <h2>
           지금
           <img
