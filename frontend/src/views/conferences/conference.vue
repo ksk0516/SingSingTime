@@ -12,7 +12,10 @@
         padding-bottom: 50px;
       "
     >
-      <div style="margin-left: 40%" v-if="this.readyVideo && !this.selectedVideo">
+      <div
+        style="margin-left: 40%"
+        v-if="this.readyVideo && !this.selectedVideo"
+      >
         <h2>
           지금
           <img
@@ -109,14 +112,12 @@
           />
           <v-row v-if="this.finish" justify="center">
             <v-col>
-            <h1 style="color: orange">
-              {{ this.winner }}
-            <span style="color:white">
-            의 승리입니다!!</span></h1>
-            <img
-            src="../../assets/images/pang.gif"
-            style="width: 300px"
-          /></v-col>
+              <h1 style="color: orange">
+                {{ this.winner }}
+                <span style="color: white"> 의 승리입니다!!</span>
+              </h1>
+              <img src="../../assets/images/pang.gif" style="width: 300px"
+            /></v-col>
           </v-row>
           <ReadyDetail v-if="this.readyVideo && !this.selectedVideo" />
         </div>
@@ -158,7 +159,7 @@
       type="button"
       @click="challenge(myUserId)"
       value="대결 신청"
-      style="margin-top:20px;margin-bottom:20px"
+      style="margin-top: 20px; margin-bottom: 20px"
     />
     <!-- 관중들 들어갈 자리 -->
     <v-card class="audiences" color="#3232FF" style="width: 200px"
@@ -241,7 +242,7 @@ export default {
       winner: "",
       challenger: "",
       waitingQueue: [],
-      allUsers: [],
+      members: [],
       championStreamManager: undefined,
       challengerStreamManager: undefined,
     };
@@ -380,9 +381,15 @@ export default {
 
       // 도전 이벤트 발생했을 때
       this.session.on("signal:challenge", (event) => {
-        console.log("challenge!!!!!!!!!!!!!!!!!!!");
-        console.log(event.target);
-        this.challengerStreamManager = event.target;
+        this.challenger = JSON.parse(event.target.connection.data).clientId;
+        // 방 멤버들 중 챔피언 유저의 화면 생성
+        for (let user of this.members) {
+          if (
+            JSON.parse(user.stream.connection.data).clientId == this.challenger
+          ) {
+            this.challengerStreamManager = user;
+          }
+        }
       });
 
       // On every new Stream received...
@@ -396,7 +403,7 @@ export default {
 
         // console.log("aaaaaaaaaaaaaaaa");
         this.subscribers.push(subscriber);
-        this.allUsers.push(subscriber);
+        this.members.push(subscriber);
       });
 
       // On every Stream destroyed...
@@ -444,7 +451,7 @@ export default {
 
             // Set the main video in the page to display our webcam and store our Publisher
             this.mainStreamManager = publisher;
-            this.allUsers.push(publisher);
+            this.members.push(publisher);
             this.publisher = publisher;
 
             // --- 6) Publish your stream ---
@@ -485,6 +492,7 @@ export default {
       if (this.mainStreamManager === stream) return;
       this.mainStreamManager = stream;
     },
+    // 챔피언 갱신 때 필요
     getSessionInfo() {
       axios({
         method: "get",
@@ -493,23 +501,17 @@ export default {
           `/api/v1/playrooms/${this.mySessionId}`,
       })
         .then((res) => {
-          // console.log(1111111111);
-          console.log(res.data);
           this.sessionInfo = res.data;
           this.champion = res.data.champion;
           this.getChampionList();
-          console.log("hhhhhhhhhhhh");
-          // console.log(toRaw(this.allUsers).length);
-          // console.log(this.champion);
-          for (let user of this.allUsers) {
-            // console.log("ttttttttt");
 
+          // 방 멤버들 중 챔피언 유저의 화면 생성
+          for (let user of this.members) {
             console.log(user.stream.connection.data);
             if (
               JSON.parse(user.stream.connection.data).clientId == this.champion
             ) {
               this.championStreamManager = user;
-              // console.log(this.championStreamManager);
             }
           }
         })
@@ -517,6 +519,7 @@ export default {
           alert(err);
         });
     },
+    // 챔피언 노래목록 불러오기
     getChampionList() {
       axios({
         method: "get",
@@ -554,32 +557,13 @@ export default {
     challenge(myUserId) {
       if (this.challenger == "") {
         this.challenger = myUserId;
-        // console.log("Hihihihi");
-        // console.log(this.allUsers);
-        for (let user of this.allUsers) {
-          if (
-            JSON.parse(user.stream.connection.data).clientId == this.challenger
-          ) {
-            this.challengerStreamManager = user;
-            console.log("sssssssssssssss");
-            console.log(this.challengerStreamManager);
-            console.log(this.publisher);
+        // 방 멤버 중 대결신청 버튼 누른 유저의 화면 전파
 
-            this.session
-              .signal({
-                data: this.publsiher,
-                type: "challenge",
-              })
-              .then(() => {
-                console.log("도전 시그널 전송");
-              })
-              .catch((err) => {
-                console.log(err);
-                console.log("도전 전송 에러");
-              });
-          }
-        }
-        console.log(this.challenger);
+        this.session.signal({
+          data: JSON.stringify(this.challenger),
+          type: "challenge",
+        });
+
         return;
       }
       if (this.challenger == myUserId) {
@@ -690,7 +674,6 @@ export default {
     return { baseModal, isShow, confirm, cancel, afterselect, store };
   },
 };
-
 </script>
 <style>
 .bigbox {
