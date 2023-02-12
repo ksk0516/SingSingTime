@@ -868,6 +868,15 @@ export default {
   color: white;
   padding: 20px;
 }
+::-webkit-scrollbar {
+  width: 15px;
+  height: 8px;
+  background-color: rgb(246, 246, 247); /* 또는 트랙에 추가한다*/
+}
+::-webkit-scrollbar-thumb {
+  background: rgb(1, 19, 45);
+  border-radius: 10cm;
+} 
 
 .musicOn {
   height: 100%;
