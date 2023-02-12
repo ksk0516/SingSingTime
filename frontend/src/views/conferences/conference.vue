@@ -381,11 +381,12 @@ export default {
 
       // 도전 이벤트 발생했을 때
       this.session.on("signal:challenge", (event) => {
-        this.challenger = JSON.parse(event.target.connection.data).clientId;
+        this.challenger = event.data;
         // 방 멤버들 중 챔피언 유저의 화면 생성
         for (let user of this.members) {
           if (
-            JSON.parse(user.stream.connection.data).clientId == this.challenger
+            JSON.stringify(JSON.parse(user.stream.connection.data).clientId) ==
+            this.challenger
           ) {
             this.challengerStreamManager = user;
           }
