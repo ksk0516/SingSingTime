@@ -2,7 +2,7 @@
   <div
     id="main-container"
     class="container"
-    :class="{ musicOn: this.selectedVideo == true }"
+    :class="{ musicOn: this.selectedVideo == true },{ win: this.finish == true }"
   >
     <div
       style="
@@ -139,7 +139,7 @@
         <!-- </v-col> -->
 
         <div class="musicbox">
-          <SongDetail
+          <SongDetail 
             v-if="this.selectedVideo && !this.finish"
             :session="session"
             @endGame="endGame"
@@ -851,7 +851,6 @@ export default {
   width: 700px;
   margin-left: 50px;
   margin-right: 50px;
-  border: 0px;
 }
 
 /* .smallboxr{
@@ -909,7 +908,15 @@ export default {
 .exit {
   float: right;
 }
-
+.win {
+  height: 100%;
+  width: 100vw;
+  background-color: black;
+  background-image: url("../../assets/images/champion2.gif");
+  background-repeat: repeat;
+  background-size: 800px;
+  color: white;
+}
 /* #video-container p {
   font-family: "IM_Hyemin-Bold";
   display: inline-block;
