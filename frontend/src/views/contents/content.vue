@@ -23,10 +23,10 @@
           <p style="margin-left: 80px">{{ state.viewCnt }}View</p>
           <p style="margin-right: 80px">
             {{ state.likeCnt }}
-            <button @click="activeBtn" v-if="state.heartcheck== 'true'" class="active">
+            <button v-if="miChin=='true'" @click="activeBtn"  class="active">
               <v-icon>mdi-heart-outline</v-icon>
             </button>
-            <button @click="activeBtn" v-else-if="state.heartcheck!= 'true'" class="active">
+            <button @click="deactiveBtn" v-else-if="miChin==='false'" class="active">
               <v-icon>mdi-heart</v-icon>
             </button>
           </p>
@@ -70,6 +70,7 @@ export default {
   data() {
     return {
       status:false,
+      // emptyheart:false,
     }
   },
   methods: {
@@ -98,7 +99,9 @@ export default {
       ordering: [],
     });
     const videoId = localStorage.getItem('page')
-    
+
+    const miChin = localStorage.getItem('likes')
+
     const activeBtn = () => {
       // state.heartcheck = !state.heartcheck;
       localStorage.setItem('likes', 'false')
@@ -110,7 +113,29 @@ export default {
         .then((res) => {
           console.log(res); 
           window.location.reload(true);
-          localStorage.getItem('likes')
+          // localStorage.getItem('likes','false')
+
+    })
+        .catch((err) => {
+          console.log(err);
+          console.log("하트 안가는데..?"); 
+        });
+      
+    };
+    const deactiveBtn = () => {
+      localStorage.removeItem('likes');
+      localStorage.setItem('likes', 'true')
+      axios({
+        method: "put",
+        url: import.meta.env.VITE_APP_URL+`/api/v1/videos/likes-cancel/${videoId}`,
+      })
+        .then((res) => {
+          console.log(res); 
+          window.location.reload(true);
+          // localStorage.clear('likes');
+          // this.emptyheart == false;
+          // localStorage.getItem('likes')
+   
     })
         .catch((err) => {
           console.log(err);
@@ -119,10 +144,10 @@ export default {
       
     };
     // const fullheart =function(){ 
-    //   localStorage.getItem('likes')
-    //   // state.binheart='true';
-    // }
-
+      //   localStorage.getItem('likes')
+      //   // state.binheart='true';
+      // }
+      
     onMounted(() => {
       const getid = localStorage.getItem('page')
       axios({
@@ -130,30 +155,32 @@ export default {
         url: import.meta.env.VITE_APP_URL+`/api/v1/videos/${getid}`
         // url: import.meta.env.VITE_APP_URL + `api/v1/videos/${state.keyId}`,
       })
-        .then((res) => {
-          console.log(res); 
-          state.title = res.data.title
-          state.description = res.data.description
-          state.usernickname = res.data.user.nickname
-          state.video=res.data.url
-          state.likeCnt=res.data.likeCnt
-          state.viewCnt=res.data.viewCnt
-          state.replys=res.data.replys
-        })
-        .catch((err) => {
-          console.log(err);
-        });
-
-        state.ordering = computed(() => _.orderBy(state.replys,'createdDate','desc'))
-    
+      .then((res) => {
+        console.log(res); 
+        state.title = res.data.title
+        state.description = res.data.description
+        state.usernickname = res.data.user.nickname
+        state.video=res.data.url
+        state.likeCnt=res.data.likeCnt
+        state.viewCnt=res.data.viewCnt
+        state.replys=res.data.replys
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+      
+      state.ordering = computed(() => _.orderBy(state.replys,'createdDate','desc'))
+      
     });
     return {
       state,
       store,
       activeBtn,
+      deactiveBtn,
       // changes,
       // getid,
-      // fullheart
+      // fullheart,
+      miChin
     };
   },
 };
