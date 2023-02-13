@@ -6,7 +6,7 @@
       ({ musicOn: this.selectedVideo == true }, { win: this.finish == true })
     "
   >
-    <div
+    <v-row 
       style="
         color: white;
         display: flex;
@@ -31,16 +31,17 @@
           />에게 도전하세요!
         </h2>
       </div>
+      <v-col justify="center"  style="margin-left: 5%">
 
-      <vue-countdown :time="5 * 1000" v-slot="{ minutes, seconds }" v-if="this.selectedVideo && !this.finish" justify="center">
-        <h4
-          :class="{ hurryup: minutes == 0 && seconds <= 30 }"
-          style="margin-top: 50px"
-        >
-          남은 투표 시간 :
-          <h1>{{ minutes }} 분 {{ seconds }} 초</h1>
-        </h4>
-      </vue-countdown>
+        <vue-countdown :time="5 * 1000" v-slot="{ minutes, seconds }" v-if="this.selectedVideo && !this.finish">
+          <h2
+            :class="{ hurryup: minutes == 0 && seconds <= 30 }"
+            style="margin-top: 50px"
+          >
+            남은 투표 시간 : {{ minutes }} 분 {{ seconds }} 초
+          </h2>
+        </vue-countdown>
+      </v-col>
 
       <div>
         <input
@@ -52,7 +53,7 @@
           style="margin-right: 20px"
         />
       </div>
-    </div>
+    </v-row>
 
     <Modal ref="championSongListShowModal">
       <div style="text-align: center">
