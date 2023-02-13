@@ -5,17 +5,15 @@
         <h2 style="text-align: left"><b>My Page</b></h2>
         <v-row>
           <v-col col="3" class="user_image">
+            <!-- <v-btn @click="imageGet">이거눌러보셈</v-btn> -->
             <img
-              :src="image"
+              :src="profileUrl"
               alt=""
-              v-if="state.there == false"
+              v-if="profileUrl != ''"
               style="width: 300px; height: 200px"
             />
-            <img
-              class="user_ex"
-              src="../../assets/images/user_ex.png"
-              v-else-if="state.there == true"
-            />
+
+            <img class="user_ex" src="../../assets/images/user_ex.png" v-else />
           </v-col>
           <v-col col="3" class="user_info">
             <v-row>
@@ -35,15 +33,12 @@
                   <v-row justify="end" style="margin-right: 20px">
                     <div class="filebox">
                       <label for="chooseFile">프로필사진</label>
-                      <form method="post" enctype="multipart/form-data">
-                        <input
-                          ref="image"
-                          @change="changeFile1"
-                          type="file"
-                          id="chooseFile"
-                          accept="image/*"
-                        />
-                      </form>
+                      <input
+                        ref="image"
+                        @change="changeFile1"
+                        type="file"
+                        id="chooseFile"
+                      />
                     </div>
                     <v-btn
                       class="inline"
@@ -350,12 +345,7 @@
                 cover
               >
                 <v-card-title
-                  class="
-                    text-h6 text-black
-                    d-flex
-                    flex-column
-                    justify-space-between
-                  "
+                  class="text-h6 text-black d-flex flex-column justify-space-between"
                   style="padding: 0px; height: 100%"
                 >
                   <p class="song_info" align="start"></p>
@@ -396,6 +386,7 @@ export default {
     message: "Hello, world",
     profileImg: null,
     token: null,
+    profileUrl: "",
   }),
   methods: {
     // uploadImg() {
@@ -412,7 +403,8 @@ export default {
       this.token = localStorage.getItem("jwt");
       const formData = new FormData();
       console.log("2222222222222222222");
-      console.log(this.profileImg.target.files[0])
+      console.log(this.profileImg.target.files[0]);
+      console.log(typeof this.profileImg.target.files[0]);
       formData.append("profileImg", this.profileImg.target.files[0]);
       console.log("여기까지ㅏㅇ");
 
@@ -426,9 +418,7 @@ export default {
         },
       })
         .then((res) => {
-          alert("이미지 올려봄!");
           console.log(res);
-          window.location.reload(true);
         })
         .catch((err) => {
           console.log("이미지 안됨");
@@ -436,12 +426,50 @@ export default {
           console.log(this.profileImg.target.files[0]);
           console.log(err);
         });
+      this.imageGet();
     },
+    async imageGet() {
+      console.log("hhhhhhhhhhhh");
+      console.log(this.token);
+      axios({
+        method: "get",
+        url: import.meta.env.VITE_APP_URL + `/api/v1/users/my-page/profile`,
+        headers: {
+          Authorization: `Bearer ${this.token}`,
+        },
+      })
+        .then((res) => {
+          console.log(res);
+          this.profileUrl = res.data;
+          console.log("4444444444444444444");
+          console.log(this.profileUrl);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+
     changeFile1(file) {
       this.profileImg = file;
-      console.log(file)
-      this.imageSubmit()
+      console.log(file);
+      this.imageSubmit();
     },
+  },
+  mounted() {
+    const token = localStorage.getItem("jwt");
+    axios({
+      method: "get",
+      url: import.meta.env.VITE_APP_URL + `/api/v1/users/my-page/profile`,
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
+      .then((res) => {
+        this.profileUrl = res.data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   },
   setup() {
     const store = useStore();
@@ -648,7 +676,6 @@ export default {
 
     onMounted(() => {
       // console.log(state.form.id);
-
       // store에서 유저 정보 가져오기
       const all = computed(() => store.getters["accountStore/getAll"]);
       user_info.token = all.value.token;
@@ -656,7 +683,6 @@ export default {
       user_info.password = all.value.password;
       user_info.nickname = all.value.nickname;
 
-      const token = localStorage.getItem("jwt");
       axios({
         method: "get",
         url: import.meta.env.VITE_APP_URL + "/api/v1/users/my-page",
