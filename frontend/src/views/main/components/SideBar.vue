@@ -57,7 +57,6 @@
     </v-layout>
   </v-card>
 </template>
-
 <script>
 import { reactive } from "vue";
 import { ref } from "vue";
