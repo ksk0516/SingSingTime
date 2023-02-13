@@ -712,19 +712,23 @@ export default {
             this.champion + `님이 ${res.data.winCnt}연승을 달성하셨습니다!!!`
           );
           this.championSongList = res.data.championSongList;
-          this.sessonInfo.challenger = this.dequeue();
-          this.sessonInfo.challenger === undefined
-            ? ""
-            : this.sessonInfo.challenger;
-
-          getSessionInfo();
-          console.log("다음도전자는:" + this.sessonInfo.challenger);
-          if (this.sessonInfo.challenger != "") {
+          const next = this.dequeue();
+          console.log("next출력");
+          console.log(next);
+          console.log(this.subscribers);
+          if(next== ""){
+            this.sessionInfo.challenger = "";
+            
+          }else{
+            this.sessionInfo.challenger = next;
             this.session.signal({
-              data: JSON.stringify(this.sessonInfo.challenger),
+              data: JSON.stringify(this.sessonInfo),
               type: "challenge",
             });
           }
+          // this.sessonInfo.challenger=this.sessonInfo.challenger == undefined ? "" : this.sessonInfo.challenger;
+          // this.getSessionInfo();
+          // alert("다음도전자는:" + this.sessonInfo.challenger);
           // for (let user of this.members) {
           //     console.log(user.stream.connection.data);
           //     if (
@@ -777,8 +781,11 @@ export default {
       };
     },
     dequeue() {
-      return this.sessionInfo.waitingQueue.shift();
-    },
+      if(this.sessionInfo.waitingQueue.length==0) return "";
+      else {
+        return this.sessionInfo.waitingQueue.shift();
+    }
+  },
     /**
      * --------------------------------------------
      * GETTING A TOKEN FROM YOUR APPLICATION SERVER
