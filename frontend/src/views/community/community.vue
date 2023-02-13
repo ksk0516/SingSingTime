@@ -199,7 +199,6 @@ export default {
     const store = useStore();
     const clickContent = function (id) {
       localStorage.setItem('page', id)
-      localStorage.setItem('likes', 'true')
       store.dispatch("contentStore/pageAction", {
             contentId: id,
           });
