@@ -32,6 +32,16 @@
         </h2>
       </div>
 
+      <vue-countdown :time="5 * 1000" v-slot="{ minutes, seconds }" v-if="this.selectedVideo && !this.finish" justify="center">
+        <h4
+          :class="{ hurryup: minutes == 0 && seconds <= 30 }"
+          style="margin-top: 50px"
+        >
+          남은 투표 시간 :
+          <h1>{{ minutes }} 분 {{ seconds }} 초</h1>
+        </h4>
+      </vue-countdown>
+
       <div>
         <input
           class="btn btn-large btn-danger"
@@ -43,6 +53,39 @@
         />
       </div>
     </div>
+
+    <Modal ref="championSongListShowModal">
+      <div style="text-align: center">
+        <v-card class="mx-auto black" max-width="500">
+          <v-list dark>
+            <h3
+              type="button"
+              @click="closeChampionSongListShowModal()"
+              style="margin: 10px; margin-right: 20px; text-align: right"
+            >
+              X
+            </h3>
+
+            <h2>챔피언 {{ this.champion }}님의</h2>
+            <h2>플레이리스트</h2>
+
+            <hr />
+            <v-list-item-group v-model="model">
+              <v-list-item
+                v-for="championSong in championSongList"
+                :key="championSong.title"
+              >
+                <v-list-item-title
+                  >{{ championSong.title }}
+
+                  {{ championSong.singer }}</v-list-item-title
+                >
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+        </v-card>
+      </div>
+    </Modal>
 
     <Modal ref="championSongListModal">
       <div style="text-align: center">
@@ -94,17 +137,17 @@
             <h2>현재 대기중인 도전자 목록</h2>
             <hr />
 
-           
             <v-list-item-group v-model="model">
               <v-list-item-title>
                 (현재 도전자):{{ sessionInfo.challenger }}
-                </v-list-item-title>
+              </v-list-item-title>
               <v-list-item
                 v-for="(waitingUser, i) in sessionInfo.waitingQueue"
                 :key="waitingUser"
               >
                 <v-list-item-title>
-                  {{i +1}}번 - {{waitingUser}}</v-list-item-title>
+                  {{ i + 1 }}번 - {{ waitingUser }}</v-list-item-title
+                >
               </v-list-item>
             </v-list-item-group>
           </v-list>
@@ -138,7 +181,6 @@
           <VoteChampion v-if="this.voteBtnShow" @voteChampion="voteChampion" />
         </div>
 
-
         <!-- </v-col> -->
 
         <div class="musicbox">
@@ -148,7 +190,12 @@
             @endGame="endGame"
           />
 
-          <v-row v-if="this.finish" justify="center" margin-top="0px" padding-top="0px;">
+          <v-row
+            v-if="this.finish"
+            justify="center"
+            margin-top="0px"
+            padding-top="0px;"
+          >
             <v-col>
               <h1 style="color: orange">
                 {{ this.winner }}
@@ -202,7 +249,6 @@
           />
         </div>
 
-
         <!-- </v-col> -->
       </div>
     </div>
@@ -216,10 +262,20 @@
     />
 
     <input
+      v-if="this.myUserId == this.sessionInfo.challenger"
       class="btn btn-large btn-warning"
       type="button"
       @click="showChampionSongList"
       value="도전 가능곡"
+      style="margin-right: 20px"
+    />
+
+    <input
+      v-if="this.myUserId != this.sessionInfo.challenger"
+      class="btn btn-large btn-primary"
+      type="button"
+      @click="showChampionSongShowList"
+      value="챔피언 플레이리스트"
       style="margin-right: 20px"
     />
 
@@ -265,6 +321,7 @@ import SongDetail from "./components/SongDetail.vue";
 import ReadyDetail from "./components/ReadyDetail.vue";
 import VoteChallenger from "./components/VoteChallenger.vue";
 import VoteChampion from "./components/VoteChampion.vue";
+import VueCountdown from "@chenfengyuan/vue-countdown";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 const API_KEY = "AIzaSyBGF5ljIuwHbPn27YSImtkkgk8KooR8q7I";
@@ -278,6 +335,7 @@ export default {
     ReadyDetail,
     VoteChallenger,
     VoteChampion,
+    VueCountdown,
   },
   props: {
     id: "",
@@ -314,6 +372,8 @@ export default {
       voteBtnShow: false,
       test: false,
       finish: false,
+      nowplaytime: 0,
+      TimeCounter: 0,
       // likeChampion: 0,
       // likeChallenger: 0,
       winner: "",
@@ -374,6 +434,15 @@ export default {
     },
     onSelectVideo: function (championSong) {
       this.readyVideo = false;
+      // this.nowplaytime = championSong.part4 + 10;
+      this.nowplaytime = 5;
+      this.TimeCounter = this.nowplaytime;
+      var interval = setInterval(() => {
+        this.TimeCounter-=1; //1초씩 감소
+        console.log("시간 : "+this.TimeCounter);
+        if (this.TimeCounter <= 0) this.timerStop(interval);
+      }, 1000);
+
       this.session.signal({
         data: this.readyVideo,
         type: "start_readyVideo",
@@ -417,6 +486,11 @@ export default {
       });
       console.log(this.$store.state.video);
     },
+    timerStop: function(Timer) {
+      clearInterval(Timer);
+      this.endGame()
+    },
+
     onInputSearch: function (inputText) {
       console.log("데이터가 Search로부터 올라왔다.");
 
@@ -542,11 +616,11 @@ export default {
         }
         console.log(originData);
       });
-      this.session.on("signal:addWaitingQueue",(event)=>{
-      console.log("대기열에 넣어줘! 500");
-      const originData = JSON.parse(event.data);
-      this.sessionInfo = originData;
-     });
+      this.session.on("signal:addWaitingQueue", (event) => {
+        console.log("대기열에 넣어줘! 500");
+        const originData = JSON.parse(event.data);
+        this.sessionInfo = originData;
+      });
       // On every new Stream received...
       this.session.on("streamCreated", ({ stream }) => {
         const subscriber = this.session.subscribe(stream);
@@ -732,10 +806,9 @@ export default {
           console.log("next출력");
           console.log(next);
           console.log(this.subscribers);
-          if(next== ""){
+          if (next == "") {
             this.sessionInfo.challenger = "";
-            
-          }else{
+          } else {
             this.sessionInfo.challenger = next;
             this.session.signal({
               data: JSON.stringify(this.sessonInfo),
@@ -762,21 +835,21 @@ export default {
       this.voteBtnShow = false;
       this.sessionInfo.likeChampion += 1;
       this.session.signal({
-        data:this.sessionInfo.likeChampion,
-        type:"selectChampion"
-      })
+        data: this.sessionInfo.likeChampion,
+        type: "selectChampion",
+      });
     },
     voteChallenger() {
       this.voteBtnShow = false;
       this.sessionInfo.likeChallenger += 1;
       this.session.signal({
-        data:this.sessionInfo.likeChallenger,
-        type:"selectChallenger"
-      })
+        data: this.sessionInfo.likeChallenger,
+        type: "selectChallenger",
+      });
     },
     enqueue(data) {
-        this.sessionInfo.waitingQueue.push(data);
-      },
+      this.sessionInfo.waitingQueue.push(data);
+    },
     challenge(myUserId) {
       if (this.sessionInfo.challenger == "") {
         this.sessionInfo.challenger = myUserId;
@@ -805,14 +878,14 @@ export default {
       this.session.signal({
         data: JSON.stringify(this.sessionInfo),
         type: "addWaitingQueue",
-      })
+      });
     },
     dequeue() {
-      if(this.sessionInfo.waitingQueue.length==0) return "";
+      if (this.sessionInfo.waitingQueue.length == 0) return "";
       else {
         return this.sessionInfo.waitingQueue.shift();
-    }
-  },
+      }
+    },
     /**
      * --------------------------------------------
      * GETTING A TOKEN FROM YOUR APPLICATION SERVER
@@ -868,12 +941,23 @@ export default {
     // 자식 컴포넌트를 핸들링하기 위한 ref
     const store = useStore();
     const championSongListModal = ref(null);
+    const championSongListShowModal = ref(null);
     const waitingQueueModal = ref(null);
     // Promise 객체를 핸들링하기 위한 ref
     const resolvePromise = ref(null);
     const showChampionSongList = () => {
       // showChampionSongList을 직접 컨트롤합니다.
       championSongListModal.value.open();
+      // Promise 객체를 사용하여, 현재 모달에서 확인 / 취소의
+      // 응답이 돌아가기 전까지 작업을 기다리게 할 수 있습니다.
+      return new Promise((resolve) => {
+        // resolve 함수를 담아 외부에서 사용합니다.
+        resolvePromise.value = resolve;
+      });
+    };
+    const showChampionSongShowList = () => {
+      // showChampionSongList을 직접 컨트롤합니다.
+      championSongListShowModal.value.open();
       // Promise 객체를 사용하여, 현재 모달에서 확인 / 취소의
       // 응답이 돌아가기 전까지 작업을 기다리게 할 수 있습니다.
       return new Promise((resolve) => {
@@ -891,6 +975,10 @@ export default {
 
     const closeChampionSongListModal = () => {
       championSongListModal.value.close();
+    };
+
+    const closeChampionSongListShowModal = () => {
+      championSongListShowModal.value.close();
     };
 
     const closeWaitingQueueModal = () => {
@@ -912,12 +1000,15 @@ export default {
     // async-await을 사용하여, Modal로부터 응답을 기다리게 된다.
     return {
       championSongListModal,
+      championSongListShowModal,
       waitingQueueModal,
       showChampionSongList,
+      showChampionSongShowList,
       showWaitingQueue,
       confirm,
       cancel,
       closeChampionSongListModal,
+      closeChampionSongListShowModal,
       closeWaitingQueueModal,
       store,
     };
@@ -1022,7 +1113,7 @@ export default {
   position: relative;
   top: 0%;
   left: 0%;
-  border: 1px solid white;
+  /* border: 1px solid white; */
 }
 
 .exit {
