@@ -505,7 +505,7 @@ export default {
       this.session.on("streamCreated", ({ stream }) => {
         const subscriber = this.session.subscribe(stream);
         console.log("스트림!");
-        const data = stream.connection.data;
+        // const data = stream.connection.data;
         console.log(subscriber);
         const originInfo = JSON.stringify(this.sessionInfo);
         console.log(originInfo);
