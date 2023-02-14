@@ -380,21 +380,6 @@
     />
     <a id="download" ref="down" href="#" style="display:none;">Download</a>
 
-    <input
-      class="btn btn-large btn-info"
-      type="button"
-      @click="startRecord"
-      value="녹화 시작"
-      style="margin-top: 20px; margin-bottom: 20px; margin-right: 20px"
-    />
-
-    <input
-      class="btn btn-large btn-info"
-      type="button"
-      @click="applyStickerFilter()"
-      value="테스트"
-      style="margin-top: 20px; margin-bottom: 20px"
-    />
     <!-- 관중들 들어갈 자리 -->
     <v-card
       class="audiences"
