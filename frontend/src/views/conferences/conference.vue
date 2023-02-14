@@ -17,8 +17,8 @@
     >
       <div><v-icon color="yellow" size="x-large">mdi-bell</v-icon></div>
       <div
-        style="margin-left: 2%;"
-        v-if="this.readyVideo && !this.selectedVideo"
+        style="margin-left: 2%"
+        v-if="this.readyVideo && !this.selectedVideo && this.myUserId != this.champion"
       >
         <h2>
           지금
@@ -45,7 +45,7 @@
           loop="1"
           >도전자가
           <span style="color: orange">{{ nowplaysong }}</span>
-          를(을) 신청하였습니다
+          를(을) 신청하였습니다. 대결이 곧 시작됩니다!
         </MARquee>
         <vue-countdown :time="nowplaytime * 1000" v-slot="{ minutes, seconds }">
           <h2
@@ -91,7 +91,7 @@
                 :key="championSong.title"
               >
                 <v-list-item-title
-                  >{{ championSong.title }} - 
+                  >{{ championSong.title }} -
 
                   {{ championSong.singer }}</v-list-item-title
                 >
@@ -103,6 +103,40 @@
     </Modal>
 
     <Modal ref="championSongListModal">
+      <div style="text-align: center">
+        <v-card class="mx-auto black" max-width="500">
+          <v-list dark>
+            <h3
+              type="button"
+              @click="closeChampionSongListModal()"
+              style="margin: 10px; margin-right: 20px; text-align: right"
+            >
+              X
+            </h3>
+
+            <h2>챔피언 {{ this.champion }}님의</h2>
+            <h2>플레이리스트</h2>
+
+            <hr />
+            <v-list-item-group v-model="model">
+              <v-list-item
+                v-for="championSong in championSongList"
+                @click="battleApplication(championSong), closeChampionSongListModal()"
+                :key="championSong.title"
+              >
+                <v-list-item-title
+                  >{{ championSong.title }}
+
+                  {{ championSong.singer }}</v-list-item-title
+                >
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+        </v-card>
+      </div>
+    </Modal>
+
+    <!-- <Modal ref="championSongListModal">
       <div style="text-align: center">
         <v-card class="mx-auto black" max-width="500">
           <v-list dark>
@@ -136,7 +170,14 @@
           </v-list>
         </v-card>
       </div>
-    </Modal>
+    </Modal> -->
+
+    <div v-if="champion_confirm && this.myUserId == this.champion" style="margin-bottom: 10px;">
+      <h2>도전자로부터 [<span style="color: green">{{nowplaysong}}</span>] 대결 신청이 들어왔습니다!</h2>
+      <h3>대결을 시작하시겠습니까?</h3>
+
+      <v-btn @click="onSelectVideo()" color="green" variant="outlined">확인</v-btn>
+    </div>
 
     <Modal ref="waitingQueueModal">
       <div style="text-align: center">
@@ -390,6 +431,7 @@ export default {
       nowplaytime: 0, // 현재 대결곡의 소요 시간
       TimeCounter: 0,
       nowplaysong: "", // 현재 대결곡
+      champion_confirm: false,
       // likeChampion: 0,
       // likeChallenger: 0,
       winner: "",
@@ -420,6 +462,7 @@ export default {
     this.getname();
     console.log("====================================================");
     console.log(this.subscribers);
+    this.myUserId= localStorage.getItem("userId")
     // this.getReadyVideo();
   },
   mounted() {
@@ -462,11 +505,12 @@ export default {
           console.log(err);
         });
     },
-    onSelectVideo: function (championSong) {
+    onSelectVideo: function () {
       this.readyVideo = false;
-      this.nowplaytime = championSong.part4 + 10;
+      // this.nowplaytime = championSong.part4 + 10;
       // this.nowplaytime = 5;
-      this.nowplaysong = championSong.title;
+      // this.nowplaysong = championSong.title;
+      this.champion_confirm = false;
       this.TimeCounter = this.nowplaytime;
       var interval = setInterval(() => {
         this.TimeCounter -= 1; //1초씩 감소
@@ -479,15 +523,23 @@ export default {
         type: "start_readyVideo",
       });
       this.session.signal({
-        data: championSong.title,
-        type: "start_notice",
+        data: this.champion_confirm,
+        type: "start_battle",
       });
       this.session.signal({
-        data: championSong.part4 + 10,
-        type: "start_nowplaytime",
+        data: this.readyVideo,
+        type: "start_readyVideo",
       });
+      // this.session.signal({
+      //   data: championSong.title,
+      //   type: "start_notice",
+      // });
+      // this.session.signal({
+      //   data: championSong.part4 + 10,
+      //   type: "start_nowplaytime",
+      // });
       this.session.signal({
-        data: championSong.part4 + 10,
+        data: this.nowplaytime,
         type: "start_timecounter",
       });
       this.selectedVideo = true;
@@ -507,7 +559,7 @@ export default {
       });
       this.session
         .signal({
-          data: JSON.stringify(championSong.title),
+          data: JSON.stringify(this.nowplaysong),
           type: "songTitle",
         })
         // .signal({
@@ -529,7 +581,21 @@ export default {
       });
       console.log(this.$store.state.video);
     },
-    
+    battleApplication: function (championSong) {
+      // console.log("222222222222222222222222222");
+      // console.log("챔피언 아이디는!!!" + this.champion);
+      // console.log(this.myUserId)
+      this.nowplaysong = championSong.title;
+      this.nowplaytime = championSong.part4 + 10;
+      this.champion_confirm = true;
+      this.session.signal({ data: championSong.title, type: "battleApply" });
+      this.session.signal({
+        data: championSong.part4 + 10,
+        type: "battleApplySongTime",
+      });
+      this.session.signal({ data: true, type: "battlemodalshow" });
+    },
+
     timerStop: function (Timer) {
       clearInterval(Timer);
       this.endGame();
@@ -594,6 +660,21 @@ export default {
       this.session.on("signal:endalert", (event) => {
         this.finish = event.data;
       }),
+        this.session.on("signal:battleApply", (event) => {
+          this.nowplaysong = event.data;
+        }),
+        this.session.on("signal:battleApplySongTime", (event) => {
+          this.nowplaytime = event.data;
+        }),
+        this.session.on("signal:battlemodalshow", (event) => {
+          this.champion_confirm = event.data;
+        }),
+        this.session.on("signal:start_readyVideo", (event) => {
+          this.readyVideo = event.data;
+        }),
+        this.session.on("signal:start_battle", (event) => {
+          this.champion_confirm = event.data;
+        }),
         this.session.on("signal:start_readyVideo", (event) => {
           this.readyVideo = event.data;
         }),
@@ -978,7 +1059,6 @@ export default {
       console.log(sessionId);
       return await this.createToken(sessionId);
     },
-
     async createSession(sessionId) {
       this.token = localStorage.getItem("jwt");
       const response = await axios.post(
@@ -1013,6 +1093,7 @@ export default {
     const store = useStore();
     const championSongListModal = ref(null);
     const championSongListShowModal = ref(null);
+    // const championBattleNoticeModal = ref(null);
     const waitingQueueModal = ref(null);
     // Promise 객체를 핸들링하기 위한 ref
     const resolvePromise = ref(null);
@@ -1072,14 +1153,17 @@ export default {
     return {
       championSongListModal,
       championSongListShowModal,
+      // championBattleNoticeModal,
       waitingQueueModal,
       showChampionSongList,
       showChampionSongShowList,
+      // showChampionBattleNoticeModal,
       showWaitingQueue,
       confirm,
       cancel,
       closeChampionSongListModal,
       closeChampionSongListShowModal,
+      // closeChampionBattleNoticeModal,
       closeWaitingQueueModal,
       store,
     };
