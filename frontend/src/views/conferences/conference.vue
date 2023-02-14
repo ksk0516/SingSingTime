@@ -45,8 +45,19 @@
           loop="1"
           >도전자가
           <span style="color: orange">{{ nowplaysong }}</span>
-          를(을) 신청하였습니다. 대결이 곧 시작됩니다!
+          를(을) 신청하였습니다. 대결이 시작됩니다!
         </MARquee>
+        <!-- <MARquee 
+          class="blinking"
+          v-if="vote_please"
+          style="font-size: 25px"
+          scrollamount="25"
+          direction="right"
+          loop="1"
+          >투표시간이 
+          <span style="color: orange">30초</span>
+          남았습니다. 투표를 진행해주세요!
+        </MARquee> -->
         <vue-countdown :time="nowplaytime * 1000" v-slot="{ minutes, seconds }">
           <h2
             :class="{ hurryup: minutes == 0 && seconds <= 30 }"
@@ -328,11 +339,11 @@
 
     <input
       v-if="this.myUserId != this.sessionInfo.challenger"
-      class="btn btn-large btn-primary"
+      class="btn btn-large btn-warning"
       type="button"
       @click="showChampionSongShowList"
       value="챔피언 플레이리스트"
-      style="margin-right: 20px"
+      style="margin-right: 20px;"
     />
 
     <input
@@ -344,8 +355,8 @@
     />
 
     <!-- 관중들 들어갈 자리 -->
-    <v-card class="audiences" color="#3232FF" style="width: 200px"
-      ><h3 style="color: white">관람객</h3></v-card
+    <v-card class="audiences" color="#3232FF" style="width: 200px; height:35px; margin-top:10px;"
+      ><h3 style="color: white; margin-top:4px;">관람객</h3></v-card
     >
 
     <div class="smallboxb">
@@ -432,6 +443,7 @@ export default {
       TimeCounter: 0,
       nowplaysong: "", // 현재 대결곡
       champion_confirm: false,
+      vote_please: false, // 30초 남았을때 공지 띄우기
       // likeChampion: 0,
       // likeChallenger: 0,
       winner: "",
@@ -515,6 +527,10 @@ export default {
       var interval = setInterval(() => {
         this.TimeCounter -= 1; //1초씩 감소
         console.log("시간 : " + this.TimeCounter);
+        if (this.TimeCounter <= 30) {
+          this.vote_please = true;
+          this.session.signal({data: this.vote_please, type:"vote_please"})
+        }
         if (this.TimeCounter <= 0) this.timerStop(interval);
       }, 1000);
 
@@ -704,6 +720,9 @@ export default {
         }),
         this.session.on("signal:showWinner", (event) => {
           this.winner = event.data;
+        }),
+        this.session.on("signal:vote_please", (event) => {
+          this.vote_please = event.data;
         }),
         this.session.on("signal:enterNewUser", (event) => {
           this.sessionInfo.challenger = JSON.parse(event.data).challenger;
@@ -1352,7 +1371,7 @@ video {
   font-weight: bold;
   border-radius: 5px;
 }
-/* .blinking{
+.blinking{
   -webkit-animation: blink 0.5s ease-in-out alternate;
   -moz-animation: blink 0.5s ease-in-out alternate;
   animation: blink 0.5s ease-in-out alternate;
@@ -1372,7 +1391,7 @@ video {
 @keyframes blink{
   0% {opacity: 0;}
   100% {opacity: 1;}
-} */
+}
 
 .exit {
   float: right;
