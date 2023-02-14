@@ -6,10 +6,13 @@
       ({ musicOn: this.selectedVideo == true }, { win: this.finish == true })
     "
   >
-  <!-- <video ref="video" width="100" height="100" controls></video> -->
-  <button @click="startRecord">
+    <div>
+        <button @click="startRecord">Start Recording</button>
+    </div>
+  <!-- <button @click="startRecord">
     녹화 시작
-  </button>
+  </button> -->
+  <!-- <a ref="down" style="display: none;"></a> -->
     <v-row
       style="
         color: white;
@@ -943,34 +946,75 @@ export default {
       console.log(sessionId);
       return await this.createToken(sessionId);
     },
-    startRecord(){
-        navigator.mediaDevices.getDisplayMedia(
-        {
-          audio:true,
-          video: {
-            mediaSource:"screen",
-          }
-        }
-      ).then((stream)=>{
-        const recorder = new MediaRecorder(stream);
+   
+    startRecord()
+    {
+     navigator.mediaDevices.getDisplayMedia({
+    video: {
+        mediaSource: 'screen',
+    },
+    audio: true,
+})
+  .then(async (e)=>{
+       // For recording the mic audio
+       let audio = await navigator.mediaDevices.getUserMedia({ 
+            audio: true, video: false })
+  
+        let combine = new MediaStream(
+            [...e.getTracks(), ...audio.getTracks()])
+  
+        /* Record the captured mediastream
+           with MediaRecorder constructor */
+        let recorder = new MediaRecorder(combine);
         recorder.start();
         const buffer = [];
-        recorder.addEventListener('dataavailable',(event)=>{
-          buffer.push(event.data);
-        })
+        /* Push the recorded data to data array 
+          when data available */
+        recorder.ondataavailable = (e) => {
+            buffer.push(e.data);
+        };
         recorder.addEventListener('stop',()=>{
           const blob = new Blob(buffer,{
           type:'video/mp4'
         });
-        this.$refs.down.href= URL.createObjectURL(blob);
+  }
+  )
+           this.$refs.down.href= URL.createObjectURL(blob);
         console.log("녹화테스트");
         console.log(this.$refs.down);
         this.$refs.down.download="recording.mp4"
         this.$refs.down.click();
         })
-      })
+      }
       },
-   
+
+    // startRecord(){
+    //     navigator.mediaDevices.getDisplayMedia(
+    //     {
+    //       audio:true,
+    //       video: {
+    //         mediaSource:"screen",
+    //       }
+    //     }
+    //   ).then((stream)=>{
+    //     const recorder = new MediaRecorder(stream);
+    //     recorder.start();
+    //     const buffer = [];
+    //     recorder.addEventListener('dataavailable',(event)=>{
+    //       buffer.push(event.data);
+    //     })
+    //     recorder.addEventListener('stop',()=>{
+    //       const blob = new Blob(buffer,{
+    //       type:'video/mp4'
+    //     });
+    //     this.$refs.down.href= URL.createObjectURL(blob);
+    //     console.log("녹화테스트");
+    //     console.log(this.$refs.down);
+    //     this.$refs.down.download="recording.mp4"
+    //     this.$refs.down.click();
+    //     })
+    //   })
+    //   },
     async createSession(sessionId) {
       this.token = localStorage.getItem("jwt");
       const response = await axios.post(
@@ -999,7 +1043,7 @@ export default {
       );
       return response.data; // The token
     },
-  },
+  }
   setup() {
     // 자식 컴포넌트를 핸들링하기 위한 ref
     const store = useStore();
