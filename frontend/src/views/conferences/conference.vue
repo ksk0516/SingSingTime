@@ -3,12 +3,10 @@
     id="main-container"
     class="container"
     :class="
-      ({ musicOn: this.selectedVideo.length>0}, { win: this.finish == true })
+      ({ musicOn: this.selectedVideo.length > 0 }, { win: this.finish == true })
     "
   >
-
     <v-row
-      <a ref="down" style="display: none;"></a>
       style="
         color: white;
         margin-left: 100px;
@@ -17,10 +15,15 @@
       "
       justify="space-between"
     >
+      <a ref="down" style="display: none"></a>
       <div><v-icon color="yellow" size="x-large">mdi-bell</v-icon></div>
       <div
         style="margin-left: 2%"
-        v-if="this.readyVideo && !this.selectedVideo && this.myUserId != this.champion"
+        v-if="
+          this.readyVideo &&
+          !this.selectedVideo &&
+          this.myUserId != this.champion
+        "
       >
         <h2>
           지금
@@ -135,7 +138,9 @@
             <v-list-item-group v-model="model">
               <v-list-item
                 v-for="championSong in championSongList"
-                @click="battleApplication(championSong), closeChampionSongListModal()"
+                @click="
+                  battleApplication(championSong), closeChampionSongListModal()
+                "
                 :key="championSong.title"
               >
                 <v-list-item-title
@@ -186,11 +191,19 @@
       </div>
     </Modal> -->
 
-    <div v-if="champion_confirm && this.myUserId == this.champion" style="margin-bottom: 10px;">
-      <h2>도전자로부터 [<span style="color: green">{{nowplaysong}}</span>] 대결 신청이 들어왔습니다!</h2>
+    <div
+      v-if="champion_confirm && this.myUserId == this.champion"
+      style="margin-bottom: 10px"
+    >
+      <h2>
+        도전자로부터 [<span style="color: green">{{ nowplaysong }}</span
+        >] 대결 신청이 들어왔습니다!
+      </h2>
       <h3>대결을 시작하시겠습니까?</h3>
 
-      <v-btn @click="onSelectVideo()" color="green" variant="outlined">확인</v-btn>
+      <v-btn @click="onSelectVideo()" color="green" variant="outlined"
+        >확인</v-btn
+      >
     </div>
 
     <Modal ref="waitingQueueModal">
@@ -332,6 +345,7 @@
     />
 
     <input
+      v-if="this.myUserId == this.sessionInfo.challenger"
       class="btn btn-large btn-warning"
       type="button"
       @click="showChampionSongList"
@@ -340,13 +354,12 @@
     />
 
     <input
-<<<<<<< frontend/src/views/conferences/conference.vue
       v-if="this.myUserId != this.sessionInfo.challenger"
       class="btn btn-large btn-warning"
       type="button"
       @click="showChampionSongShowList"
       value="챔피언 플레이리스트"
-      style="margin-right: 20px;"
+      style="margin-right: 20px"
     />
 
     <input
@@ -357,32 +370,44 @@
       style="margin-top: 20px; margin-bottom: 20px; margin-right: 20px"
     />
 
-
     <input
       class="btn btn-large btn-info"
       type="button"
       @click="startRecord"
       value="녹화 시작"
-      style="margin-top: 20px; margin-bottom: 20px "
+      style="margin-top: 20px; margin-bottom: 20px"
     />
     <!-- 관중들 들어갈 자리 -->
-    <v-card class="audiences" color="#3232FF" style="width: 200px; height:35px; margin-top:10px;"
-      ><h3 style="color: white; margin-top:4px;">관람객</h3></v-card
+    <v-card
+      class="audiences"
+      color="#3232FF"
+      style="width: 200px; height: 35px; margin-top: 10px"
+      ><h3 style="color: white; margin-top: 4px">관람객</h3></v-card
     >
 
     <div class="smallboxb">
       <!--스몰박스 right, 노래화면 오른쪽-->
-        <div>
-          <!-- <div style="position: relative; margin-left: 50px; margin-bottom: 500px"> -->
-        <v-btn @click="imageConvert" style="position:absolute;width:20px;z-index: 3;margin-top: 220px; margin-left: 250px;"><span style="color:black;font-style:bold;">전환</span></v-btn>
+      <div>
+        <!-- <div style="position: relative; margin-left: 50px; margin-bottom: 500px"> -->
+        <v-btn
+          @click="imageConvert"
+          style="
+            position: absolute;
+            width: 20px;
+            z-index: 3;
+            margin-top: 220px;
+            margin-left: 250px;
+          "
+          ><span style="color: black; font-style: bold">전환</span></v-btn
+        >
         <!-- <user-video
         :stream-manager="publisher"
         @click.native="updateMainVideoStreamManager(publisher)"
         style="z-index:1;position:absolute"
         /> -->
         <user-video
-        :stream-manager="publisher"
-        @click.native="updateMainVideoStreamManager(publisher)"
+          :stream-manager="publisher"
+          @click.native="updateMainVideoStreamManager(publisher)"
         />
         <!-- <img
           :src="profileUrl"
@@ -391,14 +416,10 @@
           style="width:300px;height:250px;position:relative;border:1px solid white ;
           z-index: 2;"
         /> -->
-        
+      </div>
 
-          </div>
-   
-
-        <!-- <v-btn @click="imageGet" style="z-index: 3">눌러봐</v-btn> -->
+      <!-- <v-btn @click="imageGet" style="z-index: 3">눌러봐</v-btn> -->
       <!-- </div> -->
-     
 
       <user-video
         v-for="sub in subscribers"
@@ -422,6 +443,7 @@ import ReadyDetail from "./components/ReadyDetail.vue";
 import VoteChallenger from "./components/VoteChallenger.vue";
 import VoteChampion from "./components/VoteChampion.vue";
 import { reactive } from "vue";
+import VueCountdown from "@chenfengyuan/vue-countdown";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 const API_KEY = "AIzaSyBGF5ljIuwHbPn27YSImtkkgk8KooR8q7I";
@@ -435,6 +457,7 @@ export default {
     ReadyDetail,
     VoteChallenger,
     VoteChampion,
+    VueCountdown,
   },
   props: {
     id: "",
@@ -487,71 +510,6 @@ export default {
       challengerStreamManager: undefined,
     };
   },
-  setup() {
-    // 자식 컴포넌트를 핸들링하기 위한 ref
-    const store = useStore();
-    const championSongListModal = ref(null);
-    const waitingQueueModal = ref(null);
-    // Promise 객체를 핸들링하기 위한 ref
-    const resolvePromise = ref(null);
-
-    const showChampionSongList = () => {
-      // showChampionSongList을 직접 컨트롤합니다.
-      championSongListModal.value.open();
-      return new Promise((resolve) => {
-        // resolve 함수를 담아 외부에서 사용합니다.
-        resolvePromise.value = resolve;
-      });
-      // Promise 객체를 사용하여, 현재 모달에서 확인 / 취소의
-      // 응답이 돌아가기 전까지 작업을 기다리게 할 수 있습니다.
-    };
-
-    // 유저 정보, 다이얼로그에 사용할 state
-    const state = reactive({
-      there: true,
-    });
-
-    const showWaitingQueue = () => {
-      waitingQueueModal.value.open();
-      return new Promise((resolve) => {
-        resolvePromise.value = resolve;
-      });
-    };
-
-    const closeChampionSongListModal = () => {
-      championSongListModal.value.close();
-    };
-
-    const closeWaitingQueueModal = () => {
-      waitingQueueModal.value.close();
-    };
-    const confirm = () => {
-      championSongListModal.value.close();
-      resolvePromise.value(true);
-      const url = "#/conferences/" + this.store.state.conferencename + "/";
-      window.open(url); // 새로운 창에서 플레이룸 오픈
-      this.store.state.conferencename = "";
-    };
-
-    const cancel = () => {
-      championSongListModal.value.close();
-      resolvePromise.value(false);
-      this.store.state.conferencename = "";
-    };
-    // async-await을 사용하여, Modal로부터 응답을 기다리게 된다.
-    return {
-      championSongListModal,
-      waitingQueueModal,
-      showChampionSongList,
-      showWaitingQueue,
-      confirm,
-      cancel,
-      closeChampionSongListModal,
-      closeWaitingQueueModal,
-      store,
-      state,
-    };
-  },
   computed: {
     movieVideo() {
       return `https://www.youtube.com/embed/${this.$store.state.movieVideo.key}?autoplay=1`;
@@ -572,7 +530,7 @@ export default {
     this.getname();
     console.log("====================================================");
     console.log(this.subscribers);
-    this.myUserId= localStorage.getItem("userId")
+    this.myUserId = localStorage.getItem("userId");
     // this.getReadyVideo();
   },
   mounted() {
@@ -599,39 +557,42 @@ export default {
         });
     },
 
-       startRecord(){
-        navigator.mediaDevices.getDisplayMedia(
-        {
-          audio:true,
+    startRecord() {
+      navigator.mediaDevices
+        .getDisplayMedia({
+          audio: true,
           video: {
-            mediaSource:"screen",
-          }
-        }
-      ).then((stream)=>{
-        const recorder = new MediaRecorder(stream);
-        recorder.start();
-        const buffer = [];
-        recorder.addEventListener('dataavailable',(event)=>{
-          buffer.push(event.data);
+            mediaSource: "screen",
+          },
         })
-        recorder.addEventListener('stop',()=>{
-          const blob = new Blob(buffer,{
-          type:'video/mp4'
+        .then((stream) => {
+          const recorder = new MediaRecorder(stream);
+          recorder.start();
+          const buffer = [];
+          recorder.addEventListener("dataavailable", (event) => {
+            buffer.push(event.data);
+          });
+          recorder.addEventListener("stop", () => {
+            const blob = new Blob(buffer, {
+              type: "video/mp4",
+            });
+            this.$refs.down.href = URL.createObjectURL(blob);
+            console.log("녹화테스트");
+            console.log(this.$refs.down);
+            this.$refs.down.download = "recording.mp4";
+            this.$refs.down.click();
+          });
         });
-        this.$refs.down.href= URL.createObjectURL(blob);
-        console.log("녹화테스트");
-        console.log(this.$refs.down);
-        this.$refs.down.download="recording.mp4"
-        this.$refs.down.click();
-        })
-      })
-      },
+    },
     // async imageGet() {
     async imageConvert() {
       this.token = localStorage.getItem("jwt");
       console.log("hhhhhhhhhhhh");
       console.log(this.token);
-      this.publisher.stream.applyFilter("GStreamerFilter", {"command": "gdkpixbufoverlay location=/images/img.png offset-x=10 offset-y=10 overlay-height=200 overlay-width=200"})
+      this.publisher.stream.applyFilter("GStreamerFilter", {
+        command:
+          "gdkpixbufoverlay location=/images/img.png offset-x=10 offset-y=10 overlay-height=200 overlay-width=200",
+      });
       axios({
         method: "get",
         url: import.meta.env.VITE_APP_URL + `/api/v1/users/my-page/profile`,
@@ -678,10 +639,10 @@ export default {
       this.TimeCounter = this.nowplaytime;
       var interval = setInterval(() => {
         this.TimeCounter -= 1; //1초씩 감소
-        console.log("시간 : " + this.TimeCounter);
+        // console.log("시간 : " + this.TimeCounter);
         if (this.TimeCounter <= 30) {
           this.vote_please = true;
-          this.session.signal({data: this.vote_please, type:"vote_please"})
+          this.session.signal({ data: this.vote_please, type: "vote_please" });
         }
         if (this.TimeCounter <= 0) this.timerStop(interval);
       }, 1000);
@@ -837,9 +798,6 @@ export default {
         }),
         this.session.on("signal:battlemodalshow", (event) => {
           this.champion_confirm = event.data;
-        }),
-        this.session.on("signal:start_readyVideo", (event) => {
-          this.readyVideo = event.data;
         }),
         this.session.on("signal:start_battle", (event) => {
           this.champion_confirm = event.data;
@@ -1006,7 +964,6 @@ export default {
             );
             alert(token);
             window.close();
-
           });
       });
 
@@ -1247,7 +1204,7 @@ export default {
       return response.data; // The token
     },
   },
-<<<<<<< frontend/src/views/conferences/conference.vue
+
   setup() {
     // 자식 컴포넌트를 핸들링하기 위한 ref
     const store = useStore();
@@ -1328,8 +1285,6 @@ export default {
       store,
     };
   },
-=======
->>>>>>> frontend/src/views/conferences/conference.vue
 };
 </script>
 <style>
@@ -1514,26 +1469,38 @@ video {
   font-weight: bold;
   border-radius: 5px;
 }
-.blinking{
+.blinking {
   -webkit-animation: blink 0.5s ease-in-out alternate;
   -moz-animation: blink 0.5s ease-in-out alternate;
   animation: blink 0.5s ease-in-out alternate;
   animation-iteration-count: 4;
 }
 
-@-webkit-keyframes blink{
-  0% {opacity: 0;}
-  100% {opacity: 1;}
+@-webkit-keyframes blink {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
-@-moz-keyframes blink{
-  0% {opacity: 0;}
-  100% {opacity: 1;}
+@-moz-keyframes blink {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
-@keyframes blink{
-  0% {opacity: 0;}
-  100% {opacity: 1;}
+@keyframes blink {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .exit {
