@@ -3,6 +3,8 @@
     <v-btn class="votebtn" color="green" @click="pickChallenger">
       투표하기
     </v-btn>
+     <!-- <h4 class="blinking" style="width: 300px;">도전자가 대결을 신청하였습니다!</h4> -->
+     <!-- <MARquee style="margin-top:20px;">투표 완료!</MARquee> -->
   </div>
 </template>
 <script>
@@ -38,5 +40,6 @@ export default {
   color: blue;
   background-color: red;
 } */
+
 
 </style>

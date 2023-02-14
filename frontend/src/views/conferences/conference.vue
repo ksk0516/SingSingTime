@@ -6,16 +6,18 @@
       ({ musicOn: this.selectedVideo == true }, { win: this.finish == true })
     "
   >
-    <v-row 
+    <v-row
       style="
         color: white;
-        display: flex;
-        justify-content: space-between;
-        padding-bottom: 50px;
+        margin-left: 100px;
+        margin-right: 50px;
+        padding-bottom: 30px;
       "
+      justify="space-between"
     >
+      <div><v-icon color="yellow" size="x-large">mdi-bell</v-icon></div>
       <div
-        style="margin-left: 40%"
+        style="margin-left: 2%;"
         v-if="this.readyVideo && !this.selectedVideo"
       >
         <h2>
@@ -31,9 +33,21 @@
           />에게 도전하세요!
         </h2>
       </div>
-      <v-col justify="center"  style="margin-left: 5%">
-
-        <vue-countdown :time="5 * 1000" v-slot="{ minutes, seconds }" v-if="this.selectedVideo && !this.finish">
+      <v-col
+        justify="center"
+        v-if="this.selectedVideo && !this.finish"
+        style="padding-top: 0px"
+      >
+        <MARquee
+          style="font-size: 25px"
+          scrollamount="25"
+          direction="right"
+          loop="1"
+          >도전자가
+          <span style="color: orange">{{ nowplaysong }}</span>
+          를(을) 신청하였습니다
+        </MARquee>
+        <vue-countdown :time="nowplaytime * 1000" v-slot="{ minutes, seconds }">
           <h2
             :class="{ hurryup: minutes == 0 && seconds <= 30 }"
             style="margin-top: 50px"
@@ -77,7 +91,7 @@
                 :key="championSong.title"
               >
                 <v-list-item-title
-                  >{{ championSong.title }}
+                  >{{ championSong.title }} - 
 
                   {{ championSong.singer }}</v-list-item-title
                 >
@@ -373,8 +387,9 @@ export default {
       voteBtnShow: false,
       test: false,
       finish: false,
-      nowplaytime: 0,
+      nowplaytime: 0, // 현재 대결곡의 소요 시간
       TimeCounter: 0,
+      nowplaysong: "", // 현재 대결곡
       // likeChampion: 0,
       // likeChallenger: 0,
       winner: "",
@@ -449,18 +464,31 @@ export default {
     },
     onSelectVideo: function (championSong) {
       this.readyVideo = false;
-      // this.nowplaytime = championSong.part4 + 10;
-      this.nowplaytime = 5;
+      this.nowplaytime = championSong.part4 + 10;
+      // this.nowplaytime = 5;
+      this.nowplaysong = championSong.title;
       this.TimeCounter = this.nowplaytime;
       var interval = setInterval(() => {
-        this.TimeCounter-=1; //1초씩 감소
-        console.log("시간 : "+this.TimeCounter);
+        this.TimeCounter -= 1; //1초씩 감소
+        console.log("시간 : " + this.TimeCounter);
         if (this.TimeCounter <= 0) this.timerStop(interval);
       }, 1000);
 
       this.session.signal({
         data: this.readyVideo,
         type: "start_readyVideo",
+      });
+      this.session.signal({
+        data: championSong.title,
+        type: "start_notice",
+      });
+      this.session.signal({
+        data: championSong.part4 + 10,
+        type: "start_nowplaytime",
+      });
+      this.session.signal({
+        data: championSong.part4 + 10,
+        type: "start_timecounter",
       });
       this.selectedVideo = true;
       this.session.signal({
@@ -501,9 +529,10 @@ export default {
       });
       console.log(this.$store.state.video);
     },
-    timerStop: function(Timer) {
+    
+    timerStop: function (Timer) {
       clearInterval(Timer);
-      this.endGame()
+      this.endGame();
     },
 
     onInputSearch: function (inputText) {
@@ -567,6 +596,15 @@ export default {
       }),
         this.session.on("signal:start_readyVideo", (event) => {
           this.readyVideo = event.data;
+        }),
+        this.session.on("signal:start_notice", (event) => {
+          this.nowplaysong = event.data;
+        }),
+        this.session.on("signal:start_nowplaytime", (event) => {
+          this.nowplaytime = event.data;
+        }),
+        this.session.on("signal:start_timecounter", (event) => {
+          this.TimeCounter = event.data;
         }),
         this.session.on("signal:start_selectedVideo", (event) => {
           this.selectedVideo = event.data;
@@ -1230,6 +1268,27 @@ video {
   font-weight: bold;
   border-radius: 5px;
 }
+/* .blinking{
+  -webkit-animation: blink 0.5s ease-in-out alternate;
+  -moz-animation: blink 0.5s ease-in-out alternate;
+  animation: blink 0.5s ease-in-out alternate;
+  animation-iteration-count: 4;
+}
+
+@-webkit-keyframes blink{
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+@-moz-keyframes blink{
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+}
+
+@keyframes blink{
+  0% {opacity: 0;}
+  100% {opacity: 1;}
+} */
 
 .exit {
   float: right;
