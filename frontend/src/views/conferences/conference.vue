@@ -3,15 +3,11 @@
     id="main-container"
     class="container"
     :class="
-      ({ musicOn: this.selectedVideo.length>0}, { win: this.finish == true })
+      ({ musicOn: this.selectedVideo.length > 0 }, { win: this.finish == true })
     "
   >
-<<<<<<< HEAD
 
-=======
->>>>>>> feature/chatting_ks
     <v-row
-      <a ref="down" style="display: none;"></a>
       style="
         color: white;
         margin-left: 100px;
@@ -20,10 +16,15 @@
       "
       justify="space-between"
     >
+      <a ref="down" style="display: none"></a>
       <div><v-icon color="yellow" size="x-large">mdi-bell</v-icon></div>
       <div
         style="margin-left: 2%"
-        v-if="this.readyVideo && !this.selectedVideo && this.myUserId != this.champion"
+        v-if="
+          this.readyVideo &&
+          !this.selectedVideo &&
+          this.myUserId != this.sessionInfo.champion
+        "
       >
         <h2>
           지금
@@ -98,13 +99,13 @@
               X
             </h3>
 
-            <h2>챔피언 {{ this.champion }}님의</h2>
+            <h2>챔피언 {{ this.sessionInfo.champion }}님의</h2>
             <h2>플레이리스트</h2>
 
             <hr />
             <v-list-item-group v-model="model">
               <v-list-item
-                v-for="championSong in championSongList"
+                v-for="championSong in sessionInfo.championSongList"
                 :key="championSong.title"
               >
                 <v-list-item-title
@@ -131,14 +132,16 @@
               X
             </h3>
 
-            <h2>챔피언 {{ this.champion }}님의</h2>
+            <h2>챔피언 {{ this.sessionInfo.champion }}님의</h2>
             <h2>플레이리스트</h2>
 
             <hr />
             <v-list-item-group v-model="model">
               <v-list-item
-                v-for="championSong in championSongList"
-                @click="battleApplication(championSong), closeChampionSongListModal()"
+                v-for="championSong in sessionInfo.championSongList"
+                @click="
+                  battleApplication(championSong), closeChampionSongListModal()
+                "
                 :key="championSong.title"
               >
                 <v-list-item-title
@@ -189,11 +192,19 @@
       </div>
     </Modal> -->
 
-    <div v-if="champion_confirm && this.myUserId == this.champion" style="margin-bottom: 10px;">
-      <h2>도전자로부터 [<span style="color: green">{{nowplaysong}}</span>] 대결 신청이 들어왔습니다!</h2>
+    <div
+      v-if="champion_confirm && this.myUserId == this.sessionInfo.champion"
+      style="margin-bottom: 10px"
+    >
+      <h2>
+        도전자로부터 [<span style="color: green">{{ nowplaysong }}</span
+        >] 대결 신청이 들어왔습니다!
+      </h2>
       <h3>대결을 시작하시겠습니까?</h3>
 
-      <v-btn @click="onSelectVideo()" color="green" variant="outlined">확인</v-btn>
+      <v-btn @click="onSelectVideo()" color="green" variant="outlined"
+        >확인</v-btn
+      >
     </div>
 
     <Modal ref="waitingQueueModal">
@@ -316,6 +327,7 @@
     />
 
     <input
+      v-if="this.myUserId == this.sessionInfo.challenger"
       class="btn btn-large btn-warning"
       type="button"
       @click="showChampionSongList"
@@ -324,13 +336,12 @@
     />
 
     <input
-<<<<<<< frontend/src/views/conferences/conference.vue
       v-if="this.myUserId != this.sessionInfo.challenger"
       class="btn btn-large btn-warning"
       type="button"
       @click="showChampionSongShowList"
       value="챔피언 플레이리스트"
-      style="margin-right: 20px;"
+      style="margin-right: 20px"
     />
 
     <input
@@ -338,11 +349,7 @@
       type="button"
       @click="showWaitingQueue"
       value="도전자 목록"
-<<<<<<< HEAD
-      style="margin-top: 20px; margin-bottom: 20px; margin-right: 20px"
-=======
       style="margin-top: 20px; margin-bottom: 20px;margin-right: 20px;"
->>>>>>> feature/chatting_ks
     />
     <br/>
     <input
@@ -373,32 +380,52 @@
     />
     <a id="download" ref="down" href="#" style="display:none;">Download</a>
 
-
     <input
       class="btn btn-large btn-info"
       type="button"
       @click="startRecord"
       value="녹화 시작"
-      style="margin-top: 20px; margin-bottom: 20px "
+      style="margin-top: 20px; margin-bottom: 20px; margin-right: 20px"
+    />
+
+    <input
+      class="btn btn-large btn-info"
+      type="button"
+      @click="applyStickerFilter()"
+      value="테스트"
+      style="margin-top: 20px; margin-bottom: 20px"
     />
     <!-- 관중들 들어갈 자리 -->
-    <v-card class="audiences" color="#3232FF" style="width: 200px; height:35px; margin-top:10px;"
-      ><h3 style="color: white; margin-top:4px;">관람객</h3></v-card
+    <v-card
+      class="audiences"
+      color="#3232FF"
+      style="width: 200px; height: 35px; margin-top: 10px"
+      ><h3 style="color: white; margin-top: 4px">관람객</h3></v-card
     >
 
     <div class="smallboxb">
       <!--스몰박스 right, 노래화면 오른쪽-->
-        <div>
-          <!-- <div style="position: relative; margin-left: 50px; margin-bottom: 500px"> -->
-        <v-btn @click="imageConvert" style="position:absolute;width:20px;z-index: 3;margin-top: 220px; margin-left: 250px;"><span style="color:black;font-style:bold;">전환</span></v-btn>
+      <div>
+        <!-- <div style="position: relative; margin-left: 50px; margin-bottom: 500px"> -->
+        <!-- <v-btn
+          @click="imageConvert"
+          style="
+            position: absolute;
+            width: 20px;
+            z-index: 3;
+            margin-top: 220px;
+            margin-left: 250px;
+          "
+          ><span style="color: black; font-style: bold">전환</span></v-btn
+        > -->
         <!-- <user-video
         :stream-manager="publisher"
         @click.native="updateMainVideoStreamManager(publisher)"
         style="z-index:1;position:absolute"
         /> -->
         <user-video
-        :stream-manager="publisher"
-        @click.native="updateMainVideoStreamManager(publisher)"
+          :stream-manager="publisher"
+          @click.native="updateMainVideoStreamManager(publisher)"
         />
         <!-- <img
           :src="profileUrl"
@@ -407,14 +434,10 @@
           style="width:300px;height:250px;position:relative;border:1px solid white ;
           z-index: 2;"
         /> -->
-        
+      </div>
 
-          </div>
-   
-
-        <!-- <v-btn @click="imageGet" style="z-index: 3">눌러봐</v-btn> -->
+      <!-- <v-btn @click="imageGet" style="z-index: 3">눌러봐</v-btn> -->
       <!-- </div> -->
-     
 
       <user-video
         v-for="sub in subscribers"
@@ -438,6 +461,7 @@ import ReadyDetail from "./components/ReadyDetail.vue";
 import VoteChallenger from "./components/VoteChallenger.vue";
 import VoteChampion from "./components/VoteChampion.vue";
 import { reactive } from "vue";
+import VueCountdown from "@chenfengyuan/vue-countdown";
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 const API_KEY = "AIzaSyBGF5ljIuwHbPn27YSImtkkgk8KooR8q7I";
@@ -482,6 +506,7 @@ export default {
     ReadyDetail,
     VoteChallenger,
     VoteChampion,
+    VueCountdown,
   },
   props: {
     id: "",
@@ -491,8 +516,11 @@ export default {
       sessionInfo: {
         waitingQueue: [],
         challenger: "",
+        challengerUsername: "",
         likeChampion: 0,
         likeChallenger: 0,
+        champion: "",
+        championSongList: [],
       },
       inputValue: "",
       videos: [],
@@ -511,8 +539,8 @@ export default {
       myUserName: localStorage.getItem("nickname"),
       myUserId: localStorage.getItem("userId"),
       token: null, // jwt토큰, 오픈비두 세션 접속용 getToken 파라미터랑 다름, this.token으로 구분
-      champion: "",
-      championSongList: [],
+      // champion: "",
+      // championSongList: [],
       readyVideo: false, // 미러볼 비디오 화면을 띄울지 결정할 변수
       ready: false,
       voteBtnShow: false,
@@ -520,84 +548,16 @@ export default {
       finish: false,
       nowplaytime: 0, // 현재 대결곡의 소요 시간
       TimeCounter: 0,
-<<<<<<< HEAD
       nowplaysong: "", // 현재 대결곡
       champion_confirm: false,
       vote_please: false, // 30초 남았을때 공지 띄우기
 
       // likeChampion: 0,
       // likeChallenger: 0,
-=======
->>>>>>> feature/chatting_ks
       winner: "",
       members: [],
       championStreamManager: undefined,
       challengerStreamManager: undefined,
-    };
-  },
-  setup() {
-    // 자식 컴포넌트를 핸들링하기 위한 ref
-    const store = useStore();
-    const championSongListModal = ref(null);
-    const waitingQueueModal = ref(null);
-    // Promise 객체를 핸들링하기 위한 ref
-    const resolvePromise = ref(null);
-
-    const showChampionSongList = () => {
-      // showChampionSongList을 직접 컨트롤합니다.
-      championSongListModal.value.open();
-      return new Promise((resolve) => {
-        // resolve 함수를 담아 외부에서 사용합니다.
-        resolvePromise.value = resolve;
-      });
-      // Promise 객체를 사용하여, 현재 모달에서 확인 / 취소의
-      // 응답이 돌아가기 전까지 작업을 기다리게 할 수 있습니다.
-    };
-
-    // 유저 정보, 다이얼로그에 사용할 state
-    const state = reactive({
-      there: true,
-    });
-
-    const showWaitingQueue = () => {
-      waitingQueueModal.value.open();
-      return new Promise((resolve) => {
-        resolvePromise.value = resolve;
-      });
-    };
-
-    const closeChampionSongListModal = () => {
-      championSongListModal.value.close();
-    };
-
-    const closeWaitingQueueModal = () => {
-      waitingQueueModal.value.close();
-    };
-    const confirm = () => {
-      championSongListModal.value.close();
-      resolvePromise.value(true);
-      const url = "#/conferences/" + this.store.state.conferencename + "/";
-      window.open(url); // 새로운 창에서 플레이룸 오픈
-      this.store.state.conferencename = "";
-    };
-
-    const cancel = () => {
-      championSongListModal.value.close();
-      resolvePromise.value(false);
-      this.store.state.conferencename = "";
-    };
-    // async-await을 사용하여, Modal로부터 응답을 기다리게 된다.
-    return {
-      championSongListModal,
-      waitingQueueModal,
-      showChampionSongList,
-      showWaitingQueue,
-      confirm,
-      cancel,
-      closeChampionSongListModal,
-      closeWaitingQueueModal,
-      store,
-      state,
     };
   },
   computed: {
@@ -619,13 +579,14 @@ export default {
     this.getname();
     console.log("====================================================");
     console.log(this.subscribers);
-    this.myUserId= localStorage.getItem("userId")
+    this.myUserId = localStorage.getItem("userId");
     // this.getReadyVideo();
   },
   mounted() {
     // this.getReadyVideo();
     // this.ready = !this.ready;
     this.test = !this.test;
+    // this.leavePlayroom();
   },
   updated() {
     this.getReadyVideo();
@@ -703,39 +664,49 @@ export default {
         });
     },
 
-       startRecord(){
-        navigator.mediaDevices.getDisplayMedia(
-        {
-          audio:true,
+    startRecord() {
+      navigator.mediaDevices
+        .getDisplayMedia({
+          audio: true,
           video: {
-            mediaSource:"screen",
-          }
-        }
-      ).then((stream)=>{
-        const recorder = new MediaRecorder(stream);
-        recorder.start();
-        const buffer = [];
-        recorder.addEventListener('dataavailable',(event)=>{
-          buffer.push(event.data);
+            mediaSource: "screen",
+          },
         })
-        recorder.addEventListener('stop',()=>{
-          const blob = new Blob(buffer,{
-          type:'video/mp4'
+        .then((stream) => {
+          const recorder = new MediaRecorder(stream);
+          recorder.start();
+          const buffer = [];
+          recorder.addEventListener("dataavailable", (event) => {
+            buffer.push(event.data);
+          });
+          recorder.addEventListener("stop", () => {
+            const blob = new Blob(buffer, {
+              type: "video/mp4",
+            });
+            this.$refs.down.href = URL.createObjectURL(blob);
+            console.log("녹화테스트");
+            console.log(this.$refs.down);
+            this.$refs.down.download = "recording.mp4";
+            this.$refs.down.click();
+          });
         });
-        this.$refs.down.href= URL.createObjectURL(blob);
-        console.log("녹화테스트");
-        console.log(this.$refs.down);
-        this.$refs.down.download="recording.mp4"
-        this.$refs.down.click();
-        })
-      })
-      },
+    },
     // async imageGet() {
-    async imageConvert() {
+    imageConvert() {
       this.token = localStorage.getItem("jwt");
       console.log("hhhhhhhhhhhh");
       console.log(this.token);
-      this.publisher.stream.applyFilter("GStreamerFilter", {"command": "gdkpixbufoverlay location=/images/img.png offset-x=10 offset-y=10 overlay-height=200 overlay-width=200"})
+      this.publisher.stream
+        .applyFilter("GStreamerFilter", {
+          command: "videoflip method=vertical-flip",
+        })
+        .then(() => {
+          console.log("Video rotated!");
+        })
+        .catch((error) => {
+          console.error(error);
+        });
+
       axios({
         method: "get",
         url: import.meta.env.VITE_APP_URL + `/api/v1/users/my-page/profile`,
@@ -748,14 +719,41 @@ export default {
           this.profileUrl = res.data;
           console.log("4444444444444444444");
           console.log(this.profileUrl);
-          console.log(this.state.there);
-          this.state.there = !this.state.there;
-          console.log(this.state.there);
+          // console.log(this.state.there);
+          // this.state.there = !this.state.there;
+          // console.log(this.state.there);
         })
         .catch((err) => {
           console.log(err);
         });
     },
+
+    // aa
+    // Kurento faceOverlayFilter 적용한 스티커 필터
+    applyStickerFilter() {
+      // bottombar 필터 해제 버튼 활성화
+      // this.$refs.bottombar.state.filter = true;
+      this.publisher.stream.applyFilter("FaceOverlayFilter").then((filter) => {
+        var offsetX;
+        var offsetY;
+        var width;
+        var height;
+        offsetX = "-0.5F";
+        offsetY = "-1.0F";
+        width = "2.1F";
+        height = "1.5F";
+        filter.execMethod("setOverlayedImage", {
+          uri: "https://sstvideo.s3.ap-northeast-2.amazonaws.com/images/aaaa.jpg",
+          offsetXPercent: offsetX,
+          offsetYPercent: offsetY,
+          widthPercent: width,
+          heightPercent: height,
+        });
+      });
+      // bottombar 필터 해제 버튼 활성화
+      // this.$refs.bottombar.state.filter = true;
+    },
+
     getReadyVideo: function () {
       this.session
         .signal({
@@ -782,10 +780,10 @@ export default {
       this.TimeCounter = this.nowplaytime;
       var interval = setInterval(() => {
         this.TimeCounter -= 1; //1초씩 감소
-        console.log("시간 : " + this.TimeCounter);
+        // console.log("시간 : " + this.TimeCounter);
         if (this.TimeCounter <= 30) {
           this.vote_please = true;
-          this.session.signal({data: this.vote_please, type:"vote_please"})
+          this.session.signal({ data: this.vote_please, type: "vote_please" });
         }
         if (this.TimeCounter <= 0) this.timerStop(interval);
       }, 1000);
@@ -942,9 +940,6 @@ export default {
         this.session.on("signal:battlemodalshow", (event) => {
           this.champion_confirm = event.data;
         }),
-        this.session.on("signal:start_readyVideo", (event) => {
-          this.readyVideo = event.data;
-        }),
         this.session.on("signal:start_battle", (event) => {
           this.champion_confirm = event.data;
         }),
@@ -1001,6 +996,10 @@ export default {
           console.log(event);
           console.log(JSON.parse(event.data).challenger);
           this.sessionInfo.challenger = JSON.parse(event.data).challenger;
+          this.sessionInfo.champion = JSON.parse(event.data).champion;
+          this.sessionInfo.championSongList = JSON.parse(
+            event.data
+          ).championSongList;
           // 방 멤버들 중 도전자 유저의 화면 생성
           console.log(this.members);
           for (let user of this.members) {
@@ -1095,6 +1094,10 @@ export default {
               mirror: false, // Whether to mirror your local video or not
             });
 
+            // aa
+            // Kurento 필터 적용을 위해 remote를 subscribe
+            publisher.subscribeToRemote(true);
+
             // Set the main video in the page to display our webcam and store our Publisher
             this.mainStreamManager = publisher;
             this.members.push(publisher);
@@ -1110,9 +1113,7 @@ export default {
               error.code,
               error.message
             );
-            alert(token);
             window.close();
-
           });
       });
 
@@ -1130,8 +1131,8 @@ export default {
       this.publisher = undefined;
       this.subscribers = [];
       this.OV = undefined;
-
-      // 방 정원수 감소
+      // 윈도우 언로드 되기전에 방 정원수 감소
+      // 윈도우 리로드에는 여길 안거치니까 감소를 안함
       this.leavePlayroom();
       // Remove beforeunload listener
       window.removeEventListener("beforeunload", this.leaveSession);
@@ -1151,16 +1152,23 @@ export default {
       })
         .then((res) => {
           // this.sessionInfo = res.data;
-          this.champion = res.data.champion;
+          this.sessionInfo.champion = res.data.champion;
           this.getChampionList();
 
           // 방 멤버들 중 챔피언 유저의 화면 생성
           for (let user of this.members) {
             console.log(user.stream.connection.data);
             if (
-              JSON.parse(user.stream.connection.data).clientId == this.champion
+              JSON.parse(user.stream.connection.data).clientId ==
+              this.sessionInfo.champion
             ) {
               this.championStreamManager = user;
+              this.championUsername = JSON.parse(
+                user.stream.connection.data
+              ).clientNickname;
+              // console.log("jjjjjjjjjjjjjjjjjj")
+              // console.log(this.champion)
+              // console.log(user.stream.connection.data)
             }
           }
         })
@@ -1177,8 +1185,9 @@ export default {
           `/api/v1/playrooms/playlist/${this.mySessionId}`,
       })
         .then((res) => {
-          this.championSongList = res.data;
+          console.log("jjjjjjjjjjjjjjjj");
           console.log(res.data);
+          this.sessionInfo.championSongList = res.data;
         })
         .catch((err) => {
           alert(err);
@@ -1202,23 +1211,27 @@ export default {
       });
       this.sessionInfo.likeChampion = 0;
       this.sessionInfo.likeChallenger = 0;
-      this.champion =
-        this.winner == "챔피언" ? this.champion : this.sessionInfo.challenger;
+      this.sessionInfo.champion =
+        this.winner == "챔피언"
+          ? this.sessionInfo.champion
+          : this.sessionInfo.challenger;
+      // 시그널 필요
       axios({
         method: "put",
         url: import.meta.env.VITE_APP_URL + `/api/v1/playrooms/end-song`,
         data: {
           sessionId: this.mySessionId,
-          championId: this.champion,
+          championId: this.sessionInfo.champion,
         },
       })
         .then((res) => {
           console.log("게임끝난 상태에서 data 받아오기!!!!");
           console.log(res);
           alert(
-            this.champion + `님이 ${res.data.winCnt}연승을 달성하셨습니다!!!`
+            this.sessionInfo.champion +
+              `님이 ${res.data.winCnt}연승을 달성하셨습니다!!!`
           );
-          this.championSongList = res.data.championSongList;
+          this.sessionInfo.championSongList = res.data.championSongList;
           const next = this.dequeue();
           console.log("next출력");
           console.log(next);
@@ -1245,8 +1258,6 @@ export default {
           //     }
           // }
         })
-<<<<<<< HEAD
-=======
         .then(() => {
           console.log("855");
           for (let subscriber of this.subscribers) {
@@ -1265,10 +1276,10 @@ export default {
             }
           }
         })
->>>>>>> feature/chatting_ks
         .catch((err) => {
           alert(err);
         });
+      window.location.reload(true);
     },
     voteChampion() {
       this.voteBtnShow = false;
@@ -1310,8 +1321,7 @@ export default {
           return;
         }
       }
-      this.enqueue(myUserId);
-      console.log(this.sessionInfo.waitingQueue);
+      this.enqueue(this.myUserId);
       console.log("대기열 출력!!");
       console.log(this.sessionInfo.waitingQueue);
       this.session.signal({
@@ -1346,38 +1356,7 @@ export default {
       console.log(sessionId);
       return await this.createToken(sessionId);
     },
-<<<<<<< HEAD
-=======
-  
-    // startRecord(){
-    //     navigator.mediaDevices.getDisplayMedia(
-    //     {
-    //       audio:true,
-    //       video: {
-    //         mediaSource:"screen",
-    //       }
-    //     }
-    //   ).
-    //   then((stream)=>{
-    //     const recorder = new MediaRecorder(stream);
-    //     recorder.start();
-    //     const buffer = [];
-    //     recorder.addEventListener('dataavailable',(event)=>{
-    //       buffer.push(event.data);
-    //     })
-    //     recorder.addEventListener('stop',()=>{
-    //       const blob = new Blob(buffer,{
-    //       type:'video/mp4'
-    //     });
-    //     this.$refs.down.href= URL.createObjectURL(blob);
-    //     console.log("녹화테스트");
-    //     console.log(this.$refs.down);
-    //     this.$refs.down.download="recording.mp4"
-    //     this.$refs.down.click();
-    //     })
-    //   })
-    //   },
->>>>>>> feature/chatting_ks
+
     async createSession(sessionId) {
       this.token = localStorage.getItem("jwt");
       const response = await axios.post(
@@ -1399,7 +1378,15 @@ export default {
           "/api/v1/openvidu/sessions/" +
           sessionId +
           "/connections",
-        {},
+        {
+          // aa
+          // filter 사용을 위해 create connection 시 body를 추가
+          type: "WEBRTC",
+          role: "PUBLISHER",
+          kurentoOptions: {
+            allowedFilters: ["GStreamerFilter", "FaceOverlayFilter"],
+          },
+        },
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -1407,11 +1394,6 @@ export default {
       return response.data; // The token
     }
   },
-<<<<<<< HEAD
-<<<<<<< frontend/src/views/conferences/conference.vue
-=======
-
->>>>>>> feature/chatting_ks
   setup() {
     // 자식 컴포넌트를 핸들링하기 위한 ref
     const store = useStore();
@@ -1492,8 +1474,6 @@ export default {
       store,
     };
   },
-=======
->>>>>>> frontend/src/views/conferences/conference.vue
 };
 </script>
 <style>
@@ -1678,26 +1658,38 @@ video {
   font-weight: bold;
   border-radius: 5px;
 }
-.blinking{
+.blinking {
   -webkit-animation: blink 0.5s ease-in-out alternate;
   -moz-animation: blink 0.5s ease-in-out alternate;
   animation: blink 0.5s ease-in-out alternate;
   animation-iteration-count: 4;
 }
 
-@-webkit-keyframes blink{
-  0% {opacity: 0;}
-  100% {opacity: 1;}
+@-webkit-keyframes blink {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
-@-moz-keyframes blink{
-  0% {opacity: 0;}
-  100% {opacity: 1;}
+@-moz-keyframes blink {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
-@keyframes blink{
-  0% {opacity: 0;}
-  100% {opacity: 1;}
+@keyframes blink {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 .exit {
