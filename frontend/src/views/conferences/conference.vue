@@ -41,14 +41,14 @@
 
       <v-col
         justify="center"
-        v-if="this.selectedVideo && !this.finish"
+        v-if="this.selectedVideo && (this.finish==false)"
         style="padding-top: 0px"
       >
         <MARquee
           style="font-size: 25px"
           scrollamount="25"
           direction="right"
-          loop="1"
+          loop="3"
           >도전자가
           <span style="color: orange">{{ nowplaysong }}</span>
           를(을) 신청하였습니다. 대결이 시작됩니다!
@@ -64,14 +64,29 @@
           <span style="color: orange">30초</span>
           남았습니다. 투표를 진행해주세요!
         </MARquee> -->
-        <vue-countdown :time="nowplaytime * 1000" v-slot="{ minutes, seconds }">
-          <h2
-            :class="{ hurryup: minutes == 0 && seconds <= 30 }"
-            style="margin-top: 50px"
+        <v-row justify="center">
+          <vue-countdown :time="20 * 1000" v-slot="{ seconds }" v-if="nowPart != false">
+            <h2 style="margin-top: 50px; margin-right: 370px">
+              {{ seconds }} 초
+            </h2>
+          </vue-countdown>
+          <vue-countdown
+            :time="nowplaytime * 1000"
+            v-slot="{ minutes, seconds }"
           >
-            남은 투표 시간 : {{ minutes }} 분 {{ seconds }} 초
-          </h2>
-        </vue-countdown>
+            <h2
+              :class="{ hurryup: minutes == 0 && seconds <= 30 }"
+              style="margin-top: 50px"
+            >
+              남은 투표 시간 : {{ minutes }} 분 {{ seconds }} 초
+            </h2>
+          </vue-countdown>
+          <vue-countdown :time="20 * 1000" v-slot="{ seconds }" v-if="nowPart == false">
+            <h2 style="margin-top: 50px; margin-left: 320px">
+              {{ seconds }} 초
+            </h2>
+          </vue-countdown>
+        </v-row>
       </v-col>
 
       <div>
@@ -268,7 +283,7 @@
 
         <div class="musicbox">
           <SongDetail
-            v-if="this.selectedVideo && !this.finish"
+            v-if="this.selectedVideo && (this.finish==false)"
             :session="session"
             @endGame="endGame"
           />
@@ -467,7 +482,7 @@ export default {
       sessionInfo: {
         waitingQueue: [],
         challenger: "",
-        challengerUsername:"",
+        challengerUsername: "",
         likeChampion: 0,
         likeChallenger: 0,
         champion: "",
@@ -502,7 +517,8 @@ export default {
       nowplaysong: "", // 현재 대결곡
       champion_confirm: false,
       vote_please: false, // 30초 남았을때 공지 띄우기
-
+      nowPart: true, // 파트를 나누기위한 변수
+      partTime: 0, // 한 파트당 20초
       // likeChampion: 0,
       // likeChallenger: 0,
       winner: "",
@@ -642,6 +658,7 @@ export default {
       this.TimeCounter = this.nowplaytime;
       var interval = setInterval(() => {
         this.TimeCounter -= 1; //1초씩 감소
+
         // console.log("시간 : " + this.TimeCounter);
         if (this.TimeCounter <= 30) {
           this.vote_please = true;
@@ -649,6 +666,10 @@ export default {
         }
         if (this.TimeCounter <= 0) this.timerStop(interval);
       }, 1000);
+
+      setInterval(() => {
+          this.session.signal({ data: !this.nowPart, type: "part_change" });
+        }, 20000);
 
       this.session.signal({
         data: this.readyVideo,
@@ -718,7 +739,7 @@ export default {
       // console.log("챔피언 아이디는!!!" + this.champion);
       // console.log(this.myUserId)
       this.nowplaysong = championSong.title;
-      this.nowplaytime = championSong.part4 + 10;
+      this.nowplaytime = championSong.part4 + 10 +4;
       this.champion_confirm = true;
       this.session.signal({ data: championSong.title, type: "battleApply" });
       this.session.signal({
@@ -820,6 +841,9 @@ export default {
         this.session.on("signal:start_selectedVideo", (event) => {
           this.selectedVideo = event.data;
         }),
+        // this.session.on("signal:selectVideo_false", (event) => {
+        //   this.selectedVideo = event.data;
+        // }),
         this.session.on("signal:start_voteBtnShow", (event) => {
           this.voteBtnShow = event.data;
         }),
@@ -837,6 +861,14 @@ export default {
         }),
         this.session.on("signal:vote_please", (event) => {
           this.vote_please = event.data;
+        }),
+        this.session.on("signal:part_time", (event) => {
+          console.log("time시그널 받았어!!!!!!!!!!!!!!!1")
+          this.partTime = event.data;
+        }),
+        this.session.on("signal:part_change", (event) => {
+          console.log("change시그널 받았어!!!!!!!!!!!!!!!1")
+          this.nowPart = event.data;
         }),
         this.session.on("signal:enterNewUser", (event) => {
           this.sessionInfo.challenger = JSON.parse(event.data).challenger;
@@ -857,7 +889,9 @@ export default {
           console.log(JSON.parse(event.data).challenger);
           this.sessionInfo.challenger = JSON.parse(event.data).challenger;
           this.sessionInfo.champion = JSON.parse(event.data).champion;
-          this.sessionInfo.championSongList = JSON.parse(event.data).championSongList;
+          this.sessionInfo.championSongList = JSON.parse(
+            event.data
+          ).championSongList;
           // 방 멤버들 중 도전자 유저의 화면 생성
           console.log(this.members);
           for (let user of this.members) {
@@ -1014,10 +1048,13 @@ export default {
           for (let user of this.members) {
             console.log(user.stream.connection.data);
             if (
-              JSON.parse(user.stream.connection.data).clientId == this.sessionInfo.champion
+              JSON.parse(user.stream.connection.data).clientId ==
+              this.sessionInfo.champion
             ) {
               this.championStreamManager = user;
-              this.championUsername = JSON.parse(user.stream.connection.data).clientNickname;
+              this.championUsername = JSON.parse(
+                user.stream.connection.data
+              ).clientNickname;
               // console.log("jjjjjjjjjjjjjjjjjj")
               // console.log(this.champion)
               // console.log(user.stream.connection.data)
@@ -1037,7 +1074,7 @@ export default {
           `/api/v1/playrooms/playlist/${this.mySessionId}`,
       })
         .then((res) => {
-          console.log("jjjjjjjjjjjjjjjj")
+          console.log("jjjjjjjjjjjjjjjj");
           console.log(res.data);
           this.sessionInfo.championSongList = res.data;
         })
@@ -1046,11 +1083,17 @@ export default {
         });
     },
     endGame() {
+      // console.log("=====================end")
       this.finish = true;
       this.session.signal({
         data: this.finish,
         type: "endalert",
       });
+      // this.selectVideo = false;
+      // this.session.signal({
+      //   data: this.selectVideo,
+      //   type:"selectVideo_false"
+      // })
       // console.log("게임 종료!!!!!!!" + this.finish)
       if (this.sessionInfo.likeChampion >= this.sessionInfo.likeChallenger) {
         this.winner = "챔피언";
@@ -1063,8 +1106,10 @@ export default {
       });
       this.sessionInfo.likeChampion = 0;
       this.sessionInfo.likeChallenger = 0;
-      this.sessionInfo.champion = 
-        this.winner == "챔피언" ? this.sessionInfo.champion : this.sessionInfo.challenger;
+      this.sessionInfo.champion =
+        this.winner == "챔피언"
+          ? this.sessionInfo.champion
+          : this.sessionInfo.challenger;
       // 시그널 필요
       axios({
         method: "put",
@@ -1078,7 +1123,8 @@ export default {
           console.log("게임끝난 상태에서 data 받아오기!!!!");
           console.log(res);
           alert(
-            this.sessionInfo.champion + `님이 ${res.data.winCnt}연승을 달성하셨습니다!!!`
+            this.sessionInfo.champion +
+              `님이 ${res.data.winCnt}연승을 달성하셨습니다!!!`
           );
           this.sessionInfo.championSongList = res.data.championSongList;
           const next = this.dequeue();
@@ -1109,7 +1155,7 @@ export default {
         .catch((err) => {
           alert(err);
         });
-        window.location.reload(true);
+      // window.location.reload(true);
     },
     voteChampion() {
       this.voteBtnShow = false;
