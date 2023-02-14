@@ -385,6 +385,7 @@
       value="테스트"
       style="margin-top: 20px; margin-bottom: 20px"
     />
+
     <!-- 관중들 들어갈 자리 -->
     <v-card
       class="audiences"
@@ -643,12 +644,12 @@ export default {
         var offsetY;
         var width;
         var height;
-        offsetX = "-0.5F";
-        offsetY = "-1.0F";
-        width = "2.1F";
-        height = "1.5F";
+        offsetX = "-0.7F";
+        offsetY = "-0.7F";
+        width = "2.3";
+        height = "2.3";
         filter.execMethod("setOverlayedImage", {
-          uri: "https://sstvideo.s3.ap-northeast-2.amazonaws.com/images/aaaa.jpg",
+          uri: "https://sstvideo.s3.ap-northeast-2.amazonaws.com/images/mask2.png",
           offsetXPercent: offsetX,
           offsetYPercent: offsetY,
           widthPercent: width,
