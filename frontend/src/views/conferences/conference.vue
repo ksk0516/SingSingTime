@@ -500,7 +500,7 @@ export default {
     this.getReadyVideo();
   },
   methods: {
-<<<<<<< frontend/src/views/conferences/conference.vue
+
     async imageGet() {
       this.token = localStorage.getItem("jwt");
       console.log("hhhhhhhhhhhh");
@@ -523,7 +523,7 @@ export default {
         })
         .catch((err) => {
           console.log(err);
-=======
+
     leavePlayroom() {
       axios({
         method: "delete",
@@ -1079,8 +1079,7 @@ export default {
       return response.data; // The token
     },
   },
-<<<<<<< frontend/src/views/conferences/conference.vue
-=======
+
   setup() {
     // 자식 컴포넌트를 핸들링하기 위한 ref
     const store = useStore();
