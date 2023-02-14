@@ -1109,6 +1109,7 @@ export default {
         .catch((err) => {
           alert(err);
         });
+        window.location.reload(true);
     },
     voteChampion() {
       this.voteBtnShow = false;
