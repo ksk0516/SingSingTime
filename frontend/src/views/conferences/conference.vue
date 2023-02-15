@@ -1,4 +1,5 @@
 <template>
+  <v-col>
   <div
     id="main-container"
     class="container"
@@ -446,6 +447,14 @@
       />
     </div>
   </div>
+</v-col>
+<v-col>
+    <room-chat
+				ref="chat"
+				@message="sendMessage"
+				:subscribers="subscribers"
+			></room-chat>
+  </v-col>
 </template>
 
 <script>
@@ -461,6 +470,7 @@ import VoteChallenger from "./components/VoteChallenger.vue";
 import VoteChampion from "./components/VoteChampion.vue";
 import { reactive } from "vue";
 import VueCountdown from "@chenfengyuan/vue-countdown";
+import RoomChat from './components/room-chat.vue';
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 const API_KEY = "AIzaSyBGF5ljIuwHbPn27YSImtkkgk8KooR8q7I";
@@ -505,6 +515,7 @@ export default {
     VoteChallenger,
     VoteChampion,
     VueCountdown,
+    RoomChat,
   },
   props: {
     id: "",
@@ -591,6 +602,34 @@ export default {
     this.getReadyVideo();
   },
   methods: {
+    sendMessage({ content, to }) {
+			let now = new Date();
+			let current = now.toLocaleTimeString([], {
+				hour: '2-digit',
+				minute: '2-digit',
+				hour12: false, // true인 경우 오후 10:25와 같이 나타냄.
+			});
+			let messageData = {
+				content: content,
+				sender: this.myUserName,
+				time: current,
+			};
+			// 전체 메시지
+			if (to === 'all') {
+				this.session
+					.signal({
+						data: JSON.stringify(messageData),
+						to: [],
+						type: 'public-chat',
+					})
+					.then(() => {
+						console.log('메시지 전송 완료');
+					})
+					.catch(error => {
+						console.log(error);
+					});
+			}
+		},
     async capture() {
       this.$refs.captureBtn.style.display = "none";
       const audio = true;
@@ -958,7 +997,8 @@ export default {
 
       // --- 3) Specify the actions when events take place in the session ---
       // 중간에 다른 유저가 들어왔을 때 도전자 data받기
-
+      			// public 채팅 signal 받기
+      
       this.session.on("signal:endalert", (event) => {
         this.finish = event.data;
       }),
@@ -1021,6 +1061,14 @@ export default {
             }
           }
         }),
+        this.session.on('signal:public-chat', event => {
+				this.$refs.chat.addMessage(
+					event.data,
+					JSON.parse(event.data).sender === this.myUserName,
+					false,
+				);
+			});
+
         // 도전 이벤트 발생했을 때
         this.session.on("signal:challenge", (event) => {
           console.log("여기가 문제??");
