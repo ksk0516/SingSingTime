@@ -41,7 +41,7 @@
 
       <v-col
         justify="center"
-        v-if="this.selectedVideo && (this.finish==false)"
+        v-if="this.selectedVideo && this.finish == false"
         style="padding-top: 0px"
       >
         <MARquee
@@ -65,7 +65,11 @@
           남았습니다. 투표를 진행해주세요!
         </MARquee> -->
         <v-row justify="center">
-          <vue-countdown :time="20 * 1000" v-slot="{ seconds }" v-if="nowPart != false">
+          <vue-countdown
+            :time="(20 * 1000)*0.97"
+            v-slot="{ seconds }"
+            v-if="this.nowPart == 'champion'"
+          >
             <h2 style="margin-top: 50px; margin-right: 370px">
               {{ seconds }} 초
             </h2>
@@ -81,7 +85,11 @@
               남은 투표 시간 : {{ minutes }} 분 {{ seconds }} 초
             </h2>
           </vue-countdown>
-          <vue-countdown :time="20 * 1000" v-slot="{ seconds }" v-if="nowPart == false">
+          <vue-countdown
+            :time="(20 * 1000)*0.97"
+            v-slot="{ seconds }"
+            v-if="this.nowPart == 'challenger'"
+          >
             <h2 style="margin-top: 50px; margin-left: 320px">
               {{ seconds }} 초
             </h2>
@@ -283,7 +291,7 @@
 
         <div class="musicbox">
           <SongDetail
-            v-if="this.selectedVideo && (this.finish==false)"
+            v-if="this.selectedVideo && this.finish == false"
             :session="session"
             @endGame="endGame"
           />
@@ -517,8 +525,9 @@ export default {
       nowplaysong: "", // 현재 대결곡
       champion_confirm: false,
       vote_please: false, // 30초 남았을때 공지 띄우기
-      nowPart: true, // 파트를 나누기위한 변수
-      partTime: 0, // 한 파트당 20초
+      nowPart: "champion", // 파트를 나누기위한 변수
+      partTime: 20, // 한 파트당 20초
+      partTimeCounter: 0,
       // likeChampion: 0,
       // likeChallenger: 0,
       winner: "",
@@ -660,16 +669,36 @@ export default {
         this.TimeCounter -= 1; //1초씩 감소
 
         // console.log("시간 : " + this.TimeCounter);
-        if (this.TimeCounter <= 30) {
+        if (this.TimeCounter == 30) {
           this.vote_please = true;
           this.session.signal({ data: this.vote_please, type: "vote_please" });
         }
-        if (this.TimeCounter <= 0) this.timerStop(interval);
+        if (this.TimeCounter <= 0) {
+          console.log("timeStop22222");
+          this.timerStop(interval);
+
+        }
       }, 1000);
 
+      var part = "";
       setInterval(() => {
-          this.session.signal({ data: !this.nowPart, type: "part_change" });
-        }, 20000);
+        if (this.nowPart == "champion") {
+          part = "challenger"
+        } else {
+          part = "champion"
+        }
+        this.session.signal({ data: part, type: "part_change" });
+      }, 20*1000);
+
+      // this.partTimeCounter = this.partTime;
+      // this.session.signal({ data: this.partTime, type: "time_reset" });
+      // var partinterval = setInterval(() => {
+      //   this.partTimeCounter -= 1; //1초씩 감소
+      //   if (this.partTimeCounter == -1) {
+      //     this.session.signal({ data: this.nowPart, type: "part_change" });
+      //     this.parttimerStop(partinterval);
+      //   }
+      // }, 1000);
 
       this.session.signal({
         data: this.readyVideo,
@@ -739,11 +768,12 @@ export default {
       // console.log("챔피언 아이디는!!!" + this.champion);
       // console.log(this.myUserId)
       this.nowplaysong = championSong.title;
-      this.nowplaytime = championSong.part4 + 10 +4;
+      this.nowplaytime = (championSong.part4 + 10)*0.9;
+      // this.nowplaytime = 60;
       this.champion_confirm = true;
       this.session.signal({ data: championSong.title, type: "battleApply" });
       this.session.signal({
-        data: championSong.part4 + 10,
+        data: (championSong.part4 + 10)*0.9,
         type: "battleApplySongTime",
       });
       this.session.signal({ data: true, type: "battlemodalshow" });
@@ -752,6 +782,9 @@ export default {
     timerStop: function (Timer) {
       clearInterval(Timer);
       this.endGame();
+    },
+    parttimerStop: function (Timer) {
+      clearInterval(Timer);
     },
 
     onInputSearch: function (inputText) {
@@ -862,13 +895,13 @@ export default {
         this.session.on("signal:vote_please", (event) => {
           this.vote_please = event.data;
         }),
-        this.session.on("signal:part_time", (event) => {
-          console.log("time시그널 받았어!!!!!!!!!!!!!!!1")
-          this.partTime = event.data;
+        this.session.on("signal:time_reset", (event) => {
+          console.log("time시그널 받았어!!!!!!!!!!!!!!!1");
+          this.partTimeCounter = event.data;
         }),
         this.session.on("signal:part_change", (event) => {
-          console.log("change시그널 받았어!!!!!!!!!!!!!!!1")
-          this.nowPart = event.data;
+          console.log("change시그널 받았어!!!!!!!!!!!!!!!1");
+          this.nowPart = event.data
         }),
         this.session.on("signal:enterNewUser", (event) => {
           this.sessionInfo.challenger = JSON.parse(event.data).challenger;
