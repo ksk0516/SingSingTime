@@ -1,4 +1,5 @@
 <template>
+  <v-col>
   <div
     id="main-container"
     class="container"
@@ -267,10 +268,6 @@
       <div id="video-container" class="bigbox">
         <!-- <div id="video-container" class=""> -->
 
-        <!-- 나 -->
-
-        <!-- <v-col> -->
-
         <div class="smallboxl" display="flex">
           <!--스몰박스 left, 노래화면 왼쪽. 여기에 스트림매니저로 챔피언을 넘겨줘야함-->
 
@@ -320,20 +317,6 @@
 
         <!--스몰박스 right, 노래화면 오른쪽, 여기에 챌린져가 들어가야 함-->
 
-        <!-- <div class="smallboxr"> 
-    
-                <user-video
-    
-                :stream-manager="challenger" 
-    
-                @click.native="updateMainVideoStreamManager(challenger)"
-    
-              />
-    
-              />
-    
-            </div> -->
-
         <!--비디오 위치 테스트용으로 퍼블리셔 넣어놓음 -->
 
         <div class="smallboxl" display="flex">
@@ -356,8 +339,6 @@
             @voteChallenger="voteChallenger"
           />
         </div>
-
-        <!-- </v-col> -->
       </div>
     </div>
 
@@ -394,14 +375,68 @@
       value="도전자 목록"
       style="margin-top: 20px; margin-bottom: 20px; margin-right: 20px"
     />
+    <input
+      v-if="stickerFilterBtnClicked"
+      class="btn btn-large btn-danger"
+      type="button"
+      @click="applyStickerFilter"
+      value="필터 ON"
+      style="margin-top: 20px; margin-bottom: 20px; margin-right: 20px"
+    />
+    <input
+      v-else
+      class="btn btn-large btn-primary"
+      type="button"
+      @click="applyStickerFilter"
+      value="필터 OFF"
+      style="margin-top: 20px; margin-bottom: 20px; margin-right: 20px"
+    />
+    <input
+      v-if="echoFilterBtnClicked"
+      class="btn btn-large btn-danger"
+      type="button"
+      @click="applyEchoFilter"
+      value="에코 ON"
+      style="margin-top: 20px; margin-bottom: 20px; margin-right: 20px"
+    />
+    <input
+      v-else
+      class="btn btn-large btn-primary"
+      type="button"
+      @click="applyEchoFilter"
+      value="에코 OFF"
+      style="margin-top: 20px; margin-bottom: 20px; margin-right: 20px"
+    />
 
+    <br />
     <input
       class="btn btn-large btn-info"
       type="button"
-      @click="startRecord"
-      value="녹화 시작"
-      style="margin-top: 20px; margin-bottom: 20px"
+      ref="captureBtn"
+      @click="capture"
+      value="녹화 화면 지정"
+      style="margin-top: 20px; margin-bottom: 20px; margin-right: 20px"
     />
+    <input
+      class="btn btn-large btn-info"
+      type="button"
+      ref="startBtn"
+      @click="start"
+      value="녹화 시작"
+      disabled
+      style="margin-top: 20px; margin-bottom: 20px; margin-right: 20px"
+    />
+    <input
+      class="btn btn-large btn-info"
+      type="button"
+      ref="stopBtn"
+      @click="stop"
+      value="녹화 중지"
+      disabled
+      style="margin-top: 20px; margin-bottom: 20px; margin-right: 20px"
+    />
+    <a id="download" ref="down" href="#" style="display: none">Download</a>
+
     <!-- 관중들 들어갈 자리 -->
     <v-card
       class="audiences"
@@ -454,6 +489,14 @@
       />
     </div>
   </div>
+</v-col>
+<v-col>
+    <room-chat
+				ref="chat"
+				@message="sendMessage"
+				:subscribers="subscribers"
+			></room-chat>
+  </v-col>
 </template>
 
 <script>
@@ -469,9 +512,40 @@ import VoteChallenger from "./components/VoteChallenger.vue";
 import VoteChampion from "./components/VoteChampion.vue";
 import { reactive } from "vue";
 import VueCountdown from "@chenfengyuan/vue-countdown";
+import RoomChat from './components/room-chat.vue';
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 const API_KEY = "AIzaSyBGF5ljIuwHbPn27YSImtkkgk8KooR8q7I";
+
+let blobs;
+let blob;
+let rec;
+let stream;
+let voiceStream;
+let desktopStream;
+const mergeAudioStreams = (desktopStream, voiceStream) => {
+  const context = new AudioContext();
+  const destination = context.createMediaStreamDestination();
+  let hasDesktop = false;
+  let hasVoice = false;
+  if (desktopStream && desktopStream.getAudioTracks().length > 0) {
+    // If you don't want to share Audio from the desktop it should still work with just the voice.
+    const source1 = context.createMediaStreamSource(desktopStream);
+    const desktopGain = context.createGain();
+    desktopGain.gain.value = 0.7;
+    source1.connect(desktopGain).connect(destination);
+    hasDesktop = true;
+  }
+
+  if (voiceStream && voiceStream.getAudioTracks().length > 0) {
+    const source2 = context.createMediaStreamSource(voiceStream);
+    const voiceGain = context.createGain();
+    voiceGain.gain.value = 0.7;
+    source2.connect(voiceGain).connect(destination);
+    hasVoice = true;
+  }
+  return hasDesktop || hasVoice ? destination.stream.getAudioTracks() : [];
+};
 
 export default {
   name: "App",
@@ -483,6 +557,7 @@ export default {
     VoteChallenger,
     VoteChampion,
     VueCountdown,
+    RoomChat,
   },
   props: {
     id: "",
@@ -533,11 +608,11 @@ export default {
       // likeChampion: 0,
       // likeChallenger: 0,
       winner: "",
-      // challenger: "",
-      // waitingQueue: [],
       members: [],
       championStreamManager: undefined,
       challengerStreamManager: undefined,
+      stickerFilterBtnClicked: false,
+      echoFilterBtnClicked: false,
     };
   },
   computed: {
@@ -555,7 +630,6 @@ export default {
     ...mapGetters(["video"]),
   },
   created() {
-    // console.log(playroom+"그냥");
     this.joinSession();
     this.getname();
     console.log("====================================================");
@@ -567,11 +641,102 @@ export default {
     // this.getReadyVideo();
     // this.ready = !this.ready;
     this.test = !this.test;
+    // this.leavePlayroom();
   },
   updated() {
     this.getReadyVideo();
   },
   methods: {
+    sendMessage({ content, to }) {
+			let now = new Date();
+			let current = now.toLocaleTimeString([], {
+				hour: '2-digit',
+				minute: '2-digit',
+				hour12: false, // true인 경우 오후 10:25와 같이 나타냄.
+			});
+			let messageData = {
+				content: content,
+				sender: this.myUserName,
+				time: current,
+			};
+			// 전체 메시지
+			if (to === 'all') {
+				this.session
+					.signal({
+						data: JSON.stringify(messageData),
+						to: [],
+						type: 'public-chat',
+					})
+					.then(() => {
+						console.log('메시지 전송 완료');
+					})
+					.catch(error => {
+						console.log(error);
+					});
+			}
+		},
+    async capture() {
+      this.$refs.captureBtn.style.display = "none";
+      const audio = true;
+      const mic = true;
+
+      desktopStream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+        audio: audio,
+      });
+
+      if (mic === true) {
+        voiceStream = await navigator.mediaDevices.getUserMedia({
+          video: false,
+          audio: mic,
+        });
+      }
+
+      const tracks = [
+        ...desktopStream.getVideoTracks(),
+        ...mergeAudioStreams(desktopStream, voiceStream),
+      ];
+
+      console.log("Tracks to add to stream", tracks);
+      stream = new MediaStream(tracks);
+      console.log("Stream", stream);
+
+      blobs = [];
+
+      rec = new MediaRecorder(stream, { mimeType: "video/webm; " });
+      rec.ondataavailable = (e) => blobs.push(e.data);
+      rec.onstop = async () => {
+        //blobs.push(MediaRecorder.requestData());
+        blob = new Blob(blobs, { type: "video/mp4" });
+        let url = window.URL.createObjectURL(blob);
+        this.$refs.down.href = url;
+        this.$refs.down.download = "test.mp4";
+        this.$refs.down.style.display = "";
+      };
+      this.$refs.startBtn.disabled = false;
+      this.$refs.startBtn.style.color = "lightsalmon";
+      this.$refs.captureBtn.disabled = true;
+    },
+
+    start() {
+      this.$refs.startBtn.disabled = true;
+      this.$refs.startBtn.style.color = "white";
+      this.$refs.stopBtn.style.color = "lightsalmon";
+      this.$refs.stopBtn.disabled = false;
+      rec.start();
+    },
+
+    stop() {
+      this.$refs.captureBtn.disabled = false;
+      this.$refs.startBtn.disabled = true;
+      this.$refs.stopBtn.disabled = true;
+      this.$refs.stopBtn.style.color = "white";
+      rec.stop();
+
+      stream.getTracks().forEach((s) => s.stop());
+      stream = null;
+      this.$refs.captureBtn.style.display = "inline";
+    },
     leavePlayroom() {
       axios({
         method: "delete",
@@ -615,34 +780,111 @@ export default {
         });
     },
     // async imageGet() {
-    async imageConvert() {
-      this.token = localStorage.getItem("jwt");
-      console.log("hhhhhhhhhhhh");
-      console.log(this.token);
-      this.publisher.stream.applyFilter("GStreamerFilter", {
-        command:
-          "gdkpixbufoverlay location=/images/img.png offset-x=10 offset-y=10 overlay-height=200 overlay-width=200",
-      });
-      axios({
-        method: "get",
-        url: import.meta.env.VITE_APP_URL + `/api/v1/users/my-page/profile`,
-        headers: {
-          Authorization: `Bearer ${this.token}`,
-        },
-      })
-        .then((res) => {
-          console.log(res);
-          this.profileUrl = res.data;
-          console.log("4444444444444444444");
-          console.log(this.profileUrl);
-          console.log(this.state.there);
-          this.state.there = !this.state.there;
-          console.log(this.state.there);
+    imageConvert() {
+      // 버튼 눌려있으면 OFF로만 바꾸기
+      if (this.stickerFilterBtnClicked) {
+        this.stickerFilterBtnClicked = false;
+        return;
+      }
+      // this.token = localStorage.getItem("jwt");
+      // console.log("hhhhhhhhhhhh");
+      // console.log(this.token);
+      // this.publisher.stream
+      //   .applyFilter("GStreamerFilter", {
+      //     command: "videoflip method=vertical-flip",
+      //   })
+      //   .then(() => {
+      //     console.log("Video rotated!");
+      //   })
+      //   .catch((error) => {
+      //     console.error(error);
+      //   });
+
+      this.stickerFilterBtnClicked = true;
+
+      // axios({
+      //   method: "get",
+      //   url: import.meta.env.VITE_APP_URL + `/api/v1/users/my-page/profile`,
+      //   headers: {
+      //     Authorization: `Bearer ${this.token}`,
+      //   },
+      // })
+      //   .then((res) => {
+      //     console.log(res);
+      //     this.profileUrl = res.data;
+      //     console.log("4444444444444444444");
+      //     console.log(this.profileUrl);
+      //     // console.log(this.state.there);
+      //     // this.state.there = !this.state.there;
+      //     // console.log(this.state.there);
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //   });
+    },
+    filterOff() {
+      this.publisher.stream
+        .removeFilter()
+        .then(() => {
+          console.log("-- Filter removed --");
         })
-        .catch((err) => {
-          console.log(err);
+        .catch((error) => {
+          console.error(error);
         });
     },
+    // aa
+    // Kurento faceOverlayFilter 적용한 스티커 필터
+    applyStickerFilter() {
+      // 필터 해제, 버튼 OFF 전환
+      if (this.stickerFilterBtnClicked) {
+        this.filterOff();
+        this.stickerFilterBtnClicked = false;
+        return;
+      }
+
+      this.publisher.stream.applyFilter("FaceOverlayFilter").then((filter) => {
+        var offsetX;
+        var offsetY;
+        var width;
+        var height;
+        offsetX = "-0.2F"; // -0.7F
+        offsetY = "-0.7F";
+        width = "1.4";
+        height = "1.4";
+        filter.execMethod("setOverlayedImage", {
+          uri: "https://sstvideo.s3.ap-northeast-2.amazonaws.com/images/singmask.png",
+          offsetXPercent: offsetX,
+          offsetYPercent: offsetY,
+          widthPercent: width,
+          heightPercent: height,
+        });
+      });
+      
+      // 버튼 ON 전환
+      this.stickerFilterBtnClicked = true;
+    },
+
+      // aa
+    // Kurento audioecho Filter 적용한 오디오 필터
+    applyEchoFilter() {
+      // 필터 해제, 버튼 OFF 전환
+      if (this.echoFilterBtnClicked) {
+        this.filterOff();
+        this.echoFilterBtnClicked = false;
+        return;
+      }
+
+      this.publisher.stream.applyFilter("GStreamerFilter", {"command": "audioecho delay=50000000 intensity=0.9 feedback=0.5"})
+
+      // this.publisher.stream.applyFilter("GStreamerFilter", {
+      //   command:
+      //     `gdkpixbufoverlay location=/assets/images/logo.png offset-x=10 offset-y=10 overlay-height=200 overlay-width=200`,
+      // });
+
+      // 버튼 ON 전환
+      this.echoFilterBtnClicked = true;
+    },
+
     getReadyVideo: function () {
       this.session
         .signal({
@@ -849,7 +1091,8 @@ export default {
 
       // --- 3) Specify the actions when events take place in the session ---
       // 중간에 다른 유저가 들어왔을 때 도전자 data받기
-
+      			// public 채팅 signal 받기
+      
       this.session.on("signal:endalert", (event) => {
         this.finish = event.data;
       }),
@@ -923,8 +1166,18 @@ export default {
             }
           }
         }),
+        this.session.on('signal:public-chat', event => {
+				this.$refs.chat.addMessage(
+					event.data,
+					JSON.parse(event.data).sender === this.myUserName,
+					false,
+				);
+			});
+
         // 도전 이벤트 발생했을 때
         this.session.on("signal:challenge", (event) => {
+          console.log("여기가 문제??");
+          console.log(event);
           console.log(JSON.parse(event.data).challenger);
           this.sessionInfo.challenger = JSON.parse(event.data).challenger;
           this.sessionInfo.champion = JSON.parse(event.data).champion;
@@ -1025,6 +1278,10 @@ export default {
               mirror: false, // Whether to mirror your local video or not
             });
 
+            // aa
+            // Kurento 필터 적용을 위해 remote를 subscribe
+            publisher.subscribeToRemote(true);
+
             // Set the main video in the page to display our webcam and store our Publisher
             this.mainStreamManager = publisher;
             this.members.push(publisher);
@@ -1040,7 +1297,6 @@ export default {
               error.code,
               error.message
             );
-            alert(token);
             window.close();
           });
       });
@@ -1059,8 +1315,8 @@ export default {
       this.publisher = undefined;
       this.subscribers = [];
       this.OV = undefined;
-
-      // 방 정원수 감소
+      // 윈도우 언로드 되기전에 방 정원수 감소
+      // 윈도우 리로드에는 여길 안거치니까 감소를 안함
       this.leavePlayroom();
       // Remove beforeunload listener
       window.removeEventListener("beforeunload", this.leaveSession);
@@ -1174,6 +1430,7 @@ export default {
             this.sessionInfo.challenger = "";
           } else {
             this.sessionInfo.challenger = next;
+            console.log("839");
             this.session.signal({
               data: JSON.stringify(this.sessionInfo),
               type: "challenge",
@@ -1191,10 +1448,28 @@ export default {
           //     }
           // }
         })
+        .then(() => {
+          console.log("855");
+          for (let subscriber of this.subscribers) {
+            console.log("구독자 출력 759");
+            console.log(subscriber);
+            const nextId = JSON.parse(
+              subscriber.stream.connection.data
+            ).clientId;
+            console.log(nextId);
+            console.log("챌린저 정보 763");
+            // console.log(this.challengerStreamManager.stream.connection.data);
+            // const challengerId = JSON.parse(this.challengerStreamManager.stream.connection.data).clientId;
+            // console.log(challengerId);
+            if (nextId == this.sessionInfo.challenger) {
+              this.challengerStreamManager = subscriber;
+            }
+          }
+        })
         .catch((err) => {
           alert(err);
         });
-      // window.location.reload(true);
+        window.location.reload(true);
     },
     voteChampion() {
       this.voteBtnShow = false;
@@ -1219,7 +1494,7 @@ export default {
       if (this.sessionInfo.challenger == "") {
         this.sessionInfo.challenger = myUserId;
         // 방 멤버 중 대결신청 버튼 누른 유저의 화면 전파
-
+        console.log("903");
         this.session.signal({
           data: JSON.stringify(this.sessionInfo),
           type: "challenge",
@@ -1271,6 +1546,7 @@ export default {
       console.log(sessionId);
       return await this.createToken(sessionId);
     },
+
     async createSession(sessionId) {
       this.token = localStorage.getItem("jwt");
       const response = await axios.post(
@@ -1292,7 +1568,15 @@ export default {
           "/api/v1/openvidu/sessions/" +
           sessionId +
           "/connections",
-        {},
+        {
+          // aa
+          // filter 사용을 위해 create connection 시 body를 추가
+          type: "WEBRTC",
+          role: "PUBLISHER",
+          kurentoOptions: {
+            allowedFilters: ["GStreamerFilter", "FaceOverlayFilter"],
+          },
+        },
         {
           headers: { "Content-Type": "application/json" },
         }
@@ -1300,7 +1584,6 @@ export default {
       return response.data; // The token
     },
   },
-
   setup() {
     // 자식 컴포넌트를 핸들링하기 위한 ref
     const store = useStore();
