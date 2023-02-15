@@ -66,16 +66,17 @@
         </MARquee> -->
         <v-row justify="center">
           <vue-countdown
-            :time="(20 * 1000)*0.97"
+            class="championCount"
+            :time="(20 * 1000)"
             v-slot="{ seconds }"
             v-if="this.nowPart == 'champion'"
           >
-            <h2 style="margin-top: 50px; margin-right: 370px">
+            <h2 style="margin-top: 50px; margin-right: 370px; color:blue;">
               {{ seconds }} 초
             </h2>
           </vue-countdown>
           <vue-countdown
-            :time="nowplaytime * 1000"
+            :time="(nowplaytime * 1000) * 0.98"
             v-slot="{ minutes, seconds }"
           >
             <h2
@@ -86,11 +87,12 @@
             </h2>
           </vue-countdown>
           <vue-countdown
-            :time="(20 * 1000)*0.97"
+            class="challengerCount"
+            :time="(20 * 1000)"
             v-slot="{ seconds }"
             v-if="this.nowPart == 'challenger'"
           >
-            <h2 style="margin-top: 50px; margin-left: 320px">
+            <h2 style="margin-top: 50px; margin-left: 320px; color:green;">
               {{ seconds }} 초
             </h2>
           </vue-countdown>
@@ -768,12 +770,13 @@ export default {
       // console.log("챔피언 아이디는!!!" + this.champion);
       // console.log(this.myUserId)
       this.nowplaysong = championSong.title;
-      this.nowplaytime = (championSong.part4 + 10)*0.9;
+      // this.nowplaytime = (championSong.part4 + 10);
+      this.nowplaytime = (70 + 10);
       // this.nowplaytime = 60;
       this.champion_confirm = true;
       this.session.signal({ data: championSong.title, type: "battleApply" });
       this.session.signal({
-        data: (championSong.part4 + 10)*0.9,
+        data: (70 + 10),
         type: "battleApplySongTime",
       });
       this.session.signal({ data: true, type: "battlemodalshow" });
@@ -781,7 +784,10 @@ export default {
 
     timerStop: function (Timer) {
       clearInterval(Timer);
-      this.endGame();
+      // if ( minutes == 0 && seconds == 0) {
+      //   this.endGame();
+      // }
+      this.endGame()
     },
     parttimerStop: function (Timer) {
       clearInterval(Timer);
@@ -1591,6 +1597,18 @@ video {
   100% {
     opacity: 1;
   }
+}
+
+.championCount{
+  position: fixed;
+  left: 950px;
+  top: 180px;
+}
+
+.challengerCount{
+  position: fixed;
+  right: 950px;
+  top: 180px;
 }
 
 .exit {
