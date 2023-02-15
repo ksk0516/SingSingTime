@@ -227,7 +227,7 @@
       </h2>
       <h3>대결을 시작하시겠습니까?</h3>
 
-      <v-btn @click="onSelectVideo()" color="green" variant="outlined"
+      <v-btn @click="sendStartSignal()" color="green" variant="outlined"
         >확인</v-btn
       >
     </div>
@@ -652,6 +652,10 @@ export default {
     this.getReadyVideo();
   },
   methods: {
+    sendStartSignal(){
+       this.session.signal({ type: "onSelectVideoSpread" }); // 데이터 상관없음
+       this.onSelectVideo();
+    },
     sendMessage({ content, to }) {
 			let now = new Date();
 			let current = now.toLocaleTimeString([], {
@@ -908,6 +912,10 @@ export default {
         });
     },
     onSelectVideo: function () {
+      // aa
+      // if(this.myUserId == this.sessionInfo.champion){
+      //   this.session.signal({ type: "onSelectVideoSpread" }); // 데이터 상관없음
+      // }
       this.readyVideo = false;
       // this.nowplaytime = championSong.part4 + 10;
       // this.nowplaytime = 5;
@@ -916,13 +924,15 @@ export default {
       this.TimeCounter = this.nowplaytime;
       var interval = setInterval(() => {
         this.TimeCounter -= 1; //1초씩 감소
+        // console.log(this.myUserName)
+        // console.log(this.TimeCounter);
 
         // console.log("시간 : " + this.TimeCounter);
         if (this.TimeCounter == 30) {
           this.vote_please = true;
           this.session.signal({ data: this.vote_please, type: "vote_please" });
         }
-        if (this.TimeCounter <= 0) {
+        if (this.TimeCounter == 0) {
           console.log("timeStop22222");
           this.timerStop(interval);
 
@@ -1097,7 +1107,12 @@ export default {
       // --- 3) Specify the actions when events take place in the session ---
       // 중간에 다른 유저가 들어왔을 때 도전자 data받기
       			// public 채팅 signal 받기
-      
+      // onSelectVideoSpread
+      this.session.on("signal:onSelectVideoSpread", () => {
+        if(this.myUserId != this.sessionInfo.champion){
+          this.onSelectVideo();
+        }
+      }),
       this.session.on("signal:endalert", (event) => {
         this.finish = event.data;
       }),
@@ -1384,17 +1399,14 @@ export default {
     },
     endGame() {
       // console.log("=====================end")
+
+      // this.finish true로 바꾸고 전파
       this.finish = true;
       this.session.signal({
         data: this.finish,
         type: "endalert",
       });
-      // this.selectVideo = false;
-      // this.session.signal({
-      //   data: this.selectVideo,
-      //   type:"selectVideo_false"
-      // })
-      // console.log("게임 종료!!!!!!!" + this.finish)
+      
       if (this.sessionInfo.likeChampion >= this.sessionInfo.likeChallenger) {
         this.winner = "챔피언";
       } else {
@@ -1423,8 +1435,9 @@ export default {
           console.log("게임끝난 상태에서 data 받아오기!!!!");
           console.log(res);
           alert(
-            this.sessionInfo.champion +
-              `님이 ${res.data.winCnt}연승을 달성하셨습니다!!!`
+            // this.sessionInfo.champion +
+            //   `님이 ${res.data.winCnt}연승을 달성하셨습니다!!!`
+            "승자가 결정되었습니다!"
           );
           this.sessionInfo.championSongList = res.data.championSongList;
           const next = this.dequeue();
@@ -1432,7 +1445,7 @@ export default {
           console.log(next);
           console.log(this.subscribers);
           if (next == "") {
-            this.sessionInfo.challenger = "";
+            this.sessionInfo.challenger ="";
           } else {
             this.sessionInfo.challenger = next;
             console.log("839");
@@ -1455,26 +1468,35 @@ export default {
         })
         .then(() => {
           console.log("855");
-          for (let subscriber of this.subscribers) {
+          for (let user of this.members) {
             console.log("구독자 출력 759");
-            console.log(subscriber);
+            console.log(user);
             const nextId = JSON.parse(
-              subscriber.stream.connection.data
+              user.stream.connection.data
             ).clientId;
             console.log(nextId);
             console.log("챌린저 정보 763");
             // console.log(this.challengerStreamManager.stream.connection.data);
             // const challengerId = JSON.parse(this.challengerStreamManager.stream.connection.data).clientId;
             // console.log(challengerId);
+            if(this.sessionInfo.challenger==""){
+              this.challengerStreamManager=undefined;
+            }
             if (nextId == this.sessionInfo.challenger) {
-              this.challengerStreamManager = subscriber;
+              this.challengerStreamManager = user;
+            }
+            if (nextId == this.sessionInfo.champion) {
+              this.championStreamManager = user;
             }
           }
+          console.log("=====================");
+          console.log(this.championStreamManager);
+          console.log(this.challengerStreamManager);
         })
         .catch((err) => {
           alert(err);
         });
-        window.location.reload(true);
+        // window.location.reload(true);
     },
     voteChampion() {
       this.voteBtnShow = false;
