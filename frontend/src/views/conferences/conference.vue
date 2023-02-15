@@ -270,8 +270,8 @@
         <div id="video-container" class="bigbox">
           <!-- <div id="video-container" class=""> -->
 
-          <div class="smallboxl" display="flex">
-            <!--스몰박스 left, 노래화면 왼쪽. 여기에 스트림매니저로 챔피언을 넘겨줘야함-->
+        <div class="smallboxl" style="margin-right: 300px;"  display="flex">
+          <!--스몰박스 left, 노래화면 왼쪽. 여기에 스트림매니저로 챔피언을 넘겨줘야함-->
 
             <v-card style="padding: 5px; font-size: 20px" color="primary"
               ><img
@@ -281,26 +281,21 @@
               <img src="../../assets/images/sparkling.gif" style="width: 20px"
             /></v-card>
 
-            <user-video
-              :stream-manager="championStreamManager"
-              @click.native="
-                updateMainVideoStreamManager(championStreamManager)
-              "
-            />
-            <VoteChampion
-              v-if="this.voteBtnShow"
-              @voteChampion="voteChampion"
-            />
-          </div>
+          <user-video
+            :stream-manager="championStreamManager"
+            @click.native="updateMainVideoStreamManager(championStreamManager)"
+          />
+          <VoteChampion v-if="this.voteBtnShow" @voteChampion="voteChampion" />
+        </div>
 
           <!-- </v-col> -->
 
-          <div class="musicbox">
-            <SongDetail
-              v-if="this.selectedVideo && this.finish == false"
-              :session="session"
-              @endGame="endGame"
-            />
+        <div class="musicbox">
+          <SongDetail
+            v-if="this.selectedVideo && this.finish == false"
+            :session="session"
+            @endGame="endGame"
+          />
 
             <v-row
               v-if="this.finish"
@@ -334,22 +329,22 @@
                 src="../../assets/images/sparkling.gif"
                 style="width: 20px" />
 
-              <span style="color: white">도전자 </span
-              ><img src="../../assets/images/sparkling.gif" style="width: 20px"
-            /></v-card>
-            <user-video
-              :stream-manager="challengerStreamManager"
-              @click.native="
-                updateMainVideoStreamManager(challengerStreamManager)
-              "
-            />
-            <VoteChallenger
-              v-if="this.voteBtnShow"
-              @voteChallenger="voteChallenger"
-            />
-          </div>
+            <span style="color: white">도전자 </span
+            ><img src="../../assets/images/sparkling.gif" style="width: 20px"
+          /></v-card>
+          <user-video
+            :stream-manager="challengerStreamManager"
+            @click.native="
+              updateMainVideoStreamManager(challengerStreamManager)
+            "
+          />
+          <VoteChallenger
+            v-if="this.voteBtnShow"
+            @voteChallenger="voteChallenger"
+          />
         </div>
       </div>
+    </div>
 
       <input
         class="btn btn-large btn-danger"
@@ -494,32 +489,21 @@
               <!-- <v-btn @click="imageGet" style="z-index: 3">눌러봐</v-btn> -->
               <!-- </div> -->
 
-              <user-video
-                v-for="sub in subscribers"
-                :key="sub.stream.connection.connectionId"
-                :stream-manager="sub"
-                @click.native="updateMainVideoStreamManager(sub)"
-              />
-            </v-row>
-          </div>
-        </v-row>
-      </v-col>
-      <v-col  lg="6">
-        <v-row
-          display="inline-block; flex"
-          style="margin-left: 20px; height: 500px; width: 200px"
-        >
-          <!-- <v-col> -->
-          <room-chat
-            ref="chat"
-            @message="sendMessage"
-            :subscribers="subscribers"
-          ></room-chat>
-          <!-- </v-col> -->
-        </v-row>
-      </v-col>
-    </v-row>
+      <user-video
+        v-for="sub in subscribers"
+        :key="sub.stream.connection.connectionId"
+        :stream-manager="sub"
+        @click.native="updateMainVideoStreamManager(sub)"
+      />
     </div>
+  </div>
+</v-col>
+<v-col>
+    <room-chat
+				ref="chat"
+				@message="sendMessage"
+				:subscribers="subscribers"
+			></room-chat>
   </v-col>
 </template>
 
@@ -637,6 +621,8 @@ export default {
       challengerStreamManager: undefined,
       stickerFilterBtnClicked: false,
       echoFilterBtnClicked: false,
+      playerJoined: true,
+      crowdJoined: false,
     };
   },
   computed: {
@@ -1721,7 +1707,7 @@ export default {
 }
 
 .smallboxl {
-  width: 300px;
+  width: 700px;
 }
 
 .musicbox {
@@ -1832,7 +1818,8 @@ export default {
   /* position: relative; */
   /* float: left; */
   margin-left: 0.6%;
-  border: 3px solid;
+  /* border: 3px solid; */
+  border: 0px solid;
   border-color: rgb(255, 255, 255);
   /* cursor: pointer; */
   /* margin:  2%;  */
