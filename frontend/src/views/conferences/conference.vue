@@ -1,4 +1,5 @@
 <template>
+  <v-col>
   <div
     id="main-container"
     class="container"
@@ -41,14 +42,14 @@
 
       <v-col
         justify="center"
-        v-if="this.selectedVideo && !this.finish"
+        v-if="this.selectedVideo && this.finish == false"
         style="padding-top: 0px"
       >
         <MARquee
           style="font-size: 25px"
           scrollamount="25"
           direction="right"
-          loop="1"
+          loop="3"
           >도전자가
           <span style="color: orange">{{ nowplaysong }}</span>
           를(을) 신청하였습니다. 대결이 시작됩니다!
@@ -64,14 +65,39 @@
           <span style="color: orange">30초</span>
           남았습니다. 투표를 진행해주세요!
         </MARquee> -->
-        <vue-countdown :time="nowplaytime * 1000" v-slot="{ minutes, seconds }">
-          <h2
-            :class="{ hurryup: minutes == 0 && seconds <= 30 }"
-            style="margin-top: 50px"
+        <v-row justify="center">
+          <vue-countdown
+            class="championCount"
+            :time="(20 * 1000)"
+            v-slot="{ seconds }"
+            v-if="this.nowPart == 'champion'"
           >
-            남은 투표 시간 : {{ minutes }} 분 {{ seconds }} 초
-          </h2>
-        </vue-countdown>
+            <h2 style="margin-top: 50px; margin-right: 370px; color:blue;">
+              {{ seconds }} 초
+            </h2>
+          </vue-countdown>
+          <vue-countdown
+            :time="(nowplaytime * 1000) * 0.98"
+            v-slot="{ minutes, seconds }"
+          >
+            <h2
+              :class="{ hurryup: minutes == 0 && seconds <= 30 }"
+              style="margin-top: 50px"
+            >
+              남은 투표 시간 : {{ minutes }} 분 {{ seconds }} 초
+            </h2>
+          </vue-countdown>
+          <vue-countdown
+            class="challengerCount"
+            :time="(20 * 1000)"
+            v-slot="{ seconds }"
+            v-if="this.nowPart == 'challenger'"
+          >
+            <h2 style="margin-top: 50px; margin-left: 320px; color:green;">
+              {{ seconds }} 초
+            </h2>
+          </vue-countdown>
+        </v-row>
       </v-col>
 
       <div>
@@ -265,7 +291,7 @@
 
         <div class="musicbox" style="margin-right: 300px;">
           <SongDetail
-            v-if="this.selectedVideo && !this.finish"
+            v-if="this.selectedVideo && this.finish == false"
             :session="session"
             @endGame="endGame"
           />
@@ -466,6 +492,14 @@
       />
     </div>
   </div>
+</v-col>
+<v-col>
+    <room-chat
+				ref="chat"
+				@message="sendMessage"
+				:subscribers="subscribers"
+			></room-chat>
+  </v-col>
 </template>
 
 <script>
@@ -481,6 +515,7 @@ import VoteChallenger from "./components/VoteChallenger.vue";
 import VoteChampion from "./components/VoteChampion.vue";
 import { reactive } from "vue";
 import VueCountdown from "@chenfengyuan/vue-countdown";
+import RoomChat from './components/room-chat.vue';
 
 axios.defaults.headers.post["Content-Type"] = "application/json";
 const API_KEY = "AIzaSyBGF5ljIuwHbPn27YSImtkkgk8KooR8q7I";
@@ -525,6 +560,7 @@ export default {
     VoteChallenger,
     VoteChampion,
     VueCountdown,
+    RoomChat,
   },
   props: {
     id: "",
@@ -569,7 +605,9 @@ export default {
       nowplaysong: "", // 현재 대결곡
       champion_confirm: false,
       vote_please: false, // 30초 남았을때 공지 띄우기
-
+      nowPart: "champion", // 파트를 나누기위한 변수
+      partTime: 20, // 한 파트당 20초
+      partTimeCounter: 0,
       // likeChampion: 0,
       // likeChallenger: 0,
       winner: "",
@@ -614,6 +652,34 @@ export default {
     this.getReadyVideo();
   },
   methods: {
+    sendMessage({ content, to }) {
+			let now = new Date();
+			let current = now.toLocaleTimeString([], {
+				hour: '2-digit',
+				minute: '2-digit',
+				hour12: false, // true인 경우 오후 10:25와 같이 나타냄.
+			});
+			let messageData = {
+				content: content,
+				sender: this.myUserName,
+				time: current,
+			};
+			// 전체 메시지
+			if (to === 'all') {
+				this.session
+					.signal({
+						data: JSON.stringify(messageData),
+						to: [],
+						type: 'public-chat',
+					})
+					.then(() => {
+						console.log('메시지 전송 완료');
+					})
+					.catch(error => {
+						console.log(error);
+					});
+			}
+		},
     async capture() {
       this.$refs.captureBtn.style.display = "none";
       const audio = true;
@@ -850,13 +916,38 @@ export default {
       this.TimeCounter = this.nowplaytime;
       var interval = setInterval(() => {
         this.TimeCounter -= 1; //1초씩 감소
+
         // console.log("시간 : " + this.TimeCounter);
-        if (this.TimeCounter <= 30) {
+        if (this.TimeCounter == 30) {
           this.vote_please = true;
           this.session.signal({ data: this.vote_please, type: "vote_please" });
         }
-        if (this.TimeCounter <= 0) this.timerStop(interval);
+        if (this.TimeCounter <= 0) {
+          console.log("timeStop22222");
+          this.timerStop(interval);
+
+        }
       }, 1000);
+
+      var part = "";
+      setInterval(() => {
+        if (this.nowPart == "champion") {
+          part = "challenger"
+        } else {
+          part = "champion"
+        }
+        this.session.signal({ data: part, type: "part_change" });
+      }, 20*1000);
+
+      // this.partTimeCounter = this.partTime;
+      // this.session.signal({ data: this.partTime, type: "time_reset" });
+      // var partinterval = setInterval(() => {
+      //   this.partTimeCounter -= 1; //1초씩 감소
+      //   if (this.partTimeCounter == -1) {
+      //     this.session.signal({ data: this.nowPart, type: "part_change" });
+      //     this.parttimerStop(partinterval);
+      //   }
+      // }, 1000);
 
       this.session.signal({
         data: this.readyVideo,
@@ -926,11 +1017,13 @@ export default {
       // console.log("챔피언 아이디는!!!" + this.champion);
       // console.log(this.myUserId)
       this.nowplaysong = championSong.title;
-      this.nowplaytime = championSong.part4 + 10;
+      // this.nowplaytime = (championSong.part4 + 10);
+      this.nowplaytime = (70 + 10);
+      // this.nowplaytime = 60;
       this.champion_confirm = true;
       this.session.signal({ data: championSong.title, type: "battleApply" });
       this.session.signal({
-        data: championSong.part4 + 10,
+        data: (70 + 10),
         type: "battleApplySongTime",
       });
       this.session.signal({ data: true, type: "battlemodalshow" });
@@ -938,7 +1031,13 @@ export default {
 
     timerStop: function (Timer) {
       clearInterval(Timer);
-      this.endGame();
+      // if ( minutes == 0 && seconds == 0) {
+      //   this.endGame();
+      // }
+      this.endGame()
+    },
+    parttimerStop: function (Timer) {
+      clearInterval(Timer);
     },
 
     onInputSearch: function (inputText) {
@@ -997,7 +1096,8 @@ export default {
 
       // --- 3) Specify the actions when events take place in the session ---
       // 중간에 다른 유저가 들어왔을 때 도전자 data받기
-
+      			// public 채팅 signal 받기
+      
       this.session.on("signal:endalert", (event) => {
         this.finish = event.data;
       }),
@@ -1028,6 +1128,9 @@ export default {
         this.session.on("signal:start_selectedVideo", (event) => {
           this.selectedVideo = event.data;
         }),
+        // this.session.on("signal:selectVideo_false", (event) => {
+        //   this.selectedVideo = event.data;
+        // }),
         this.session.on("signal:start_voteBtnShow", (event) => {
           this.voteBtnShow = event.data;
         }),
@@ -1046,6 +1149,14 @@ export default {
         this.session.on("signal:vote_please", (event) => {
           this.vote_please = event.data;
         }),
+        this.session.on("signal:time_reset", (event) => {
+          console.log("time시그널 받았어!!!!!!!!!!!!!!!1");
+          this.partTimeCounter = event.data;
+        }),
+        this.session.on("signal:part_change", (event) => {
+          console.log("change시그널 받았어!!!!!!!!!!!!!!!1");
+          this.nowPart = event.data
+        }),
         this.session.on("signal:enterNewUser", (event) => {
           this.sessionInfo.challenger = JSON.parse(event.data).challenger;
           // 방 멤버들 중 도전자 유저의 화면 생성
@@ -1060,6 +1171,14 @@ export default {
             }
           }
         }),
+        this.session.on('signal:public-chat', event => {
+				this.$refs.chat.addMessage(
+					event.data,
+					JSON.parse(event.data).sender === this.myUserName,
+					false,
+				);
+			});
+
         // 도전 이벤트 발생했을 때
         this.session.on("signal:challenge", (event) => {
           console.log("여기가 문제??");
@@ -1264,11 +1383,17 @@ export default {
         });
     },
     endGame() {
+      // console.log("=====================end")
       this.finish = true;
       this.session.signal({
         data: this.finish,
         type: "endalert",
       });
+      // this.selectVideo = false;
+      // this.session.signal({
+      //   data: this.selectVideo,
+      //   type:"selectVideo_false"
+      // })
       // console.log("게임 종료!!!!!!!" + this.finish)
       if (this.sessionInfo.likeChampion >= this.sessionInfo.likeChallenger) {
         this.winner = "챔피언";
@@ -1349,7 +1474,7 @@ export default {
         .catch((err) => {
           alert(err);
         });
-      window.location.reload(true);
+        window.location.reload(true);
     },
     voteChampion() {
       this.voteBtnShow = false;
@@ -1761,6 +1886,18 @@ video {
   100% {
     opacity: 1;
   }
+}
+
+.championCount{
+  position: fixed;
+  left: 950px;
+  top: 180px;
+}
+
+.challengerCount{
+  position: fixed;
+  right: 950px;
+  top: 180px;
 }
 
 .exit {
