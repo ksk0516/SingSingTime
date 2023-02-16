@@ -1436,7 +1436,7 @@ export default {
           if (next == "") {
             this.sessionInfo.challenger = "";
             // DB 플레이룸 도전자 정보 수정2
-            alert("다음 도전자 없음, 도전자 비우기")
+            // alert("다음 도전자 없음, 도전자 비우기")
             this.updateDBChallenger(this.sessionInfo.challenger);
             // challenger 없는거 전파
             this.session.signal({

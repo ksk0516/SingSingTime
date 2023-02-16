@@ -3253,3 +3253,4 @@ Caused by: java.net.SocketException: Network is unreachable: connect
 2023-02-16 09:59:32.907 DEBUG 1564 --- [http-nio-127.0.0.1-8080-exec-5] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[Song(title=band, singer=기타밴드, part1=0, part2=40, part3=80, part4=17), Song(title=출발, singer=김동률, pa (truncated)...]
 2023-02-16 09:59:32.907 DEBUG 1564 --- [http-nio-127.0.0.1-8080-exec-5] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
 2023-02-16 09:59:32.907 DEBUG 1564 --- [http-nio-127.0.0.1-8080-exec-4] o.s.w.s.m.m.a.HttpEntityMethodProcessor  : Writing [[Song(title=band, singer=기타밴드, part1=0, part2=40, part3=80, part4=17), Song(title=출발, singer=김동률, pa (truncated)...]
+2023-02-16 09:59:32.908 DEBUG 1564 --- [http-nio-127.0.0.1-8080-exec-4] o.s.web.servlet.DispatcherServlet        : Completed 200 OK
