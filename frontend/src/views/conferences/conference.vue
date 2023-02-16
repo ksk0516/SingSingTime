@@ -1026,7 +1026,7 @@ export default {
       this.champion_confirm = true;
       this.session.signal({ data: championSong.title, type: "battleApply" });
       this.session.signal({
-        data: 80 + 10,
+        data: 120 + 10,
         type: "battleApplySongTime",
       });
       this.session.signal({ data: true, type: "battlemodalshow" });
