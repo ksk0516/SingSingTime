@@ -912,103 +912,106 @@ export default {
       // this.nowplaysong = championSong.title;
       this.champion_confirm = false;
       this.TimeCounter = this.nowplaytime;
-      var interval = setInterval(() => {
-        this.TimeCounter -= 1; //1초씩 감소
-        // console.log(this.myUserName)
-        // console.log(this.TimeCounter);
-
-        // console.log("시간 : " + this.TimeCounter);
-        if (this.TimeCounter == 30) {
-          this.vote_please = true;
-          this.session.signal({ data: this.vote_please, type: "vote_please" });
-        }
-        if (this.TimeCounter == 0) {
-          console.log("timeStop22222");
-          this.timerStop(interval);
-        }
-      }, 1000);
-
-      setInterval(() => {
-        if (this.nowPart == "champion") {
-          this.session.signal({ data: "challenger", type: "part_change" })
-        }
-        if (this.nowPart == "challenger") {
-          this.session.signal({ data: "champion", type: "part_change" })
-        }
-      }, 20 * 1000);
-
-      // this.partTimeCounter = this.partTime;
-      // this.session.signal({ data: this.partTime, type: "time_reset" });
-      // var partinterval = setInterval(() => {
-      //   this.partTimeCounter -= 1; //1초씩 감소
-      //   if (this.partTimeCounter == -1) {
-      //     this.session.signal({ data: this.nowPart, type: "part_change" });
-      //     this.parttimerStop(partinterval);
-      //   }
-      // }, 1000);
-
-      this.session.signal({
-        data: this.readyVideo,
-        type: "start_readyVideo",
-      });
-      this.session.signal({
-        data: this.champion_confirm,
-        type: "start_battle",
-      });
-      this.session.signal({
-        data: this.readyVideo,
-        type: "start_readyVideo",
-      });
-      // this.session.signal({
-      //   data: championSong.title,
-      //   type: "start_notice",
-      // });
-      // this.session.signal({
-      //   data: championSong.part4 + 10,
-      //   type: "start_nowplaytime",
-      // });
-      this.session.signal({
-        data: this.nowplaytime,
-        type: "start_timecounter",
-      });
-      this.selectedVideo = true;
-      this.session.signal({
-        data: this.selectedVideo,
-        type: "start_selectedVideo",
-      });
-      this.voteBtnShow = true;
-      this.session.signal({
-        data: this.voteBtnShow,
-        type: "start_voteBtnShow",
-      });
-      this.finish = false;
-      this.session.signal({
-        data: this.finish,
-        type: "start_finish",
-      });
-      this.session
-        .signal({
-          data: JSON.stringify(this.nowplaysong),
-          type: "songTitle",
-        })
-        // .signal({
-        //   data : championSong.id,
-        //   type: "songId",
-        // })
-        .then(() => {
-          console.log("노래방 시그널 전송");
-          // console.log(video.id.videoId)
-        })
-        .catch((err) => {
-          console.log(err);
-          console.log("전송 에러");
+      setTimeout(() => {
+        
+        var interval = setInterval(() => {
+          this.TimeCounter -= 1; //1초씩 감소
+          // console.log(this.myUserName)
+          // console.log(this.TimeCounter);
+  
+          // console.log("시간 : " + this.TimeCounter);
+          if (this.TimeCounter == 30) {
+            this.vote_please = true;
+            this.session.signal({ data: this.vote_please, type: "vote_please" });
+          }
+          if (this.TimeCounter == 0) {
+            console.log("timeStop22222");
+            this.timerStop(interval);
+          }
+        }, 1000);
+  
+        setInterval(() => {
+          if (this.nowPart == "champion") {
+            this.session.signal({ data: "challenger", type: "part_change" })
+          }
+          if (this.nowPart == "challenger") {
+            this.session.signal({ data: "champion", type: "part_change" })
+          }
+        }, 20 * 1000);
+  
+        // this.partTimeCounter = this.partTime;
+        // this.session.signal({ data: this.partTime, type: "time_reset" });
+        // var partinterval = setInterval(() => {
+        //   this.partTimeCounter -= 1; //1초씩 감소
+        //   if (this.partTimeCounter == -1) {
+        //     this.session.signal({ data: this.nowPart, type: "part_change" });
+        //     this.parttimerStop(partinterval);
+        //   }
+        // }, 1000);
+  
+        this.session.signal({
+          data: this.readyVideo,
+          type: "start_readyVideo",
         });
-      this.session.signal({
-        // data: championSong.part4 + 10,
-        data: 5,
-        type: "songTime",
-      });
-      console.log(this.$store.state.video);
+        this.session.signal({
+          data: this.champion_confirm,
+          type: "start_battle",
+        });
+        this.session.signal({
+          data: this.readyVideo,
+          type: "start_readyVideo",
+        });
+        // this.session.signal({
+        //   data: championSong.title,
+        //   type: "start_notice",
+        // });
+        // this.session.signal({
+        //   data: championSong.part4 + 10,
+        //   type: "start_nowplaytime",
+        // });
+        this.session.signal({
+          data: this.nowplaytime,
+          type: "start_timecounter",
+        });
+        this.selectedVideo = true;
+        this.session.signal({
+          data: this.selectedVideo,
+          type: "start_selectedVideo",
+        });
+        this.voteBtnShow = true;
+        this.session.signal({
+          data: this.voteBtnShow,
+          type: "start_voteBtnShow",
+        });
+        this.finish = false;
+        this.session.signal({
+          data: this.finish,
+          type: "start_finish",
+        });
+        this.session
+          .signal({
+            data: JSON.stringify(this.nowplaysong),
+            type: "songTitle",
+          })
+          // .signal({
+          //   data : championSong.id,
+          //   type: "songId",
+          // })
+          .then(() => {
+            console.log("노래방 시그널 전송");
+            // console.log(video.id.videoId)
+          })
+          .catch((err) => {
+            console.log(err);
+            console.log("전송 에러");
+          });
+        this.session.signal({
+          // data: championSong.part4 + 10,
+          data: 5,
+          type: "songTime",
+        });
+        console.log(this.$store.state.video);
+      }, 6000);
     },
     battleApplication: function (championSong) {
       // console.log("222222222222222222222222222");
@@ -1496,7 +1499,7 @@ export default {
           } else {
             this.sessionInfo.challenger = next;
             // DB 플레이룸 도전자 정보 수정3
-            alert("다음 도전자 있음, 도전자 수정");
+            // alert("다음 도전자 있음, 도전자 수정");
             this.updateDBChallenger(this.sessionInfo.challenger);
             // challenger 다음 사람 전파
             this.session.signal({
