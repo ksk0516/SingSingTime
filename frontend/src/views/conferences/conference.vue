@@ -1330,7 +1330,7 @@ export default {
           this.sessionInfo.challenger = res.data.challenger;
           this.getChampionSongList();
           // aa 플레이룸-도전자 조회
-
+          this.getWaitingQueue();
           // 2. 방 멤버들 중 챔피언 화면 생성
           this.setChampionStreamManager();
 
@@ -1376,6 +1376,25 @@ export default {
           console.log("jjjjjjjjjjjjjjjj");
           console.log(res.data);
           this.sessionInfo.championSongList = res.data;
+        })
+        .catch((err) => {
+          alert(err);
+        });
+    },
+    getWaitingQueue(){
+      axios({
+        method: "get",
+        url:
+          import.meta.env.VITE_APP_URL +
+          `/api/v1/playrooms/getmember/${this.sessionId}`,
+       data: {
+        sessionId : this.sessionId,
+       },
+        })
+        .then((res) => {
+          console.log("대기열불러오기 1395");
+          console.log(res.data);
+          this.sessionInfo.waitingQueue = Array.from(res.data);
         })
         .catch((err) => {
           alert(err);
@@ -1503,6 +1522,24 @@ export default {
     enqueue(data) {
       // aa 플레이룸-도전자 등록
       this.sessionInfo.waitingQueue.push(data);
+      axios({
+        method: "post",
+        url:
+          import.meta.env.VITE_APP_URL +
+          `/api/v1/playrooms/addmember/`,
+       data: {
+        sessionId : this.sessionId,
+        challengerId : data,
+       },
+        })
+        .then((res) => {
+          console.log("jjjjjjjjjjjjjjjj");
+          console.log(res.data);
+          this.sessionInfo.championSongList = res.data;
+        })
+        .catch((err) => {
+          alert(err);
+        });
     },
     // 도전자만 실행하는 함수
     challengeFirst(myUserId) {
@@ -1541,7 +1578,27 @@ export default {
       if (this.sessionInfo.waitingQueue.length == 0) return "";
       else {
         // aa 플레이룸-도전자 삭제 (변수 선언)
-        return this.sessionInfo.waitingQueue.shift();
+        const data = this.sessionInfo.waitingQueue.shift();
+        axios({
+        method: "delete",
+        url:
+          import.meta.env.VITE_APP_URL +
+          `/api/v1/playrooms/deletemember/`,
+       data: {
+        sessionId : this.sessionId,
+        challengerId : data,
+       },
+        })
+        .then((res) => {
+          console.log("1574"+"deleteWaitingQueue");
+          console.log(res);
+        })
+        .catch((err) => {
+          alert(err);
+        });
+
+
+        return data;
       }
     },
     /**
