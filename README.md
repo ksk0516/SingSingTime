@@ -63,7 +63,7 @@ Web RTC
 
 
 ## 📋 API 명세서
-<image src="./image2.png"/>
+<image src="./image/image2.png"/>
 
 
 <br />
@@ -72,13 +72,13 @@ Web RTC
 
 
 ## ✔️ ERD
-<image src="./image3.png"/>
+<image src="./image/image3.png"/>
 
 
 <br />
 
 ## ✔️ 와이어프레임
-<image src="./image4.png"/>
+<image src="./image/image4.png"/>
 
 
 <br />
@@ -90,23 +90,23 @@ Web RTC
 
 #### 1️⃣ 노래 대결 및 투표 기능   
 - 챔피언과 이에 대결을 신청하는 도전자는 챔피언의 플레이리스트 중 노래를 선곡하여 대결을 신청할 수 있으며 관람객들은 대결에 대한 투표를 진행할 수 있습니다.
-<image src="./image5.png"/>
+<image src="./image/image5.png"/>
 
 #### 2️⃣ 가면 및 에코 기능  
 - 얼굴 공개를 원하지 않는 사용자들은 가면 기능을 기용하여 일부를 가릴 수 있으며 노래 대결을 하는 사용자들은 에코 기능을 사용해 보다 퀄리티 높은 대결을 즐길 수 있습니다.  
-<image src="./image6.png"/>
+<image src="./image/image6.png"/>
 
 #### 3️⃣ 실시간 채팅 기능   
 - 대결을 관람하는 관람객들은 대결화면 아래에서 실시간으로 소통을 할 수 있습니다.  
-<image src="./image7.png"/>
+<image src="./image/image7.png"/>
 
 #### 4️⃣ 영상 녹화 및 공유 기능   
 - 대결화면에서 바로 영상을 녹화 및 저장할 수 있으며 이를 커뮤니티 페이지에 공유하여 사용자들과 소통할 수 있습니다.
-<image src="./image8.png"/>
+<image src="./image/image8.png"/>
 
 #### 4️⃣ 나의 영상 및 플레이리스트 선곡
 - 대결 시 사용하게 될 사용자의 플레이리스트를 선곡할 수 있으며 사용자가 커뮤니티에 올린 영상들을 조회할 수 있습니다.
-<image src="./image9.png"/>
+<image src="./image/image9.png"/>
 
 
 <br />
