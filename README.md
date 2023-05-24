@@ -54,7 +54,7 @@ Web RTC
 
 
 ## 💻 사용기술
-<image src="./image1.png"/>
+<image src="./image/image1.png"/>
 
 
 <br />
